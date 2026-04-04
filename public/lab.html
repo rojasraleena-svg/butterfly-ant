@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🧪 虫痕鉴定实验室 | 🦋 蝴蝶与蚂蚁</title>
 <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
-    <link rel="stylesheet" href="/css/common.css?v=3">
+    <link rel="stylesheet" href="/css/common.css?v=5">
   <meta name="description" content="上传叶片照片，AI（GLM-5V视觉模型）自动识别昆虫取食痕迹类型、推测昆虫种类。支持洞孔、边缘啃食、骨架化等7种痕迹类型。">
   <meta property="og:title" content="🔬 虫痕鉴定实验室 | 🦋 蝴蝶与蚂蚁">
   <meta property="og:description" content="上传叶片照片，AI（GLM-5V视觉模型）自动识别昆虫取食痕迹类型、推测昆虫种类。支持洞孔、边缘啃食、骨架化等7种痕迹类型。">
@@ -46,6 +46,7 @@
     <div class="lab-layout">
       <!-- 左侧：上传+预览 -->
       <div class="lab-left">
+        <div class="lab-left-title"><span class="llt-icon">📤</span>样本上传</div>
         <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
           <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleUpload(event)">
           <div id="uploadPlaceholder">
@@ -92,8 +93,8 @@
         <h3>📚 痕迹类型图鉴（点击了解）</h3>
         <div class="lab-examples-wrap">
           <div class="example-grid" id="exampleGrid"></div>
-          <div style="margin-top:18px;padding:14px 16px;background:rgba(212,168,67,0.06);border-radius:10px;border:1px solid rgba(212,168,67,0.15);">
-            <p style="color:var(--accent-gold);font-size:0.85em;font-weight:600;margin-bottom:6px;">💡 小贴士</p>
+          <div class="lab-tips">
+            <p class="tips-title">💡 小贴士</p>
             <ul style="color:var(--text-muted);font-size:0.8em;padding-left:16px;line-height:1.75;margin:0">
               <li>拍照时让光线均匀，避免阴影遮挡痕迹</li>
               <li>痕迹很小时可靠近拍摄后裁剪</li>
@@ -216,7 +217,7 @@ async function loadExamples(){
     const grid=document.getElementById('exampleGrid'); grid.innerHTML='';
     const gm={chewer:'咀嚼式口器',sucker:'刺吸式口器',miner:'潜叶者',borer:'钻蛀者'};
     data.examples.forEach(ex=>{
-      const c=document.createElement('div');c.className='example-card';
+      const c=document.createElement('div');c.className='example-card';c.setAttribute('data-type', ex.type);
       c.innerHTML=`<div class="example-icon">${ex.icon}</div><h4>${ex.cn}</h4><p>${ex.desc.slice(0,30)}...</p>`;
       c.onclick=()=>alert(`【${ex.cn}】(${ex.type})\n\n${ex.desc}\n\n可能昆虫：${ex.insects.join('、')}\n功能群：${gm[ex.guild]||ex.guild}`);
       grid.appendChild(c);
@@ -225,7 +226,6 @@ async function loadExamples(){
 }
 loadExamples();
 sharedInit();
-document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 </body>
 </html>

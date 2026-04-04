@@ -135,6 +135,15 @@ body {
 }
 .section-desc { color:var(--text-secondary); font-size:var(--ts-body); max-width:620px; margin:0 auto; line-height:1.8; }
 
+/* ===== SKIP LINK (a11y) — 默认隐藏，键盘聚焦时显示 ===== */
+.skip-link {
+  position:absolute; left:-9999px; top:0; z-index:10000;
+  padding:12px 24px; background:var(--primary); color:#fff;
+  font-size:0.9em; font-weight:600; text-decoration:none;
+  border-radius:0 0 8px 8px; transition:left 0.2s var(--ease-out);
+}
+.skip-link:focus { left:16px; top:8px; outline:3px solid var(--accent-gold); outline-offset:2px; }
+
 /* ===== BUTTONS ===== */
 .btn {
   padding:13px 30px; border-radius:28px; font-size:0.92em; font-weight:600;
@@ -268,7 +277,7 @@ body {
 /* ===== MUTUALISM TYPES ===== */
 .mutualism-types { display:grid; grid-template-columns:repeat(auto-fit, minmax(310px,1fr)); gap:22px; margin-top:40px; }
 .type-card {
-  background:var(--card-bg); border:1px solid var(--card-border);
+  background:var(--card-bg-elevated); border:1px solid var(--card-border);
   border-radius:var(--radius-lg); padding:32px; transition:all var(--transition-base);
   position:relative; overflow:hidden;
 }
@@ -288,7 +297,7 @@ body {
 /* Mutualism spectrum visualization */
 .spectrum-section {
   margin-top:56px; padding:36px; border-radius:var(--radius-lg);
-  background:var(--card-bg); border:1px solid var(--card-border);
+  background:var(--card-bg-elevated); border:1px solid var(--card-border);
   position:relative; overflow:hidden;
 }
 .spectrum-section::before {
@@ -342,6 +351,57 @@ body {
 .lifecycle-section {
   background: linear-gradient(180deg, transparent 0%, rgba(15,35,60,0.25) 50%, transparent 100%);
   position:relative;
+}
+
+/* Progress bar */
+.lc-progress-bar {
+  max-width:500px; margin:0 auto 32px; position:relative;
+}
+.lc-progress-fill {
+  height:3px; border-radius:2px; background:linear-gradient(90deg,
+    var(--accent-gold), var(--primary), var(--accent-green), var(--accent-purple), var(--accent-red));
+  width:0%; transition:width 0.6s var(--ease-out);
+}
+.lc-progress-stages {
+  display:flex; justify-content:space-between; margin-top:8px;
+}
+.lc-ps {
+  font-size:var(--ts-micro); color:var(--text-dim); cursor:pointer;
+  padding:4px 10px; border-radius:10px; transition:all 0.25s var(--ease-out);
+  font-weight:500; letter-spacing:0.02em;
+}
+.lc-ps:hover { color:var(--text-secondary); background:rgba(255,255,255,0.04); }
+.lc-ps.dot-active { color:var(--text-muted); }
+.lc-ps.dot-current { color:var(--primary); font-weight:700; }
+
+/* Journey badge */
+.lc-journey-badge {
+  text-align:center; padding:12px 24px; margin-bottom:36px;
+  background:rgba(201,162,39,0.06); border:1px solid rgba(201,162,39,0.15);
+  border-radius:var(--radius-md); font-size:var(--ts-small); color:var(--text-secondary);
+  display:inline-flex; align-items:center; gap:8px;
+  left:50%; transform:translateX(-50%); position:relative;
+}
+.lc-journey-icon { font-size:1.2em; }
+
+/* Stage navigation */
+.lc-nav {
+  display:flex; align-items:center; justify-content:center; gap:24px;
+  margin-top:40px; padding-top:28px;
+  border-top:1px solid var(--card-border);
+}
+.lc-nav-btn {
+  padding:10px 22px; border-radius:14px; font-size:0.84em; font-weight:600;
+  background:rgba(59,125,216,0.08); color:var(--primary); border:1px solid rgba(59,125,216,0.18);
+  cursor:pointer; transition:all 0.25s var(--ease-spring); font-family:inherit;
+}
+.lc-nav-btn:hover:not(:disabled) { background:rgba(59,125,216,0.16); transform:translateX(var(----dir, 0)); }
+.lc-nav-btn:first-of-type { --dir: -3px; }
+.lc-nav-btn:last-of-type { --dir: 3px; }
+.lc-nav-btn:disabled { opacity:0.3; cursor:not-allowed; }
+.lc-nav-counter {
+  font-size:var(--ts-small); color:var(--text-dim); font-weight:600;
+  min-width:48px; text-align:center; font-family:var(--font-mono); letter-spacing:0.05em;
 }
 .lifecycle-timeline { position:relative; max-width:900px; margin:0 auto; padding:24px 0; }
 .lc-line {
@@ -437,42 +497,125 @@ body {
 .g-info h4 { font-size:0.93em; margin-bottom:4px; font-weight:600; }
 .g-info p { font-size:var(--ts-micro); color:var(--text-muted); }
 
-/* ===== LAB / BITE MARK ===== */
-.lab-layout { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start; }
-@media(max-width:768px){ .lab-layout { grid-template-columns:1fr; } }
-.lab-left, .lab-right { display:flex; flex-direction:column; gap:16px; }
-.upload-zone {
-  border:2px dashed var(--card-border); border-radius:var(--radius-lg); padding:36px;
-  text-align:center; cursor:pointer; transition:all 0.3s var(--ease-out); background:var(--card-bg);
-  position:relative; min-height:280px; display:flex; align-items:center; justify-content:center;
-  flex:1;
+/* ===== LAB / BITE MARK — v5 STOD级重构 ===== */
+.lab-layout {
+  display:grid; grid-template-columns:minmax(0,360px) 1fr; gap:0;
+  align-items:start; position:relative;
 }
-.upload-zone:hover { border-color:var(--primary); background:rgba(59,125,216,0.04); }
-.upload-zone.dragover { border-color:var(--accent-green); background:rgba(58,157,92,0.06); }
-.upload-icon { font-size:2.8em; margin-bottom:12px; }
-.upload-hint { color:var(--text-dim); font-size:var(--ts-small); margin-top:8px; }
-.lab-actions { display:flex; gap:12px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
-.lab-status {
-  display:flex; align-items:center; justify-content:center; gap:10px; padding:16px;
-  background:rgba(59,125,216,0.07); border-radius:var(--radius-md);
-  color:var(--primary); font-size:0.9em; margin-top:18px;
+@media(max-width:860px){ .lab-layout { grid-template-columns:1fr; } }
+
+/* 外框容器 + 顶部高光线 */
+.lab-layout::before {
+  content:''; position:absolute; inset:0;
+  background:var(--card-bg); border:1px solid var(--card-border);
+  border-radius:var(--radius-lg); pointer-events:none; z-index:0;
+  box-shadow: inset 0 1px 0 rgba(59,125,216,0.10), 0 4px 24px rgba(0,0,0,0.2);
 }
 
-/* 右侧面板统一卡片容器 */
-.lab-right > h3:first-child {
-  font-size:0.9em; color:var(--text-muted); margin:0 0 2px 0; font-weight:500;
+/* ── 左侧：上传区 ── */
+.lab-left {
+  display:flex; flex-direction:column; gap:0; position:relative; z-index:1;
+  border-right:1px solid var(--card-border); padding:28px 24px;
+  border-radius:var(--radius-lg) 0 0 var(--radius-lg);
+  background: linear-gradient(180deg, rgba(59,125,216,0.03) 0%, transparent 40%);
 }
-.lab-examples-wrap {
-  background:var(--card-bg); border:1px solid var(--card-border);
-  border-radius:var(--radius-lg); padding:18px 20px 20px;
+@media(max-width:860px){ .lab-left { border-right:none; border-bottom:1px solid var(--card-border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; } }
+
+/* 左侧标题 — 与右侧对称 */
+.lab-left-title {
+  display:flex; align-items:center; gap:8px;
+  font-size:0.85em; font-weight:600; color:var(--text-secondary);
+  margin-bottom:16px; padding-bottom:12px;
+  border-bottom:1px solid var(--card-border);
 }
+.lab-left-title .llt-icon { font-size:1.1em; }
+
+/* 上传区 → 科学仪器感 */
+.upload-zone {
+  border:1px solid rgba(59,125,216,0.18); border-radius:var(--radius-md); padding:36px 16px;
+  text-align:center; cursor:pointer; transition:all 0.4s var(--ease-out);
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(59,125,216,0.09) 0%, transparent 65%),
+    rgba(14,28,48,0.6);
+  position:relative; overflow:hidden;
+  display:flex; align-items:center; justify-content:center; flex-direction:column;
+}
+/* 脉冲光环 */
+.upload-zone::after {
+  content:''; position:absolute; width:80px; height:80px; top:50%; left:50%;
+  transform:translate(-50%,-55%);
+  border-radius:50%; border:1.5px solid rgba(59,125,216,0.15);
+  animation:pulse-ring 2.5s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes pulse-ring {
+  0%,100% { transform:translate(-50%,-55%) scale(1); opacity:0.4; }
+  50% { transform:translate(-50%,-55%) scale(1.35); opacity:0; }
+}
+.upload-zone:hover {
+  border-color:var(--primary); box-shadow:
+    0 0 0 1px var(--primary),
+    0 0 24px rgba(59,125,216,0.12),
+    inset 0 0 30px rgba(59,125,216,0.04);
+  transform:scale(1.005);
+}
+.upload-zone.dragover {
+  border-color:var(--accent-green); box-shadow:0 0 28px rgba(58,157,92,0.15);
+  background:
+    radial-gradient(ellipse at center, rgba(58,157,92,0.10), transparent 65%),
+    rgba(14,28,48,0.6);
+}
+.upload-icon {
+  font-size:2.4em; margin-bottom:12px; opacity:0.9;
+  position:relative; z-index:1;
+  animation:float-icon 3s ease-in-out infinite;
+}
+@keyframes float-icon {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-4px); }
+}
+.upload-zone > #uploadPlaceholder,
+.upload-zone > img {
+  position:relative; z-index:1;
+}
+.upload-hint { color:var(--text-dim); font-size:var(--ts-micro); margin-top:8px; letter-spacing:0.02em; }
+
+.lab-actions { display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
+.lab-status {
+  display:flex; align-items:center; justify-content:center; gap:10px; padding:14px;
+  background:rgba(59,125,216,0.07); border-radius:var(--radius-md);
+  color:var(--primary); font-size:0.88em; margin-top:14px;
+}
+
+/* ── 右侧面板 ── */
+.lab-right {
+  display:flex; flex-direction:column; position:relative; z-index:1;
+  padding:24px 28px; border-radius:0 var(--radius-lg) var(--radius-lg) 0;
+}
+@media(max-width:860px){ .lab-right { border-radius:0 0 var(--radius-lg) var(--radius-lg); } }
+
+/* 右侧标题 — 渐变处理 */
+.lab-panel-title {
+  display:flex; align-items:center; gap:10px;
+  font-size:0.88em; font-weight:600; margin-bottom:16px; padding-bottom:12px;
+  border-bottom:1px solid var(--card-border);
+}
+.lab-panel-title .lpt-icon {
+  font-size:1.15em;
+  background:linear-gradient(135deg, var(--accent-gold), #e8c547);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.lab-examples-wrap { padding:0; }
+
 .status-spinner {
   width:20px; height:20px; border:2.5px solid rgba(59,125,216,0.2);
   border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite;
 }
 @keyframes spin { to{transform:rotate(360deg)} }
 
-/* Result Card */
+/* ── Result Card（保持不变）── */
 .result-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius-lg); overflow:hidden; }
 .result-header {
   display:flex; align-items:center; gap:14px; padding:20px 24px;
@@ -499,13 +642,104 @@ body {
 .guild-sucker { background:rgba(59,125,216,0.1); color:var(--primary); }
 .guild-miner { background:rgba(58,157,92,0.1); color:var(--accent-green); }
 .guild-borer { background:rgba(201,162,39,0.1); color:var(--accent-gold); }
-.example-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+
+/* ── 图鉴卡片 · STOD级升级 ── */
+.example-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
 @media(max-width:768px){ .example-grid { grid-template-columns:repeat(2,1fr); } }
-.example-card { background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:var(--radius-md); padding:14px 10px; cursor:pointer; transition:all 0.25s var(--ease-out); text-align:center; }
-.example-card:hover { transform:translateY(-3px); border-color:var(--card-border-hover); }
-.example-icon { font-size:1.7em; margin-bottom:8px; }
-.example-card h4 { font-size:0.84em; margin-bottom:5px; font-weight:600; }
+
+.example-card {
+  background:rgba(255,255,255,0.025); border:1px solid var(--card-border);
+  border-radius:var(--radius-md); padding:16px 12px; cursor:pointer;
+  transition:all 0.35s var(--ease-out); text-align:center;
+  position:relative; overflow:hidden;
+  animation:fi 0.5s cubic-bezier(.4,0,.2,1) both;
+}
+/* 顶部色条 */
+.example-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2.5px;
+  border-radius:var(--radius-md) var(--radius-md) 0 0;
+  transition:height 0.3s var(--ease-out);
+}
+.example-card:hover {
+  transform:translateY(-4px);
+  border-color:var(--card-border-hover);
+}
+.example-card:hover::before { height:3.5px; }
+
+/* icon 彩色圆形背景 */
+.example-icon {
+  font-size:1.7em; margin-bottom:10px;
+  width:52px; height:52px; margin:0 auto 10px;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  transition:transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease-out);
+}
+.example-card:hover .example-icon {
+  transform:scale(1.1);
+}
+.example-card h4 { font-size:0.84em; margin-bottom:5px; font-weight:600; color:var(--text); }
 .example-card p { font-size:var(--ts-micro); color:var(--text-dim); line-height:1.5; }
+
+/* ── 7种痕迹类型配色方案 ── */
+/* 洞孔式 → 红 */
+.example-card[data-type="hole"]::before { background:var(--accent-red); }
+.example-card[data-type="hole"] .example-icon { background:rgba(212,100,74,0.12); }
+.example-card[data-type="hole"]:hover { box-shadow:0 8px 28px rgba(212,100,74,0.12); border-color:rgba(212,100,74,0.25); }
+
+/* 边缘啃食 → 金 */
+.example-card[data-type="margin"]::before { background:var(--accent-gold); }
+.example-card[data-type="margin"] .example-icon { background:rgba(201,162,39,0.12); }
+.example-card[data-type="margin"]:hover { box-shadow:0 8px 28px rgba(201,162,39,0.12); border-color:rgba(201,162,39,0.25); }
+
+/* 骨架化 → 紫 */
+.example-card[data-type="skeletonization"]::before { background:var(--accent-purple); }
+.example-card[data-type="skeletonization"] .example-icon { background:rgba(139,109,184,0.12); }
+.example-card[data-type="skeletonization"]:hover { box-shadow:0 8px 28px rgba(139,109,184,0.12); border-color:rgba(139,109,184,0.25); }
+
+/* 潜叶隧道 → 绿 */
+.example-card[data-type="mining"]::before { background:var(--accent-green); }
+.example-card[data-type="mining"] .example-icon { background:rgba(58,157,92,0.12); }
+.example-card[data-type="mining"]:hover { box-shadow:0 8px 28px rgba(58,157,92,0.12); border-color:rgba(58,157,92,0.25); }
+
+/* 虫瘿 → 蓝 */
+.example-card[data-type="gall"]::before { background:var(--primary); }
+.example-card[data-type="gall"] .example-icon { background:rgba(59,125,216,0.12); }
+.example-card[data-type="gall"]:hover { box-shadow:0 8px 28px rgba(59,125,216,0.12); border-color:rgba(59,125,216,0.25); }
+
+/* 斑点状 → 青灰 */
+.example-card[data-type="spot"]::before { background:#5a9aad; }
+.example-card[data-type="spot"] .example-icon { background:rgba(90,154,173,0.12); }
+.example-card[data-type="spot"]:hover { box-shadow:0 8px 28px rgba(90,154,173,0.12); border-color:rgba(90,154,173,0.25); }
+
+/* 表面刮擦 → 橙 */
+.example-card[data-type="surface_scraping"]::before { background:#d4943a; }
+.example-card[data-type="surface_scraping"] .example-icon { background:rgba(212,148,58,0.12); }
+.example-card[data-type="surface_scraping"]:hover { box-shadow:0 8px 28px rgba(212,148,58,0.12); border-color:rgba(212,148,58,0.25); }
+
+/* 入场动画 stagger */
+.example-card:nth-child(1) { animation-delay:0.05s; }
+.example-card:nth-child(2) { animation-delay:0.10s; }
+.example-card:nth-child(3) { animation-delay:0.15s; }
+.example-card:nth-child(4) { animation-delay:0.20s; }
+.example-card:nth-child(5) { animation-delay:0.25s; }
+.example-card:nth-child(6) { animation-delay:0.30s; }
+.example-card:nth-child(7) { animation-delay:0.35s; }
+
+/* ── 小贴士区域美化 ── */
+.lab-tips {
+  margin-top:18px; padding:14px 16px;
+  background:linear-gradient(135deg, rgba(201,162,39,0.05), rgba(201,162,39,0.02));
+  border-radius:var(--radius-md);
+  border-left:3px solid var(--accent-gold);
+}
+.lab-tips .tips-title {
+  color:var(--accent-gold); font-size:0.85em; font-weight:600; margin-bottom:6px;
+  display:flex; align-items:center; gap:6px;
+}
+.lab-tips ul {
+  color:var(--text-muted); font-size:0.8em; padding-left:16px;
+  line-height:1.75; margin:0;
+}
+.lab-tips li { margin-bottom:2px; }
 
 /* ===== QUIZ — Enhanced ===== */
 .quiz-container { max-width:680px; margin:0 auto; }
