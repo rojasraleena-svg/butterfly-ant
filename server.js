@@ -2,7 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3242;
+const PORT = process.env.BUTTERFLY_PORT || 3242;
 const BASE_DIR = __dirname;
 
 // Zhipu GLM-5V Config
