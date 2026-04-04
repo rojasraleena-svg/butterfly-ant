@@ -49,6 +49,147 @@ app.post('/api/identify-bite', identifyBiteLimiter, async (req, res) => {
     //     Root RB (1973). Organization of a plant-arthropod association in simple and diverse habitats. Ecol Monogr 43(1):95–124.
     // [3] Godfray HCJ (1984) Insect life histories & feeding strategies
     // [4] Coley PD & Barone JA (1996) Herbivory and plant defenses in tropical forests. Ecol Monogr 66(4):501–522.
+
+    /**
+     * 拉丁名/学名自动斜体化
+     * 匹配模式：
+     *   - Genus species（属名大写+种名小写，如 Lycaenidae, Chrysomelidae）
+     *   - (Familyname) 括号内的拉丁科/属名
+     *   - 已知昆虫分类单元（常见科/属/目名）
+     *   - DT编码后的括号注释（如 (Tenthredinidae)）
+     * 输出带 <em> 标签的HTML字符串，前端直接 innerHTML 渲染
+     */
+    function italicizeLatinNames(obj) {
+      if (!obj || typeof obj !== 'object') return obj;
+      // 常见拉丁学名词汇表（不完整但覆盖绝大多数情况）
+      const latinUnits = [
+        // 目
+        'Lepidoptera','Coleoptera','Diptera','Hymenoptera','Hemiptera','Thysanoptera',
+        'Orthoptera','Blattodea','Mantodea','Phthiraptera','Psocoptera','Neuroptera',
+        'Mecoptera','Siphonaptera','Trichoptera','Odonata','Ephemeroptera','Plecoptera',
+        // 科（高频）
+        'Chrysomelidae','Curculionidae','Tenthredinidae','Gracillariidae','Lyonetiidae',
+        'Agromyzidae','Cecidomyiidae','Cynipidae','Aphididae','Tetranychidae',
+        'Aleyrodidae','Noctuidae','Geometridae','Nymphalidae','Pieridae','Papilionidae',
+        'Lycaenidae','Sphingidae','Bombycidae','Tortricidae','Pyralidae','Crambidae',
+        'Gelechiidae','Oecophoridae','Depressariidae','Elateridae','Buprestidae',
+        'Cerambycidae','Scarabaeidae','Carabidae','Coccinellidae','Chalcidoidae',
+        'Ichneumonidae','Braconidae','Formicidae','Apidae','Vespidae','Halictidae',
+        'Andrenidae','Megachilidae','Colletidae','Melittidae','Stenotritidae',
+        'Reduviidae','Pentatomidae','Miridae','Cicadellidae','Fulgoridae',
+        'Aphididae','Psyllidae','Aleurodidae','Coccidae','Diaspididae','Pseudococcidae',
+        'Forficulidae','Gryllidae','Tettigoniidae','Acrididae','Blattidae',
+        'Blaberidae','Mantidae','Phasmatidae','Dermaptera','Zygentoma',
+        'Psychodidae','Culicidae','Simuliidae','Tabanidae','Muscidae','Calliphoridae',
+        'Sarcophagidae','Tachinidae','Drosophilidae','Agromyzidae','Anthomyiidae',
+        'Sciaridae','Cecidomyiidae','Tipulidae','Syrphidae','Asilidae',
+        'Slagidae','Zygaenidae','Notodontidae','Lasiocampidae','Erebidae','Arctiinae',
+        'Geometridae','Erebidae','Noctuidae','Nolidae','Limacodidae','Dalceridae',
+        'Limacodidae','Hesperiidae','Lycaenidae','Riodinidae','Nymphalidae',
+        'Satyridae','Danainae','Ithomiinae','Heliconiinae','Morphinae','Caligo',
+        'Monarcha','Danaus','Pieris','Colias','Pontia','Pararge','Vanessa',
+        'Aglais','Nymphalis','Polygonia','Speyeria','Argynnis','Boloria',
+        'Clossiana','Fabriciana','Issoria','Brenthis','Euphydryas','Melitaea',
+        'Euphydryas','Mellicta','Occidryas','Euphydryas','Melitaea','Occidryas',
+        'Hydaspe','Occidryas','Chlosyne','Poladryas','Anthanassa','Anartia',
+        'Junonia','Precis','Hypolimnas','Vanessa','Cynthia','Hypanartia',
+        // 属级（常见）
+        'Monarcha','Danaus','Pieris','Colias','Pontia','Pararge','Vanessa',
+        'Aglais','Nymphalis','Polygonia','Speyeria','Argynnis','Boloria',
+        'Clossiana','Fabriciana','Issoria','Brenthis','Euphydryas','Melitaea',
+        'Chlosyne','Poladryas','Anthanassa','Anartia','Junonia','Precis',
+        'Hypolimmas','Cynthia','Hypanartia','Caligo','Morpho','Heliconius',
+        'Hamadryas','Smyrna','Consul','Catagramma','Historis','Brassolis',
+        'Dynastor','Opsiphanes','Caligo','Zeuxidia','Amathusia','Faunula',
+        'Discophora','Stichophthalma','Neorina','Aemona','Ptychandra',
+        'Thaumantis','Zeuxidia','Amathusia','Faunula','Discophora',
+        // 灰蝶相关
+        'Maculinea','Phengaris','Polyommatus','Plebejus','Cyaniris','Glaucopsyche',
+        'Lycaena','Scolitantides','Satyrium','Fixsenia','Thecla','Rapala',
+        'Deudorix','Hypolycaena','Rathinda','Zizula','Leptotes','Lampides',
+        'Zizina','Zizeeria','Pseudozizeeria','Cyaniris','Polyommatus','Plebejus',
+        'Aricia','Cranechors','Eumedonia','Kretania','Aricia','Plebicula',
+        'Vacciniina','Albulina','Agriades','Phengaris','Maculinea','Phengaris',
+        // 蚂蚁相关
+        'Myrmica','Lasius','Formica','Camponotus','Tapinoma','Prenolepis',
+        'Tetramorium','Solenopsis','Pheidole','Monomorium','Crematogaster',
+        'Linepithema','Wasmannia','Paratrechina','Nylanderia','Plagiolepis',
+        'Temnothorax','Aphaenogaster','Messor','Veromessor','Pogonomyrmex',
+        // 其他常见属
+        'Locusta','Schistocerca','Gryllus','Acheta','Blatta','Periplaneta',
+        'Blaberus','Gromphadorhina','Mantis','Tenodera','Hierodula','Statilia',
+        'Forficula','Labidura','Anisolabis','Apis','Bombus','Melipona',
+        'Trigona','Xylocopa','Osmia','Megachile','Habropoda','Nomada',
+        'Sphecodes','Halictus','Lasioglossum','Augochlora','Augochlorella',
+        'Vespula','Vespa','Dolichovespula','Polistes','Mischocyttarus',
+        'Ropalidia','Parapolybia','Provespa','Chartergus',' Charterginus',
+        'Agelaia','Polybia','Brachygastra','Synoeca','Apoica',
+        'Cimex','Reduvius','Triatoma','Rhodnius','Panstrongylus',
+        'Pentatoma','Nezara','Palomena','Eurydema','Graphosoma',
+        'Cicadella','Empoasca','Macrosteles','Psylla','Cacopsylla',
+        'Aphis','Myzus','Rhopalosiphum','Pemphigus','Tuberolachnus',
+        'Brevicoryne','Lipaphis','Aphis','Myzus','Toxoptera','Greenidea',
+        'Dialeuroisia','Trialeurodes','Bemisia','Aleurocanthus','Aleurothrix',
+        'Planococcus','Pseudococcus','Maconellicoccus','Dysmicoccus',
+        'Icerya','Ceroplastes','Coccus','Saissetia','Lecanium',
+        'Panonychus','Tetranychus','Eotetranychus','Schizotetranychus',
+        'Oligonychus','Bryobia','Petrobia','Frankliniella','Thrips',
+        'Scirtothrips','Frankliniella','Thrips-tabaci','Hercinothrips',
+        'Drosophila','Musca','Calliphora','Lucilia','Sarcophaga',
+        'Wohlfahrtia','Gasterophilus','Oestrus','Hypoderma','Dermatobia',
+        'Culex','Aedes','Anopheles','Culiseta','Mansonia','Coquillettidia',
+        'Simulium','Tabanus','Chrysops','Haematopota','Stomoxys',
+        'Haematobia','Musca','Stomoxys','Fannia','Phormia','Phaenicia',
+        'Phormia','Phaenicia','Sarcophaga','Wohlfahrtia','Ravinia',
+        'Agria','Sarcophaga','Wohlfahrtia','Blaesoxipha','Amobia',
+        'Taxigramma','Wohlfahrtia','Sarcophaga','Ravinia','Agria',
+        'Blaesoxipha','Amobia','Taxigramma','Miltogramma','Senotainia',
+        'Metopia','Metopia-senillata','Senotainia-pacifica','Senotainia-conica',
+        // 植物属名（可能出现在描述中）
+        'Quercus','Fagus','Betula','Salix','Populus','Ulmus','Acer',
+        'Fraxinus','Juglans','Carya','Castanea','Fagus','Tilia','Carpinus',
+        'Ostrya','Alnus','Betula','Corylus','Salix','Populus','Prunus',
+        'Malus','Pyrus','Cydonia','Sorbus','Crataegus','Amelanchier',
+        'Rosa','Rubus','Fragaria','Potentilla','Geum','Agrimonia',
+        'Vaccinium','Vaccinium-oxycoccos','Vaccinium-uliginosum','Vaccinium-vitis-idaea',
+        'Vaccinium-myrtillus','Vaccinium-corymbosum','Vaccinium-macrocarpon',
+        'Arctostaphylos','Comarostaphylis','Chamaedaphne','Gaylussacia',
+        'Lyonia','Oxydendrum','Pieris','Kalmia','Rhododendron','Azalea',
+        'Rhododendron','Azalea','Kalmia','Lyonia','Oxydendrum','Pieris',
+        'Arbutus','Arctostaphylos','Comarostaphylis','Chamaedaphne','Gaylussacia',
+        'Ilex','Nemopanthus','Aquifolia','Ilex-opaca','Ilex-verticillata',
+        'Ilex-montana','Ilex-glabra','Ilex-cassine','Ilex-vomitoria',
+        'Ilex-amblyphylla','Ilex-dipyrena','Ilex-perado','Ilex-canariensis',
+        'Ilex-aquifolium','Ilex-colchica','Ilex-perado-subsp-azorica',
+        'Nemopanthus','Aquifolia','Ilex-opaca','Ilex-verticillata',
+        'Ilex-montana','Ilex-glabra','Ilex-cassine','Ilex-vomitoria',
+        // DTM 相关术语
+        'Labandeira','Godfray','Root','Coley','Barone','Johnson','Wilf',
+        'Myers','Pierce','DeVries','Nash','Hojo','Schönrogge','Elmes',
+        'Thomas','Settele','Casacci','Fiedler','Mooney','Zemeitat',
+        'Naragon','Wagner','Gregorio','Dankowicz'
+      ].sort((a,b) => b.length - a.length); // 长词优先匹配
+
+      const latinPattern = new RegExp(
+        '\\b(' + latinUnits.join('|') + ')\\b', 'g'
+      );
+
+      function processVal(val) {
+        if (typeof val === 'string') {
+          return val.replace(latinPattern, '<em>$1</em>');
+        }
+        if (Array.isArray(val)) return val.map(v => processVal(v));
+        if (val && typeof val === 'object') {
+          const newObj = {};
+          for (const k of Object.keys(val)) newObj[k] = processVal(val[k]);
+          return newObj;
+        }
+        return val;
+      }
+
+      return processVal(obj);
+    }
+
     const systemPrompt = `你是一位昆虫学、古生物学和植物生态学交叉领域的专家，专门研究昆虫对植物的取食痕迹（herbivory / insect herbivory damage）。
 你的核心知识体系建立在以下金标准框架之上：
 1. Labandeira CC 的 DTM（Damage Type Model, 2002 PNAS / 2007 Annu Rev Ecol Evol Syst）— 全球通用的昆虫取食痕迹分类体系，同时适用于化石和现生叶片
@@ -288,7 +429,7 @@ DT71 — 线形产卵切口 (Oviposition Slit / Egg Clutch)
             { type: 'image_url', image_url: { url: imageData } }
           ]}
         ],
-        max_tokens: 6000,
+        max_tokens: 20000,
         temperature: 0.3
       })
     });
@@ -314,6 +455,9 @@ DT71 — 线形产卵切口 (Oviposition Slit / Egg Clutch)
     } else {
       result = { raw_response: content };
     }
+
+    // ── 拉丁名斜体化 ──
+    result = italicizeLatinNames(result);
 
     // 记录使用量
     console.log(`[虫痕鉴定] model=${data.model} usage=${JSON.stringify(data.usage || {})}`);

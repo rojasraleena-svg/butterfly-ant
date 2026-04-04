@@ -30,6 +30,7 @@
     <a href="lab.html" class="nav-link">虫痕鉴定</a>
     <a href="lifecycle.html" class="nav-link">生命循环</a>
     <a href="chemical.html" class="nav-link">化学通讯</a>
+    <a href="story.html" class="nav-link">微观战争</a>
     <a href="gallery.html" class="nav-link">图鉴</a>
     <a href="quiz.html" class="nav-link">测验</a>
     <a href="about.html" class="nav-link">关于</a>
@@ -166,6 +167,22 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ═══ SOTD级图鉴详情弹窗 ═══ -->
+  <div class="type-modal-backdrop" id="typeModalBackdrop">
+    <div class="type-modal" id="typeModal" role="dialog" aria-modal="true">
+      <button class="type-modal-close" id="typeModalClose" aria-label="关闭">✕</button>
+      <div class="type-modal-header" id="typeModalHeader">
+        <span class="type-modal-icon" id="typeModalIcon"></span>
+        <div>
+          <h2 class="type-modal-title" id="typeModalTitle"></h2>
+          <span class="type-modal-dtcode" id="typeModalDtCode"></span>
+        </div>
+      </div>
+      <div class="type-modal-body" id="typeModalBody"></div>
+      <div class="type-modal-footer" id="typeModalFooter"></div>
     </div>
   </div>
 
@@ -483,17 +500,17 @@ function displayResult(r) {
   }
 
   // ── 原有字段 ──
-  document.getElementById('resultDesc').textContent = r.description || '';
-  document.getElementById('resultEco').textContent = r.ecological_context || '';
-  document.getElementById('resultDefense').textContent = r.plant_defense_response || '';
+  document.getElementById('resultDesc').innerHTML = r.description || '';
+  document.getElementById('resultEco').innerHTML = r.ecological_context || '';
+  document.getElementById('resultDefense').innerHTML = r.plant_defense_response || '';
 
   if (r.differential_diagnosis) {
     document.getElementById('ddSection').style.display = 'block';
-    document.getElementById('resultDD').textContent = r.differential_diagnosis;
+    document.getElementById('resultDD').innerHTML = r.differential_diagnosis;
   } else { document.getElementById('ddSection').style.display = 'none'; }
   if (r.limitations) {
     document.getElementById('limitSection').style.display = 'block';
-    document.getElementById('resultLimit').textContent = r.limitations;
+    document.getElementById('resultLimit').innerHTML = r.limitations;
   } else { document.getElementById('limitSection').style.display = 'none'; }
 
   const featEl = document.getElementById('resultFeatures'); featEl.innerHTML = '';
@@ -512,8 +529,8 @@ function displayResult(r) {
     const lcConf = ld.confidence === 'high' ? '🔥高度疑似' :
                     ld.confidence === 'medium' ? '🟡中度疑似' : '🔵低度可能';
     document.getElementById('lycaenidTitle').textContent = `🦋 疑似灰蝶科(Lycaenidae)幼虫取食 — ${lcConf}`;
-    document.getElementById('lycaenidReasoning').textContent = ld.reasoning || '';
-    document.getElementById('lycaenidHint').textContent = ld.actionable_hint || '';
+    document.getElementById('lycaenidReasoning').innerHTML = ld.reasoning || '';
+    document.getElementById('lycaenidHint').innerHTML = ld.actionable_hint || '';
     document.getElementById('lycaenidFps').innerHTML = '';
     (ld.matched_fingerprints||[]).forEach(fp => {
       const sp = document.createElement('span'); sp.className='fp-tag'; sp.textContent=fp;
@@ -539,6 +556,99 @@ function resetLab() {
   document.getElementById('fileInput').value='';
 }
 
+// ═══ SOTD级图鉴详情弹窗 ═══
+const typeColorMap = {
+  marg:    { bg:'linear-gradient(135deg,#C9A227 0%,#e8c94a 100%)', accent:'#e8c94a', glow:'rgba(201,162,39,0.25)' },
+  hole:    { bg:'linear-gradient(135deg,#D4644A 0%,#e88870 100%)', accent:'#e88870', glow:'rgba(212,100,74,0.25)' },
+  skel:    { bg:'linear-gradient(135deg,#8B6DB8 0%,#b09cd4 100%)', accent:'#b09cd4', glow:'rgba(139,109,184,0.25)' },
+  surf:    { bg:'linear-gradient(135deg,#4A9B8C 0%,#7bc4b3 100%)', accent:'#7bc4b3', glow:'rgba(74,155,140,0.25)' },
+  mine:    { bg:'linear-gradient(135deg,#5B8DEF 0%,#8ab4f8 100%)', accent:'#8ab4f8', glow:'rgba(91,141,239,0.25)' },
+  gall:    { bg:'linear-gradient(135deg,#5B7DEF 0%,#8a9ef8 100%)', accent:'#8a9ef8', glow:'rgba(91,125,239,0.25)' },
+  spot:    { bg:'linear-gradient(135deg,#E07B55 0%,#f0a085 100%)', accent:'#f0a085', glow:'rgba(224,123,85,0.25)' },
+  ovip:    { bg:'linear-gradient(135deg,#7B8FA0 0%,#a8bccf 100%)', accent:'#a8bccf', glow:'rgba(123,143,160,0.25)' },
+};
+
+function openTypeModal(ex) {
+  try {
+  const bd = document.getElementById('typeModalBackdrop');
+  const modal = document.getElementById('typeModal');
+  if(!bd || !modal){ console.error('[typeModal] DOM元素未找到'); return; }
+  const colors = typeColorMap[ex.type] || typeColorMap.marg;
+  const gm = { chewer:'咀嚼式口器', sucker:'刺吸式口器', miner:'潜叶者', borer:'钻蛀者' };
+
+  // ── 填充内容 ──
+  document.getElementById('typeModalIcon').textContent = ex.icon;
+  document.getElementById('typeModalIcon').style.background = colors.glow;
+  document.getElementById('typeModalTitle').textContent = ex.cn;
+  document.getElementById('typeModalTitle').style.color = colors.accent;
+  document.getElementById('typeModalDtCode').textContent = ex.dt_code || '';
+  document.getElementById('typeModalHeader').style.background = colors.bg;
+
+  // body：结构化信息
+  const insectTags = ex.insects.map(ins =>
+    `<span class="modal-insect-tag">${ins}</span>`
+  ).join('');
+
+  document.getElementById('typeModalBody').innerHTML = `
+    <div class="modal-section">
+      <h4>📖 特征描述</h4>
+      <p>${ex.desc}</p>
+    </div>
+    <div class="modal-section">
+      <h4>🐛 可能昆虫</h4>
+      <div class="modal-tag-row">${insectTags}</div>
+    </div>
+    <div class="modal-section">
+      <h4>🏷️ 功能群分类</h4>
+      <p><span class="modal-guild-badge guild-${ex.guild}">${gm[ex.guild]||ex.guild}</span>
+      <span style="margin-left:12px;color:var(--text-muted);font-size:0.85em">${ex.ffg || ''}</span></p>
+    </div>
+    ${ex.confusion_note ? `<div class="modal-section modal-warning">
+      <h4>⚠️ 混淆提示</h4>
+      <p>${ex.confusion_note}</p>
+    </div>` : ''}
+  `;
+
+  // footer：快捷操作
+  document.getElementById('typeModalFooter').innerHTML = `
+    <button class="modal-action-btn" onclick="closeTypeModal()">了解，关闭</button>
+  `;
+
+  // ── 显示动画 ──
+  bd.style.display = 'flex';
+  requestAnimationFrame(() => {
+    bd.classList.add('active');
+    modal.classList.add('active');
+  });
+  document.body.style.overflow = 'hidden';
+  } catch(err) {
+    console.error('[openTypeModal]', err);
+    // 降级：回退到 alert
+    const gm = { chewer:'咀嚼式口器', sucker:'刺吸式口器', miner:'潜叶者', borer:'钻蛀者' };
+    alert(`【${ex.cn}】(${ex.type})\n\n${ex.desc}\n\n可能昆虫：${ex.insects.join('、')}\n功能群：${gm[ex.guild]||ex.guild}`);
+  }
+}
+
+function closeTypeModal() {
+  const bd = document.getElementById('typeModalBackdrop');
+  const modal = document.getElementById('typeModal');
+  bd.classList.remove('active');
+  modal.classList.remove('active');
+  setTimeout(() => {
+    bd.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 300);
+}
+
+// 点击背景关闭
+document.getElementById('typeModalBackdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeTypeModal();
+});
+// ESC关闭
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeTypeModal(); });
+// X按钮
+document.getElementById('typeModalClose').addEventListener('click', closeTypeModal);
+
 async function loadExamples(){
   try{
     const resp=await fetch('/api/damage-examples'), data=await resp.json();
@@ -547,7 +657,11 @@ async function loadExamples(){
     data.examples.forEach(ex=>{
       const c=document.createElement('div');c.className='example-card';c.setAttribute('data-type', ex.type);
       c.innerHTML=`<div class="example-icon">${ex.icon}</div><h4>${ex.cn}</h4><p>${ex.desc.slice(0,30)}...</p>`;
-      c.onclick=()=>alert(`【${ex.cn}】(${ex.type})\n\n${ex.desc}\n\n可能昆虫：${ex.insects.join('、')}\n功能群：${gm[ex.guild]||ex.guild}`);
+      c.onclick=(e)=>{ e.preventDefault(); openTypeModal(ex); };
+      // 移动端 touch 兜底（部分浏览器 click 延迟/丢失）
+      c.addEventListener('touchend', function(e){
+        e.preventDefault(); openTypeModal(ex);
+      }, {passive:false});
       grid.appendChild(c);
     });
   }catch(e){}

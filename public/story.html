@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍃 一片叶子的微观战争 | 🦋 蝴蝶与蚂蚁</title>
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+<link rel="stylesheet" href="/css/common.css?v=5">
+<meta name="description" content="滚动叙事——跟随一片叶子从春天到秋天，见证昆虫取食的微观战争。DTM金标准分类体系的沉浸式科普体验。">
+<meta property="og:title" content="🍃 一片叶子的微观战争 | 🦋 蝴蝶与蚂蚁">
+<meta property="og:description" content="滚动叙事——跟随一片叶子从春天到秋天，见证昆虫取食的微观战争。">
+<meta property="og:image" content="https://butterfly.gqy25.top/img/hero.jpg">
+<style>
+/* ═════ SCROLLYTELLING 专属样式 ═════ */
+
+/* Hero — 全屏沉浸式 */
+.story-hero {
+  position:relative; min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center; overflow:hidden;
+}
+.story-hero-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(34,139,87,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 30% 70%, rgba(91,141,239,0.08) 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg) 0%, #0a1612 100%);
+}
+/* 叶脉纹理背景 */
+.story-hero::before {
+  content:''; position:absolute; inset:0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='800' height='800' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.03)' stroke-width='1'%3E%3Cpath d='M400 0 Q420 200 400 400 T400 800'/%3E%3Cpath d='M400 150 Q300 180 150 160'/%3E%3Cpath d='M400 150 Q500 180 650 160'/%3E%3Cpath d='M400 280 Q320 310 180 290'/%3E%3Cpath d='M400 280 Q480 310 620 290'/%3E%3Cpath d='M400 380 Q340 410 220 395'/%3E%3Cpath d='M400 380 Q460 410 580 395'/%3E%3Cpath d='M400 500 Q330 520 170 505'/%3E%3Cpath d='M400 500 Q470 520 630 505'/%3E%3Cpath d='M400 620 Q350 640 200 630'/%3E%3Cpath d='M400 620 Q450 640 600 630'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 700px 700px;
+  background-position: center;
+  opacity:0.6;
+}
+
+.story-hero-content { position:relative; z-index:2; max-width:640px; padding:24px; }
+.story-hero h1 {
+  font-size: clamp(2em, 6vw, 3.5em);
+  font-weight:900; line-height:1.15;
+  margin-bottom:16px;
+  background: linear-gradient(135deg, #7bcf9e 0%, #5b8def 50%, #b09cd4 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.story-hero .subtitle {
+  font-size:clamp(0.95em, 2vw, 1.15em); color:var(--text-secondary);
+  line-height:1.8; margin-bottom:32px;
+}
+.story-hero .start-btn {
+  display:inline-block; padding:14px 36px;
+  background:linear-gradient(135deg, rgba(91,141,239,0.2), rgba(91,141,239,0.08));
+  border:1px solid rgba(91,141,239,0.3); border-radius:30px;
+  color:#8ab4f8; font-weight:700; font-size:0.95em;
+  cursor:pointer; transition:all 0.35s ease;
+  text-decoration:none;
+}
+.story-hero .start-btn:hover {
+  background:linear-gradient(135deg, rgba(91,141,239,0.3), rgba(91,141,239,0.12));
+  border-color:rgba(91,141,239,0.5); transform:translateY(-2px);
+  box-shadow:0 8px 28px rgba(91,141,239,0.2);
+}
+
+.scroll-indicator {
+  position:absolute; bottom:36px; left:50%; transform:translateX(-50%);
+  z-index:2; text-align:center; animation:bounce 2s infinite;
+  color:var(--text-dim); font-size:0.82em;
+}
+.scroll-indicator span { display:block; margin-top:6px; font-size:1.4em; }
+@keyframes bounce {
+  0%,20%,50%,80%,100% { transform:translateX(-50%) translateY(0); }
+  40% { transform:translateX(-50%) translateY(10px); }
+  60% { transform:translateX(-50%) translateY(5px); }
+}
+
+/* ═══ 章节通用结构 ═══ */
+.chapter {
+  position:relative; min-height:100vh;
+  display:flex; align-items:center;
+  padding:80px 0;
+}
+.chapter-inner {
+  width:100%; max-width:1140px; margin:0 auto;
+  padding:0 24px;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:48px; align-items:center;
+}
+@media(max-width:768px){
+  .chapter-inner { grid-template-columns:1fr; gap:32px; }
+  .chapter { min-height:auto; padding:60px 0; }
+}
+
+.chapter-text { }
+.chapter-num {
+  display:inline-block; font-size:0.72em; font-weight:800;
+  letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--primary); margin-bottom:10px;
+  padding:4px 12px; border-radius:20px;
+  background:rgba(91,141,239,0.08); border:1px solid rgba(91,141,239,0.15);
+}
+.chapter-title {
+  font-size:clamp(1.5em, 4vw, 2.2em);
+  font-weight:900; line-height:1.2; margin-bottom:18px;
+}
+.chapter-desc {
+  font-size:1em; line-height:1.85; color:var(--text-secondary);
+  margin-bottom:20px;
+}
+.chapter-fact {
+  display:inline-block; padding:10px 18px;
+  background:rgba(255,255,255,0.03);
+  border-left:3px solid var(--accent-gold);
+  border-radius:0 10px 10px 0;
+  font-size:0.88em; color:var(--text-muted);
+  line-height:1.6;
+}
+
+/* ═══ 视觉面板（右侧/下方） ═══ */
+.chapter-visual {
+  position:relative;
+  aspect-ratio:1/1; max-width:480px;
+  justify-self:center;
+  border-radius:20px;
+  overflow:hidden;
+  background:rgba(0,0,0,0.2);
+  border:1px solid rgba(255,255,255,0.06);
+}
+@media(max-width:768px){ .chapter-visual { max-width:100%; } }
+
+/* 叶子SVG容器 */
+.leaf-canvas {
+  width:100%; height:100%;
+  position:relative;
+}
+.leaf-canvas svg {
+  width:100%; height:100%;
+}
+
+/* ═══ 进度条 ═══ */
+.story-progress {
+  position:fixed; top:0; left:0; right:0; height:3px;
+  z-index:9999; background:rgba(255,255,255,0.05);
+  pointer-events:none;
+}
+.story-progress-bar {
+  height:100%; width:0%;
+  background:linear-gradient(90deg, #228B22, #5B8DEF, #B09CD4);
+  transition:width 0.1s linear;
+  border-radius:0 2px 2px 0;
+}
+
+/* ═══ 章节导航点 ═══ */
+.story-nav-dots {
+  position:fixed; right:20px; top:50%; transform:translateY(-50%);
+  z-index:999; display:flex; flex-direction:column; gap:10px;
+}
+.story-nav-dot {
+  width:10px; height:10px; border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  border:none; cursor:pointer; transition:all 0.3s ease;
+  padding:0; position:relative;
+}
+.story-nav-dot.active { background:var(--primary); transform:scale(1.3); }
+.story-nav-dot:hover { background:rgba(255,255,255,0.5); transform:scale(1.2); }
+.story-nav-dot::after {
+  content:attr(data-label);
+  position:absolute; right:20px; top:50%; transform:translateY(-50%);
+  white-space:nowrap; font-size:0.72em; color:var(--text-secondary);
+  opacity:0; transition:opacity 0.2s; pointer-events:none;
+  padding:4px 10px; background:var(--card-bg);
+  border-radius:6px; border:1px solid var(--card-border);
+}
+.story-nav-dot:hover::after { opacity:1; }
+
+@media(max-width:768px){
+  .story-nav-dots { display:none; }
+}
+
+/* ═══ 章间过渡分隔 ═══ */
+.chapter-divider {
+  height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  margin:0 auto; max-width:60%;
+}
+
+/* ═══ 各章节配色 ═══ */
+[data-chapter="1"] .chapter-num { background:rgba(46,204,113,0.1); border-color:rgba(46,204,113,0.25); color:#2ecc71; }
+[data-chapter="1"] .chapter-title { color:#2ecc71; }
+[data-chapter="1"] .chapter-fact { border-color:#2ecc71; }
+
+[data-chapter="2"] .chapter-num { background:rgba(91,141,239,0.1); border-color:rgba(91,141,239,0.25); color:#5B8DEF; }
+[data-chapter="2"] .chapter-title { color:#5B8DEF; }
+[data-chapter="2"] .chapter-fact { border-color:#5B8DEF; }
+
+[data-chapter="3"] .chapter-num { background:rgba(224,123,85,0.1); border-color:rgba(224,123,85,0.25); color:#E07B55; }
+[data-chapter="3"] .chapter-title { color:#E07B55; }
+[data-chapter="3"] .chapter-fact { border-color:#E07B55; }
+
+[data-chapter="4"] .chapter-num { background:rgba(155,126,217,0.1); border-color:rgba(155,126,217,0.25); color:#9B7ED9; }
+[data-chapter="4"] .chapter-title { color:#9B7ED9; }
+[data-chapter="4"] .chapter-fact { border-color:#9B7ED9; }
+
+[data-chapter="5"] .chapter-num { background:rgba(201,162,39,0.1); border-color:rgba(201,162,39,0.25); color:#C9A227; }
+[data-chapter="5"] .chapter-title { color:#C9A227; }
+[data-chapter="5"] .chapter-fact { border-color:#C9A227; }
+
+[data-chapter="6"] .chapter-num { background:rgba(139,109,184,0.1); border-color:rgba(139,109,184,0.25); color:#b09cd4; }
+[data-chapter="6"] .chapter-title { color:#b09cd4; }
+[data-chapter="6"] .chapter-fact { border-color:#b09cd4; }
+
+/* ═══ 动画状态类（JS控制） ═══ */
+.chap-visible .chapter-text { animation:chapTextIn 0.7s cubic-bezier(.2,.8,.2,1) both; }
+.chap-visible .chapter-visual { animation:chapVisualIn 0.9s cubic-bezier(.2,.8,.2,1) 0.15s both; }
+@keyframes chapTextIn {
+  from { opacity:0; transform:translateY(30px); }
+  to   { opacity:1; transform:none; }
+}
+@keyframes chapVisualIn {
+  from { opacity:0; transform:scale(0.92) translateX(20px); }
+  to   { opacity:1; transform:none; }
+}
+@media(max-width:768px){
+  .chap-visible .chapter-visual { animation-name:chapVisualInMobile; }
+  @keyframes chapVisualInMobile {
+    from { opacity:0; transform:scale(0.92) translateY(20px); }
+    to   { opacity:1; transform:none; }
+  }
+}
+
+/* ═══ SVG 动画关键帧 ═══ */
+
+/* Chapter 1: 缺口出现动画 */
+@keyframes biteAppear {
+  0% { stroke-dashoffset: 300; opacity:0; }
+  100% { stroke-dashoffset: 0; opacity:1; }
+}
+.bite-path {
+  stroke-dasharray: 300; stroke-dashoffset: 300;
+}
+.chap-visible .bite-path { animation:biteAppear 1.5s ease-out 0.3s forwards; }
+
+/* Chapter 2: 潜叶隧道绘制 */
+@keyframes mineDraw {
+  0% { stroke-dashoffset: 500; opacity:0; }
+  100% { stroke-dashoffset: 0; opacity:1; }
+}
+.mine-path { stroke-dasharray: 500; stroke-dashoffset: 500; }
+.chap-visible .mine-path { animation:mineDraw 2s ease-in-out 0.4s forwards; }
+
+/* Chapter 3: 刺吸点扩散 */
+@keyframes stipplePop {
+  0% { transform:scale(0); opacity:0; }
+  70% { transform:scale(1.2); }
+  100% { transform:scale(1); opacity:1; }
+}
+.stipple-dot { transform-origin:center; opacity:0; }
+.chap-visible .stipple-dot:nth-child(1) { animation:stipplePop 0.4s ease-out 0.5s forwards; }
+.chap-visible .stipple-dot:nth-child(2) { animation:stipplePop 0.4s ease-out 0.65s forwards; }
+.chap-visible .stipple-dot:nth-child(3) { animation:stipplePop 0.4s ease-out 0.8s forwards; }
+.chap-visible .stipple-dot:nth-child(4) { animation:stipplePop 0.4s ease-out 0.95s forwards; }
+.chap-visible .stipple-dot:nth-child(5) { animation:stipplePop 0.4s ease-out 1.1s forwards; }
+.chap-visible .stipple-dot:nth-child(6) { animation:stipplePop 0.4s ease-out 1.25s forwards; }
+.chap-visible .stipple-dot:nth-child(7) { animation:stipplePop 0.4s ease-out 1.4s forwards; }
+.chap-visible .stipple-dot:nth-child(8) { animation:stipplePop 0.4s ease-out 1.55s forwards; }
+.chap-visible .stipple-dot:nth-child(n+9) { animation:stipplePop 0.4s ease-out 1.7s forwards; }
+
+/* Chapter 4: 虫瘿隆起 */
+@keyframes gallRise {
+  0% { transform:scale(0.5) translateY(10px); opacity:0; }
+  100% { transform:scale(1) translateY(0); opacity:1; }
+}
+.gall-shape { transform-origin:center; opacity:0; }
+.chap-visible .gall-shape { animation:gallRise 1s cubic-bezier(.34,1.56,.64,1) 0.4s forwards; }
+
+/* Chapter 5: 灰蝶生命周期序列 */
+@keyframes lifecycleStep {
+  0% { opacity:0; transform:translateY(15px) scale(0.9); }
+  100% { opacity:1; transform:none; }
+}
+.lc-step { opacity:0; }
+.chap-visible .lc-step:nth-child(1) { animation:lifecycleStep 0.5s ease-out 0.3s forwards; }
+.chap-visible .lc-step:nth-child(2) { animation:lifecycleStep 0.5s ease-out 0.55s forwards; }
+.chap-visible .lc-step:nth-child(3) { animation:lifecycleStep 0.5s ease-out 0.8s forwards; }
+.chap-visible .lc-step:nth-child(4) { animation:lifecycleStep 0.5s ease-out 1.05s forwards; }
+.chap-visible .lc-step:nth-child(5) { animation:lifecycleStep 0.5s ease-out 1.3s forwards; }
+
+/* Chapter 6: DTM编码浮现 */
+@keyframes dtCodeReveal {
+  0% { letter-spacing:0.3em; opacity:0; filter:blur(4px); }
+  100% { letter-spacing:normal; opacity:1; filter:blur(0); }
+}
+.dt-code-reveal { opacity:0; }
+.chap-visible .dt-code-reveal { animation:dtCodeReveal 0.8s ease-out 0.5s forwards; }
+
+/* ═══ 结尾 CTA ═══ */
+.story-end {
+  text-align:center; padding:120px 24px;
+  position:relative;
+}
+.story-end h2 {
+  font-size:clamp(1.6em, 4vw, 2.5em);
+  font-weight:900; margin-bottom:20px;
+  background:linear-gradient(135deg, #2ecc71, #5B8DEF, #b09cd4);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.story-end p { color:var(--text-secondary); font-size:1.05em; max-width:500px; margin:0 auto 32px; line-height:1.8; }
+.story-end .cta-row { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+.story-end .cta-row a {
+  padding:13px 30px; border-radius:28px; font-weight:700;
+  font-size:0.92em; text-decoration:none; transition:all 0.3s ease;
+}
+.cta-primary {
+  background:linear-gradient(135deg, #5B8DEF, #8ab4f8);
+  color:#fff; border:none;
+  box-shadow:0 6px 24px rgba(91,141,239,0.3);
+}
+.cta-primary:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(91,141,239,0.4); }
+.cta-outline {
+  background:transparent; color:var(--text-secondary);
+  border:1px solid var(--card-border);
+}
+.cta-outline:hover { border-color:rgba(255,255,255,0.2); color:var(--text); }
+
+/* ═══ 彩蛋系统 ═══ */
+.easter-egg {
+  position:absolute; cursor:pointer;
+  width:24px; height:24px; border-radius:50%;
+  background:radial-gradient(circle, rgba(201,162,39,0.6), transparent);
+  animation:eggPulse 2s ease-in-out infinite;
+  transition:transform 0.3s ease;
+  z-index:10;
+}
+.easter-egg:hover { transform:scale(1.5); }
+.easter-egg.found {
+  background:radial-gradient(circle, rgba(46,204,113,0.8), transparent);
+  animation:none;
+}
+@keyframes eggPulse {
+  0%, 100% { transform:scale(1); opacity:0.6; }
+  50% { transform:scale(1.3); opacity:1; }
+}
+
+/* 彩蛋弹窗 */
+.egg-toast {
+  position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:var(--card-bg); border:1px solid rgba(201,162,39,0.4);
+  border-radius:14px; padding:14px 24px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.4);
+  z-index:10000; opacity:0; transition:all 0.4s cubic-bezier(.34,1.56,.64,1);
+  display:flex; align-items:center; gap:12px;
+  white-space:nowrap;
+}
+.egg-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.egg-toast-icon { font-size:1.4em; }
+.egg-toast-text { font-size:0.88em; font-weight:600; color:var(--accent-gold); }
+
+/* ═══ 隐藏导航（story模式） ═══ */
+[data-page="story"] .nav { position:fixed; top:0; backdrop-filter: blur(12px); background:rgba(10,16,18,0.7); }
+</style>
+</head>
+<body data-page="story">
+
+<nav class="nav" aria-label="主导航">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/img/logo.svg" alt="蝴蝶与蚂蚁"></a>
+    <a href="/" class="nav-link">首页</a>
+    <a href="mutualism.html" class="nav-link">互作类型</a>
+    <a href="lab.html" class="nav-link">虫痕鉴定</a>
+    <a href="lifecycle.html" class="nav-link">生命循环</a>
+    <a href="chemical.html" class="nav-link">化学通讯</a>
+    <a href="gallery.html" class="nav-link">图鉴</a>
+    <a href="quiz.html" class="nav-link">测验</a>
+    <a href="about.html" class="nav-link">关于</a>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="story-hero" id="storyHero">
+  <div class="story-hero-bg"></div>
+  <div class="story-hero-content">
+    <div style="font-size:0.82em;color:var(--primary);margin-bottom:12px;font-weight:600;letter-spacing:0.1em;">🍃 SCROLLYTELLING · 滚动叙事</div>
+    <h1>一片叶子的<br>微观战争</h1>
+    <p class="subtitle">
+      从春芽到秋落，一片叶子会经历什么？<br>
+      在显微镜下，每一道痕迹都是一场战役的证据。<br>
+      向下滚动，开始这场跨越千万年的进化之旅。
+    </p>
+    <a href="#ch1" class="start-btn">开始探索 ↓</a>
+  </div>
+  <div class="scroll-indicator"><span>↓</span><span style="font-size:0.7em">滚动探索</span></div>
+</div>
+
+<!-- ═══ 进度条 ═══ -->
+<div class="story-progress"><div class="story-progress-bar" id="progressBar"></div></div>
+
+<!-- ═══ 导航点 ═══ -->
+<div class="story-nav-dots" id="navDots"></div>
+
+<!-- ═══ CHAPTER 1: 春天的第一口咬痕 ═══ -->
+<div class="chapter" id="ch1" data-chapter="1">
+  <div class="chapter-inner">
+    <div class="chapter-text">
+      <span class="chapter-num">Chapter 01</span>
+      <h2 class="chapter-title">春天的第一口咬痕</h2>
+      <p class="chapter-desc">
+        四月的一个清晨，第一缕阳光穿透树冠。<br><br>
+        一片刚刚展开的嫩叶还带着晨露，表面光滑如纸。
+        它不知道的是，一位不速之客已经降临——<br><br>
+        一只<strong>咀嚼式口器</strong>的昆虫幼虫，正从叶缘开始它今天的早餐。
+        这不是随机的破坏，而是经过数亿年进化精炼出的<strong>DT1 边缘取食（Marginal Feeding）</strong>。
+      </p>
+      <div class="chapter-fact">
+        🌿 <strong>化石证据：</strong>DT1 类边缘取食痕迹在白垩纪地层中出现率高达 47%，是所有取食痕迹中最古老的类型之一。（Labandeira, 2007）
+      </div>
+    </div>
+    <div class="chapter-visual">
+      <div class="leaf-canvas">
+        <!-- SVG: 带缺口边缘的叶子 -->
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="leafGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2d5a3d" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#1a3a27" stop-opacity="0.95"/>
+            </linearGradient>
+            <filter id="glow1">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- 叶片主体（带缺口的右边缘）-->
+          <path d="M200 30
+                   C260 45, 310 80, 330 140
+                   C345 185, 335 230, 310 260
+                   C280 295, 240 320, 200 340
+                   C160 320, 120 295, 90 260
+                   C65 230, 55 185, 70 140
+                   C90 80, 140 45, 200 30Z"
+                fill="url(#leafGrad1)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <!-- 主叶脉 -->
+          <path d="M200 50 L200 330" stroke="rgba(255,255,255,0.12)" stroke-width="2" fill="none"/>
+          <path d="M200 120 Q150 115 100 105" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+          <path d="M200 120 Q250 115 300 108" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+          <path d="M200 190 Q145 183 85 172" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+          <path d="M200 190 Q255 183 315 170" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+          <path d="M200 260 Q155 255 95 245" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+          <path d="M200 260 Q245 255 305 243" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+
+          <!-- DT1 缺口：右上边缘的半圆形啃食痕 -->
+          <path class="bite-path"
+                d="M310 140 Q335 165 308 195 Q285 170 310 140Z"
+                fill="rgba(10,16,18,0.7)"
+                stroke="#2ecc71" stroke-width="2"
+                filter="url(#glow1)"/>
+          <!-- 缺口边缘锯齿状细节 -->
+          <path class="bite-path" style="animation-delay:0.8s"
+                d="M312 143 L318 148 L315 155 L322 160 L317 168 L324 174 L318 182 L312 188"
+                fill="none" stroke="rgba(46,204,113,0.5)" stroke-width="1.5"
+                stroke-dasharray="200" stroke-dashoffset="200"/>
+
+          <!-- 标注线 -->
+          <g opacity="0" class="dt-label" style="animation:chapTextIn 1s ease-out 1.5s forwards;">
+            <line x1="320" y1="167" x2="370" y2="130" stroke="rgba(46,204,113,0.4)" stroke-width="1" stroke-dasharray="4,3"/>
+            <circle cx="320" cy="167" r="3" fill="#2ecc71"/>
+            <rect x="355" y="110" width="75" height="26" rx="6" fill="rgba(46,204,113,0.1)" stroke="rgba(46,204,113,0.3)" stroke-width="1"/>
+            <text x="392" y="127" text-anchor="end" fill="#2ecc71" font-size="11" font-family="monospace" font-weight="bold">DT1</text>
+          </g>
+        </svg>
+      </div>
+      <!-- 彩蛋 -->
+      <div class="easter-egg" style="right:25%;top:35%;" data-egg="marg" title="你找到了隐藏的边缘取食痕迹！"></div>
+    </div>
+  </div>
+</div>
+<div class="chapter-divider"></div>
+
+<!-- ═══ CHAPTER 2: 潜行者的入侵 ═══ -->
+<div class="chapter" id="ch2" data-chapter="2">
+  <div class="chapter-inner">
+    <div class="chapter-text">
+      <span class="chapter-num">Chapter 02</span>
+      <h2 class="chapter-title">潜行者的入侵</h2>
+      <p class="chapter-desc">
+        你看到的叶片表面完好无损。<br>
+        但如果把它对着光，你会看到一条蜿蜒的银白色隧道——<br><br>
+        这是一位<strong>潜叶者（Leaf Miner）</strong>的作品。<br>
+        它不吃穿叶片，而是在上下表皮之间开辟了一条"高速公路"，
+        一边吃一边走，身后留下一条由<strong>粪便颗粒（frass）</strong>组成的轨迹线。<br><br>
+        这是 <strong>DT41 蛇形潜叶（Serpent Mine）</strong>，
+        自然界最精致的地下艺术之一。
+      </p>
+      <div class="chapter-fact">
+        🔬 <strong>分类学：</strong>潜叶行为独立演化了至少 7 次！涉及鳞翅目（Gracillariidae）、双翅目（Agromyzidae）、膜翅目（Tenthredinidae）等完全不同的昆虫类群。（Connor & Taverner, 1997）
+      </div>
+    </div>
+    <div class="chapter-visual">
+      <div class="leaf-canvas">
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="leafGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2a4a3a" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#152820" stop-opacity="0.95"/>
+            </linearGradient>
+            <filter id="glow2">
+              <feGaussianBlur stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- 叶片 -->
+          <path d="M200 30 C270 50, 320 90, 335 155 C350 215, 335 270, 300 305 C255 345, 210 360, 200 365 C190 360, 145 345, 100 305 C65 270, 50 215, 65 155 C80 90, 130 50, 200 30Z"
+                fill="url(#leafGrad2)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <!-- 叶脉 -->
+          <path d="M200 55 L200 355" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/>
+          <path d="M200 130 Q140 122 80 112" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 130 Q260 122 320 112" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 205 Q138 196 72 184" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 205 Q262 196 328 184" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 280 Q142 272 78 260" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 280 Q258 272 322 260" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+
+          <!-- DT41 蛇形潜叶隧道 -->
+          <path class="mine-path"
+                d="M130 140
+                   Q150 135, 170 150
+                   Q195 170, 185 200
+                   Q175 235, 210 250
+                   Q250 262, 240 290
+                   Q228 320, 200 330"
+                fill="none"
+                stroke="rgba(91,141,239,0.5)" stroke-width="12"
+                stroke-linecap="round" stroke-linejoin="round"
+                filter="url(#glow2)"/>
+          <!-- 隧道中心亮线 -->
+          <path class="mine-path" style="animation-delay:0.3s; stroke-width:4;"
+                d="M130 140
+                   Q150 135, 170 150
+                   Q195 170, 185 200
+                   Q175 235, 210 250
+                   Q250 262, 240 290
+                   Q228 320, 200 330"
+                fill="none"
+                stroke="rgba(138,180,248,0.8)"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Frass 粪便颗粒（小点沿隧道分布） -->
+          <g class="frass-dots" opacity="0" style="animation:chapTextIn 1s ease-out 2s forwards;">
+            <circle cx="150" cy="137" r="2" fill="rgba(91,141,239,0.6)"/>
+            <circle cx="170" cy="150" r="2" fill="rgba(91,141,239,0.6)"/>
+            <circle cx="192" cy="168" r="2" fill="rgba(91,141,239,0.6)"/>
+            <circle cx="185" cy="198" r="2" fill="rgba(91,141,239,0.6)"/>
+            <circle cx="178" cy="225" r="2" fill="rgba(91,141,239,0.6)"/>
+            <circle cx="193" cy="250" r="2" fill="rgba(91,141,239,0.6)"/>
+            <circle cx="225" cy="260" r="2" fill="rgba(91,141,239,0.6)"/>
+            <circle cx="242" cy="282" r="2" fill="rgba(91,141,239,0.6)"/>
+            <circle cx="218" cy="318" r="2" fill="rgba(91,141,239,0.6)"/>
+          </g>
+
+          <!-- 标注 -->
+          <g opacity="0" class="dt-label" style="animation:chapTextIn 1s ease-out 2.3s forwards;">
+            <line x1="185" y1="220" x2="100" y2="180" stroke="rgba(91,141,239,0.4)" stroke-width="1" stroke-dasharray="4,3"/>
+            <circle cx="185" cy="220" r="3" fill="#5B8DEF"/>
+            <rect x="40" y="163" width="78" height="26" rx="6" fill="rgba(91,141,239,0.1)" stroke="rgba(91,141,239,0.3)" stroke-width="1"/>
+            <text x="112" y="180" text-anchor="end" fill="#5B8DEF" font-size="11" font-family="monospace" font-weight="bold">DT41</text>
+          </g>
+        </svg>
+      </div>
+      <div class="easter-egg" style="left:20%;top:45%;" data-egg="mine" title="发现了一条蛇形潜叶隧道！"></div>
+    </div>
+  </div>
+</div>
+<div class="chapter-divider"></div>
+
+<!-- ═══ CHAPTER 3: 刺吸者的隐形攻击 ═══ -->
+<div class="chapter" id="ch3" data-chapter="3">
+  <div class="chapter-inner">
+    <div class="chapter-text">
+      <span class="chapter-num">Chapter 03</span>
+      <h2 class="chapter-title">刺吸者的隐形攻击</h2>
+      <p class="chapter-desc">
+        有些昆虫甚至不需要"吃"穿叶片。<br><br>
+        它们像用吸管一样，将口针刺入叶肉，
+        直接抽取植物细胞的内容物——糖分、氨基酸、水分。<br><br>
+        每一针只造成一个直径不到 0.5mm 的微小斑点，
+        但当成百上千次穿刺叠加在一起时……<br><br>
+        叶片开始失绿、变黄、枯萎。<br>
+        这是 <strong>DT61-67 刺吸损伤（Piercing & Sucking）</strong>，
+        最难与真菌病害区分的痕迹类型。
+      </p>
+      <div class="chapter-fact">
+        ⚠️ <strong>天然混淆组 C：</strong>DT61 刺吸损伤 vs 真菌性病害 vs 营养缺乏症——三者仅凭视觉几乎无法区分，需要显微镜检查 + 病史记录才能确诊。
+      </div>
+    </div>
+    <div class="chapter-visual">
+      <div class="leaf-canvas">
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="leafGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#3a4a35" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#222e22" stop-opacity="0.95"/>
+            </linearGradient>
+            <radialGradient id="chlorosis" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="rgba(180,160,80,0.2)"/>
+              <stop offset="100%" stop-color="rgba(180,160,80,0)"/>
+            </radialGradient>
+            <filter id="glow3">
+              <feGaussianBlur stdDeviation="1.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- 叶片（带黄化区域）-->
+          <path d="M200 30 C265 48, 315 85, 332 148 C348 208, 334 264, 300 300 C256 342, 212 358, 200 362 C188 358, 144 342, 100 300 C66 264, 52 208, 68 148 C85 85, 135 48, 200 30Z"
+                fill="url(#leafGrad3)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <!-- 黄化区域（刺吸造成的 chlorosis）-->
+          <ellipse cx="200" cy="200" rx="100" ry="90" fill="url(#chlorosis)"/>
+          <!-- 叶脉 -->
+          <path d="M200 52 L200 355" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/>
+          <path d="M200 128 Q142 120 82 110" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 128 Q258 120 318 110" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 204 Q138 195 72 183" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 204 Q262 195 328 183" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 280 Q142 272 78 260" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 280 Q258 272 322 260" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+
+          <!-- DT61 刺吸斑点群 -->
+          <g filter="url(#glow3)">
+            <circle class="stipple-dot" cx="160" cy="150" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="195" cy="165" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="230" cy="148" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="175" cy="190" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="215" cy="195" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="150" cy="215" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="190" cy="225" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="240" cy="218" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="168" cy="248" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="210" cy="255" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="185" cy="275" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="225" cy="282" r="4" fill="none" stroke="#E07B55" stroke-width="1.5"/>
+            <circle class="stipple-dot" cx="155" cy="175" r="3" fill="none" stroke="#E07B55" stroke-width="1" opacity="0.6"/>
+            <circle class="stipple-dot" cx="245" cy="175" r="3" fill="none" stroke="#E07B55" stroke-width="1" opacity="0.6"/>
+            <circle class="stipple-dot" cx="200" cy="140" r="3" fill="none" stroke="#E07B55" stroke-width="1" opacity="0.6"/>
+            <circle class="stipple-dot" cx="140" cy="235" r="3" fill="none" stroke="#E07B55" stroke-width="1" opacity="0.6"/>
+            <circle class="stipple-dot" cx="250" cy="245" r="3" fill="none" stroke="#E07B55" stroke-width="1" opacity="0.6"/>
+          </g>
+
+          <!-- 标注 -->
+          <g opacity="0" class="dt-label" style="animation:chapTextIn 1s ease-out 2s forwards;">
+            <line x1="200" y1="210" x2="320" y2="260" stroke="rgba(224,123,85,0.4)" stroke-width="1" stroke-dasharray="4,3"/>
+            <circle cx="200" cy="210" r="3" fill="#E07B55"/>
+            <rect x="305" y="245" width="82" height="26" rx="6" fill="rgba(224,123,85,0.1)" stroke="rgba(224,123,85,0.3)" stroke-width="1"/>
+            <text x="383" y="262" text-anchor="end" fill="#E07B55" font-size="11" font-family="monospace" font-weight="bold">DT61</text>
+          </g>
+        </svg>
+      </div>
+      <div class="easter-egg" style="right:22%;top:55%;" data-egg="spot" title="发现了刺吸斑点群！"></div>
+    </div>
+  </div>
+</div>
+<div class="chapter-divider"></div>
+
+<!-- ═══ CHAPTER 4: 虫瘿建筑师 ═══ -->
+<div class="chapter" id="ch4" data-chapter="4">
+  <div class="chapter-inner">
+    <div class="chapter-text">
+      <span class="chapter-num">Chapter 04</span>
+      <h2 class="chapter-title">虫瘿建筑师</h2>
+      <p class="chapter-desc">
+        如果说前三种痕迹是"破坏"，<br>
+        那么这一种则是"改造"——而且是让受害者自己动手。<br><br>
+        <strong>造瘿昆虫（Gall Inducer）</strong>并不直接取食叶片。<br>
+        它注入化学物质，劫持植物的基因表达程序，<br>
+        让叶片组织疯狂增生，形成一个球形或椭圆形的"房间"——<br><br>
+        这就是 <strong>虫瘿（Gall）</strong>，DT51-55。<br>
+        内部是恒温恒湿的完美育婴室，外壁是天然装甲。<br>
+        昆虫的终极寄生策略：<strong>让宿主为你建造监狱。</strong>
+      </p>
+      <div class="chapter-fact">
+        🏗️ <strong>结构复杂性：</strong>某些瘿蜂（Cynipidae）制造的虫瘿具有多层结构——内层为营养组织，外层为保护层，甚至包含空气通道！（Stone & Cook, 1998）
+      </div>
+    </div>
+    <div class="chapter-visual">
+      <div class="leaf-canvas">
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="leafGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2a3d35" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#182820" stop-opacity="0.95"/>
+            </linearGradient>
+            <radialGradient id="gallGrad" cx="35%" cy="35%" r="60%">
+              <stop offset="0%" stop-color="rgba(176,136,216,0.4)"/>
+              <stop offset="70%" stop-color="rgba(139,109,184,0.25)"/>
+              <stop offset="100%" stop-color="rgba(139,109,184,0.1)"/>
+            </radialGradient>
+            <filter id="glow4">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- 叶片 -->
+          <path d="M200 30 C268 48, 318 88, 334 152 C350 214, 334 270, 298 306 C254 348, 210 362, 200 366 C190 362, 146 348, 102 306 C66 270, 50 214, 66 152 C82 88, 132 48, 200 30Z"
+                fill="url(#leafGrad4)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <!-- 叶脉 -->
+          <path d="M200 52 L200 355" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/>
+          <path d="M200 130 Q140 122 80 112" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 130 Q260 122 320 112" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 206 Q138 198 72 186" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 206 Q262 198 328 186" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 282 Q142 274 78 262" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+          <path d="M200 282 Q258 274 322 262" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+
+          <!-- DT51 虫瘿（球状隆起）-->
+          <g filter="url(#glow4)">
+            <ellipse class="gall-shape" cx="230" cy="180" rx="42" ry="38" fill="url(#gallGrad)" stroke="#9B7ED9" stroke-width="1.5"/>
+            <!-- 虫瘿内部结构暗示 -->
+            <ellipse class="gall-shape" style="animation-delay:0.2s" cx="230" cy="180" rx="26" ry="22" fill="none" stroke="rgba(155,126,217,0.3)" stroke-width="1" stroke-dasharray="4,2"/>
+            <!-- 小点代表内部幼虫室 -->
+            <circle class="gall-shape" style="animation-delay:0.4s" cx="230" cy="180" r="5" fill="rgba(155,126,217,0.4)"/>
+          </g>
+          <!-- 第二个小虫瘿 -->
+          <g filter="url(#glow4)">
+            <ellipse class="gall-shape" style="animation-delay:0.3s" cx="160" cy="250" rx="26" ry="24" fill="url(#gallGrad)" stroke="#9B7ED9" stroke-width="1" opacity="0.8"/>
+            <circle class="gall-shape" style="animation-delay:0.5s" cx="160" cy="250" r="3" fill="rgba(155,126,217,0.35)"/>
+          </g>
+
+          <!-- 标注 -->
+          <g opacity="0" class="dt-label" style="animation:chapTextIn 1s ease-out 1.8s forwards;">
+            <line x1="230" y1="180" x2="310" y2="120" stroke="rgba(155,126,217,0.4)" stroke-width="1" stroke-dasharray="4,3"/>
+            <circle cx="230" cy="180" r="3" fill="#9B7ED9"/>
+            <rect x="295" y="103" width="78" height="26" rx="6" fill="rgba(155,126,217,0.1)" stroke="rgba(155,126,217,0.3)" stroke-width="1"/>
+            <text x="369" y="120" text-anchor="end" fill="#9B7ED9" font-size="11" font-family="monospace" font-weight="bold">DT51</text>
+          </g>
+        </svg>
+      </div>
+      <div class="easter-egg" style="left:28%;top:38%;" data-egg="gall" title="发现了虫瘿！"></div>
+    </div>
+  </div>
+</div>
+<div class="chapter-divider"></div>
+
+<!-- ═══ CHAPTER 5: 灰蝶与蚂蚁的特洛伊木马 ═══ -->
+<div class="chapter" id="ch5" data-chapter="5">
+  <div class="chapter-inner">
+    <div class="chapter-text">
+      <span class="chapter-num">Chapter 05</span>
+      <h2 class="chapter-title">灰蝶与蚂蚁的特洛伊木马</h2>
+      <p class="chapter-desc">
+        现在，故事的主角登场了。<br><br>
+        一只灰蝶科蝴蝶在百里香嫩叶上产下了一粒卵——
+        直径不到 0.5mm，肉眼几乎不可见。<br><br>
+        卵孵化后，幼虫并不像普通毛毛虫那样大嚼叶片。<br>
+        它悄悄取食叶肉，同时背部的一个特殊器官——<strong>DNO（背囊腺）</strong>——<br>
+        开始分泌一种含糖蜜露。<br><br>
+        蚂蚁被吸引来了。它们不是来捕食的，而是来<strong>放牧</strong>的。<br>
+        最终，蚂蚁把这条毛毛虫搬回了蚁巢……<br><br>
+        <strong>自然界最复杂的跨物种欺骗，正式开始。</strong>
+      </p>
+      <div class="chapter-fact">
+        🐜 <strong>DNO 分泌物：</strong>含糖量高达 20–40%（因物种而异），成分可模拟蚂蚁幼虫的化学信号，使工蚁将其视为"超级幼虫"加以保护。（DeVries, 1990; Pierce et al., 2002）
+      </div>
+    </div>
+    <div class="chapter-visual">
+      <div class="leaf-canvas" style="background:rgba(0,0,0,0.15);">
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="leafGrad5" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2d4a30" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#1a2e1c" stop-opacity="0.95"/>
+            </linearGradient>
+            <filter id="glow5">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- 小叶片背景 -->
+          <path d="M200 80 C250 95, 285 125, 295 170 C305 215, 290 255, 260 280 C225 310, 210 318, 200 320 C190 318, 175 310, 140 280 C110 255, 95 215, 105 170 C115 125, 150 95, 200 80Z"
+                fill="url(#leafGrad5)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <path d="M200 100 L200 315" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" fill="none"/>
+          <path d="M200 155 Q158 150 118 143" stroke="rgba(255,255,255,0.05)" stroke-width="1" fill="none"/>
+          <path d="M200 155 Q242 150 282 143" stroke="rgba(255,255,255,0.05)" stroke-width="1" fill="none"/>
+          <path d="M200 215 Q156 208 112 200" stroke="rgba(255,255,255,0.05)" stroke-width="1" fill="none"/>
+          <path d="M200 215 Q244 208 288 200" stroke="rgba(255,255,255,0.05)" stroke-width="1" fill="none"/>
+
+          <!-- 生命周期序列（垂直排列在叶片上）-->
+          <g filter="url(#glow5)">
+            <!-- Step 1: 卵 -->
+            <g class="lc-step">
+              <circle cx="200" cy="130" r="6" fill="rgba(201,162,39,0.3)" stroke="#C9A227" stroke-width="1.2"/>
+              <text x="200" y="134" text-anchor="middle" fill="#C9A227" font-size="8" font-weight="bold">卵</text>
+            </g>
+            <!-- 箭头1 -->
+            <path class="lc-step" d="M200 138 L200 158" stroke="rgba(201,162,39,0.3)" stroke-width="1.5" marker-end="url(#arrow5)"/>
+            <!-- Step 2: 幼虫 -->
+            <g class="lc-step">
+              <ellipse cx="200" cy="175" rx="12" ry="6" fill="rgba(74,155,140,0.3)" stroke="#4A9B8C" stroke-width="1.2"/>
+              <text x="200" y="178" text-anchor="middle" fill="#4A9B8C" font-size="7" font-weight="bold">幼虫</text>
+            </g>
+            <!-- 箭头2 -->
+            <path class="lc-step" d="M200 183 L200 203" stroke="rgba(74,155,140,0.3)" stroke-width="1.5"/>
+            <!-- Step 3: 蚂蚁互动 -->
+            <g class="lc-step">
+              <circle cx="188" cy="220" r="5" fill="rgba(201,162,39,0.25)" stroke="#C9A227" stroke-width="1"/>
+              <circle cx="200" cy="218" r="5" fill="rgba(201,162,39,0.25" stroke="#C9A227" stroke-width="1"/>
+              <circle cx="212" cy="220" r="5" fill="rgba(201,162,39,0.25)" stroke="#C9A227" stroke-width="1"/>
+              <ellipse cx="200" cy="232" rx="10" ry="5" fill="rgba(74,155,140,0.25)" stroke="#4A9B8C" stroke-width="1"/>
+              <text x="200" y="235" text-anchor="middle" fill="#4A9B8C" font-size="6" font-weight="bold">守护</text>
+            </g>
+            <!-- 箭头3 -->
+            <path class="lc-step" d="M200 239 L200 259" stroke="rgba(74,155,140,0.3)" stroke-width="1.5"/>
+            <!-- Step 4: 蛹 -->
+            <g class="lc-step">
+              <rect x="193" y="264" width="14" height="10" rx="5" fill="rgba(139,109,184,0.3)" stroke="#b09cd4" stroke-width="1.2"/>
+              <text x="200" y="272" text-anchor="middle" fill="#b09cd4" font-size="6" font-weight="bold">蛹</text>
+            </g>
+            <!-- 箭头4 -->
+            <path class="lc-step" d="M200 276 L200 292" stroke="rgba(139,109,184,0.3)" stroke-width="1.5"/>
+            <!-- Step 5: 成虫羽化 -->
+            <g class="lc-step">
+              <!-- 蝴蝶翅膀简化形状 -->
+              <path d="M200 300 Q185 295 178 305 Q185 315 200 310 Q215 315 222 305 Q215 295 200 300Z"
+                    fill="rgba(91,141,239,0.2)" stroke="#5B8DEF" stroke-width="1"/>
+              <text x="200" y="335" text-anchor="middle" fill="#5B8DEF" font-size="7" font-weight="bold">✨ 羽化</text>
+            </g>
+          </g>
+
+          <!-- 箭头标记定义 -->
+          <defs>
+            <marker id="arrow5" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="rgba(201,162,39,0.3)"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+      <div class="easter-egg" style="left:45%;top:52%;" data-egg="lycaenid" title="你找到了灰蝶的生命周期！"></div>
+    </div>
+  </div>
+</div>
+<div class="chapter-divider"></div>
+
+<!-- ═══ CHAPTER 6: 秋天的遗书 — DTM编码 ═══ -->
+<div class="chapter" id="ch6" data-chapter="6">
+  <div class="chapter-inner">
+    <div class="chapter-text">
+      <span class="chapter-num">Chapter 06</span>
+      <h2 class="chapter-title">秋天的遗书</h2>
+      <p class="chapter-desc">
+        秋风起时，这片叶子飘落了。<br><br>
+        如果它恰好落在缺氧的湖底或火山灰中，<br>
+        不被分解者触及——<br><br>
+        千万年后，一位古生物学家将它从岩层中取出。<br>
+        在显微镜下，所有痕迹依然清晰可见。<br><br>
+        她拿出 <strong>DTM 编码表</strong>，逐一记录：<br>
+        DT1（边缘取食）、DT41（蛇形潜叶）、DT61（刺吸）、DT51（虫瘿）……<br><br>
+        这不是一片普通的叶子。<br>
+        <strong>这是一份来自远古的生态档案。</strong>
+      </p>
+      <div class="chapter-fact">
+        📜 <strong>DTM 的力量：</strong>Labandeira (2002) 发表的 DTM 框架已收录 300+ 种功能不同的损伤类型，被全球古生物学家和昆虫生态学家采用为金标准，实现了古今植食性研究的统一语言。
+      </div>
+    </div>
+    <div class="chapter-visual">
+      <div class="leaf-canvas" style="background:rgba(0,0,0,0.25);">
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="leafGrad6" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#3a352a" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#252018" stop-opacity="0.95"/>
+            </linearGradient>
+            <filter id="glow6">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- 化石化的叶子（偏棕色调）-->
+          <path d="M200 30 C265 48, 315 85, 332 148 C348 208, 334 264, 300 300 C256 342, 212 358, 200 362 C188 358, 144 342, 100 300 C66 264, 52 208, 68 148 C85 85, 135 48, 200 30Z"
+                fill="url(#leafGrad6)" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+          <!-- 叶脉（更明显，化石特征）-->
+          <path d="M200 52 L200 355" stroke="rgba(255,255,255,0.15)" stroke-width="2.5" fill="none"/>
+          <path d="M200 130 Q140 122 80 112" stroke="rgba(255,255,255,0.08)" stroke-width="1.2" fill="none"/>
+          <path d="M200 130 Q260 122 320 112" stroke="rgba(255,255,255,0.08)" stroke-width="1.2" fill="none"/>
+          <path d="M200 206 Q138 198 72 186" stroke="rgba(255,255,255,0.08)" stroke-width="1.2" fill="none"/>
+          <path d="M200 206 Q262 198 328 186" stroke="rgba(255,255,255,0.08)" stroke-width="1.2" fill="none"/>
+          <path d="M200 282 Q142 274 78 262" stroke="rgba(255,255,255,0.08)" stroke-width="1.2" fill="none"/>
+          <path d="M200 282 Q258 274 322 262" stroke="rgba(255,255,255,0.08)" stroke-width="1.2" fill="none"/>
+
+          <!-- 所有痕迹叠加（化石版，颜色淡化）-->
+          <g filter="url(#glow6)" opacity="0.7">
+            <!-- DT1 缺口 -->
+            <path d="M308 140 Q335 165 306 195 Q283 170 308 140Z"
+                  fill="rgba(10,16,18,0.6)" stroke="rgba(46,204,113,0.4)" stroke-width="1.5"/>
+            <!-- DT41 隧道 -->
+            <path d="M130 140 Q150 135, 170 150 Q195 170, 185 200 Q175 235, 210 250 Q250 262, 240 290 Q228 320, 200 330"
+                  fill="none" stroke="rgba(91,141,239,0.3)" stroke-width="8" stroke-linecap="round"/>
+            <!-- DT61 斑点 -->
+            <g>
+              <circle cx="160" cy="150" r="3" fill="none" stroke="rgba(224,123,85,0.4)" stroke-width="1"/>
+              <circle cx="195" cy="165" r="3" fill="none" stroke="rgba(224,123,85,0.4)" stroke-width="1"/>
+              <circle cx="230" cy="148" r="3" fill="none" stroke="rgba(224,123,85,0.4)" stroke-width="1"/>
+              <circle cx="175" cy="190" r="3" fill="none" stroke="rgba(224,123,85,0.4)" stroke-width="1"/>
+              <circle cx="215" cy="195" r="3" fill="none" stroke="rgba(224,123,85,0.4)" stroke-width="1"/>
+              <circle cx="150" cy="215" r="3" fill="none" stroke="rgba(224,123,85,0.4)" stroke-width="1"/>
+              <circle cx="190" cy="225" r="3" fill="none" stroke="rgba(224,123,85,0.4)" stroke-width="1"/>
+              <circle cx="240" cy="218" r="3" fill="none" stroke="rgba(224,123,85,0.4)" stroke-width="1"/>
+            </g>
+            <!-- DT51 虫瘿 -->
+            <ellipse cx="230" cy="180" rx="38" ry="34" fill="none" stroke="rgba(155,126,217,0.35)" stroke-width="1.5"/>
+          </g>
+
+          <!-- DTM 编码列表（右侧浮现）-->
+          <g class="dt-code-list" opacity="0" style="animation:chapTextIn 0.8s ease-out 0.5s forwards;">
+            <rect x="260" y="60" width="120" height="130" rx="10" fill="rgba(0,0,0,0.4)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <text x="320" y="82" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" letter-spacing="0.1em">DTM RECORD</text>
+            <line x1="270" y1="90" x2="370" y2="90" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            
+            <text x="272" y="108" fill="#2ecc71" font-size="10" font-family="monospace" class="dt-code-reveal">DT1  ✓</text>
+            <text x="272" y="124" fill="#5B8DEF" font-size="10" font-family="monospace" class="dt-code-reveal" style="animation-delay:0.15s">DT41 ✓</text>
+            <text x="272" y="140" fill="#E07B55" font-size="10" font-family="monospace" class="dt-code-reveal" style="animation-delay:0.3s">DT61 ✓</text>
+            <text x="272" y="156" fill="#9B7ED9" font-size="10" font-family="monospace" class="dt-code-reveal" style="animation-delay:0.45s">DT51 ✓</text>
+            <text x="272" y="176" fill="rgba(255,255,255,0.4)" font-size="8" font-family="monospace">4 types</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ENDING CTA ═══ -->
+<div class="story-end" id="storyEnd">
+  <h2>现在，轮到你了</h2>
+  <p>你已经了解了微观战争的每一种武器。<br>去实验室里，鉴定一片真实的叶子吧。</p>
+  <div class="cta-row">
+    <a href="lab.html" class="cta cta-primary">🧪 进入虫痕鉴定实验室</a>
+    <a href="lifecycle.html" class="cta cta-outline">🦋 了解灰蝶完整生命周期</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <p><a href="/">← 返回首页</a></p>
+  <p style="margin-top:12px;">Made with 💙 · <span id="year"></span></p>
+</footer>
+
+<!-- 彩蛋 Toast -->
+<div class="egg-toast" id="eggToast">
+  <span class="egg-toast-icon">🎉</span>
+  <span class="egg-toast-text" id="eggToastText"></span>
+</div>
+
+<script src="/js/common.js?v=4"></script>
+<script>
+// ===== Scrollytelling Engine =====
+
+(function(){
+  'use strict';
+
+  const chapters = document.querySelectorAll('.chapter');
+  const progressBar = document.getElementById('progressBar');
+  const navDots = document.getElementById('navDots');
+  const eggToast = document.getElementById('eggToast');
+  const eggToastText = document.getElementById('eggToastText');
+  let toastTimer = null;
+
+  // ── 构建导航点 ──
+  chapters.forEach((ch, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'story-nav-dot';
+    dot.setAttribute('data-label', `第${i+1}章`);
+    dot.setAttribute('aria-label', `跳转到第${i+1}章`);
+    dot.addEventListener('click', () => ch.scrollIntoView({ behavior:'smooth', block:'center' }));
+    navDots.appendChild(dot);
+  });
+  const dots = navDots.querySelectorAll('.story-nav-dot');
+
+  // ── IntersectionObserver: 章节显隐 ──
+  const chapterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const idx = Array.from(chapters).indexOf(entry.target);
+      if (entry.isIntersecting) {
+        entry.target.classList.add('chap-visible');
+        // 更新导航点
+        dots.forEach(d => d.classList.remove('active'));
+        if(dots[idx]) dots[idx].classList.add('active');
+      } else {
+        // 可选：离开视口时移除（允许重复播放动画）
+        // entry.target.classList.remove('chap-visible');
+      }
+    });
+  }, {
+    threshold: 0.2,
+    rootMargin: '-10% 0px -10% 0px'
+  });
+
+  chapters.forEach(ch => chapterObserver.observe(ch));
+
+  // ── 进度条 ──
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    if(docHeight <= 0) return;
+    const progress = Math.min(Math.max(scrollTop / docHeight, 0), 1);
+    progressBar.style.width = (progress * 100) + '%';
+  }
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if(!ticking) {
+      requestAnimationFrame(() => {
+        updateProgress();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive:true });
+
+  // ── 彩蛋系统 ──
+  const foundEggs = new Set();
+  document.querySelectorAll('.easter-egg').forEach(egg => {
+    egg.addEventListener('click', () => {
+      if(foundEggs.has(egg)) return;
+      foundEggs.add(egg);
+      egg.classList.add('found');
+
+      const titles = {
+        marg: '🎉 发现「边缘取食」彩蛋！',
+        mine: '🎉 发现「潜叶隧道」彩蛋！',
+        spot: '🎉 发现「刺吸斑点」彩蛋！',
+        gall: '🎉 发现「虫瘿」彩蛋！',
+        lycaenid: '🎉 发现「灰蝶生命周期」彩蛋！'
+      };
+      showEggToast(titles[egg.dataset.egg] || '🎉 发现隐藏彩蛋！');
+    }, { once:false }); // 允许多次点击但只触发一次
+  });
+
+  function showEggToast(text) {
+    eggToastText.textContent = text;
+    eggToast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => eggToast.classList.remove('show'), 3000);
+  }
+
+  // ── 初始化 ──
+  sharedInit();
+  updateProgress();
+
+})();
+</script>
+</body>
+</html>
