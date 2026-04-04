@@ -560,6 +560,156 @@ app.get('/api/damage-examples', (req, res) => {
   });
 });
 
+// ===== 进化沙盒 API =====
+const evolveLimiter = createRateLimit();
+
+app.post('/api/evolve', evolveLimiter, async (req, res) => {
+  try {
+    const { mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season } = req.body;
+
+    if (!mouthpart || !hostPlant) {
+      return res.status(400).json({ error: '缺少必要参数' });
+    }
+
+    const evolveSystemPrompt = `你是一位进化生物学家、古昆虫学家和植物生态学家，专精于植食性昆虫与植物之间的协同进化（coevolutionary arms race）。
+
+你的任务：根据用户设计的昆虫参数，推理并生成一个**千万年级别的演化模拟叙事**。
+
+## 核心学术框架
+1. **DTM Damage Type Model** (Labandeira 2002, 2007) — 植食性昆虫痕迹分类体系
+2. **协同进化军备竞赛** (Ehrlich & Raven 1964; Thompson 2005) — 植物-植食者相互驱动演化
+3. **植物防御权衡** (Herms & Mattson 1992) — 生长-防御权衡假说（GDBH）
+4. **取食功能群理论** (Root 1973) — 外部取食/潜叶/造瘿/刺吸/产卵/钻孔
+
+## 演化规则（必须遵守）
+- 演化不是随机的，是**选择压力驱动的适应性变化**
+- 每一步演化必须有**生态学理由**（为什么这个性状被选中）
+- 植物会主动响应（增厚叶片、产生毒素、改变营养组成）
+- 昆虫的痕迹形态会随演化而**系统性改变**
+- DT编码的变化必须符合DTM分类体系的逻辑
+- 最终可能产生**全新的DT亚型**（用DT+数字标注，如DT47）
+
+## 输出格式（严格JSON）
+{
+  "generations": [
+    {
+      "gen": 0,
+      "title": "世代标题",
+      "narrative": "该世代的详细演化叙事（中文80-150字），包含发生了什么、为什么发生",
+      "damage_type": "当前主导的DT编码（如DT1/DT41/DT61等）",
+      "damage_type_name": "DT名称",
+      "leaf_state": {
+        "health": 0.0-1.0,
+        "thickness": 0.0-1.0,
+        "toxicity": 0.0-1.0,
+        "description": "叶片状态描述（一句话）"
+      },
+      "insect_traits": {
+        "mouthpart_change": "口器是否有变化及描述",
+        "size_change": "体型变化",
+        "new_adaptation": "新获得的适应特征"
+      },
+      "fitness": 0.0-1.0,
+      "population_trend": "rising/stable/declining/bottleneck",
+      "key_event": "关键事件标题",
+      "is_milestone": true/false
+    }
+  ],
+  "final_dt_code": "最终DT编码",
+  "final_dt_name": "最终DT名称",
+  "evolution_path": "coevolutionary_arms_race / directional_change / extinction / speciation / stable_equilibrium",
+  "ai_summary": "整个演化过程的总结评述（中文120-200字），包含科学意义和趣味洞察",
+  "fun_fact": "一个令人惊讶的科学事实（与本次演化相关）",
+  "total_generations": 总世代数
+}
+
+## 生成要求
+- 生成 6-8 个关键世代（gen 0, ~50, ~100, ~200, ~400, ~600, ~800, ~1000）
+- gen=0 是初始状态（用户的参数设定）
+- 至少 3 个 milestone 事件（is_milestone=true）
+- fitness 应有波动（不是单调递增）
+- 可能出现种群瓶颈（bottleneck）事件
+- narrative 要生动有趣，像讲故事而不是写论文
+- 每个世代的 damage_type 应该合理过渡`;
+
+    // 参数映射表
+    const mpMap = { mandibulate: '咀嚼式', piercing_sucking: '刺吸式', rasping_sucking: '锉吸式', siphoning: '虹吸式' };
+    const chemMap = { toxin: '毒素分泌', pheromone: '信息素干扰', silicification: '硅质强化' };
+    const stealthMap = { open: '公开取食(无隐蔽)', balanced: '平衡型(部分隐蔽)', hidden: '高度隐蔽' };
+    const speedMap = { slow: '慢速取食', medium: '中速取食', fast: '快速取食' };
+
+    const evolveUserPrompt = `请为以下设计的昆虫运行千万年级别演化模拟：
+
+## 昆虫设计参数
+- 口器类型：${mpMap[mouthpart] || mouthpart}
+- 体长：${bodySize}mm
+- 取食速度：${speedMap[feedingSpeed] || feedingSpeed}
+- 取食隐蔽性：${stealthMap[stealth] || stealth}
+- 化学武器：${chemicals ? chemicals.map(c => chemMap[c] || c).join(' + ') : '无'}
+- 宿主植物：${hostPlant}
+- 环境：${biome || '温带森林'}，季节：${season || '夏季'}
+
+请基于真实生态学和演化生物学原理，生成完整的演化模拟。特别注意：
+1. ${bodySize > 10 ? '大型昆虫(>10mm)更容易被天敌发现，但能穿透更厚的植物组织' : bodySize > 5 ? '中型昆虫(5-10mm)在隐蔽性和取食效率之间有较好的平衡' : '小型昆虫(<5mm)擅长隐蔽取食，但单次取食量有限'}
+2. ${mouthpart === 'piercing_sucking' ? '刺吸式口器通常不会造成大面积咀嚼痕迹，而是点状损伤或潜叶模式' : mouthpart === 'mandibulate' ? '咀嚼式口器会造成典型的边缘取食或洞孔痕迹' : '该口器类型会产生独特的痕迹形态'}
+3. ${stealth === 'hidden' ? '高隐蔽性意味着植物更难检测到攻击，演化压力主要来自种内竞争' : stealth === 'open' ? '公开取食会触发植物的强烈防御反应' : '平衡策略会在不同时期面临不同的选择压力'}
+4. 如果化学武器包含毒素，考虑协同进化的可能性；如果包含信息素干扰，考虑通讯伪装角度
+
+请输出完整JSON。`;
+
+    const response = await fetch(ZHIPU_BASE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ZHIPU_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: ZHIPU_MODEL,
+        messages: [
+          { role: 'system', content: evolveSystemPrompt },
+          { role: 'user', content: evolveUserPrompt }
+        ],
+        max_tokens: 8000,
+        temperature: 0.7
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('[进化沙盒] Zhipu API error:', response.status, errText);
+      return res.status(500).json({ error: 'AI模型调用失败', details: errText });
+    }
+
+    const data = await response.json();
+    let content = data.choices?.[0]?.message?.content || '';
+
+    let result;
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        result = JSON.parse(jsonMatch[0]);
+      } catch(e) {
+        result = { raw_response: content, parse_error: true };
+      }
+    } else {
+      result = { raw_response: content };
+    }
+
+    console.log(`[进化沙盒] model=${data.model} usage=${JSON.stringify(data.usage || {})}`);
+
+    res.json({
+      success: true,
+      result: result,
+      model: data.model,
+      usage: data.usage
+    });
+
+  } catch (error) {
+    console.error('[进化沙盒] Error:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Sitemap
 app.get('/sitemap.xml', (req, res) => {
   const { generateSitemap } = require('./lib/sitemap');
