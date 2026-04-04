@@ -560,16 +560,93 @@ app.get('/api/damage-examples', (req, res) => {
   });
 });
 
-// ===== 进化沙盒 API =====
+// ===== 进化沙盒 API（支持SSE流式 + 普通JSON双模式）=====
 const evolveLimiter = createRateLimit();
 
 app.post('/api/evolve', evolveLimiter, async (req, res) => {
+  const useStream = req.query.stream === 'true';
+
   try {
     const { mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season } = req.body;
 
     if (!mouthpart || !hostPlant) {
       return res.status(400).json({ error: '缺少必要参数' });
     }
+
+    // ── 流式模式（SSE）──
+    if (useStream) {
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      res.flushHeaders();
+
+      const sendSSE = (event, data) => {
+        res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+      };
+
+      sendSSE('status', { step: 'calling_ai', message: '正在连接演化引擎...' });
+
+      const result = await runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season });
+
+      if (!result.success) {
+        sendSSE('error', { error: result.error });
+        res.end();
+        return;
+      }
+
+      // 逐世代推送
+      const gens = result.result.generations || [];
+      sendSSE('status', { step: 'streaming', total: gens.length, message: `演化完成！共 ${gens.length} 个世代` });
+
+      for (let i = 0; i < gens.length; i++) {
+        sendSSE('generation', { index: i, total: gens.length, data: gens[i] });
+        // 小延迟让前端有动画时间
+        await new Promise(r => setTimeout(r, 300));
+      }
+
+      // 推送最终结果
+      sendSSE('complete', {
+        final_dt_code: result.result.final_dt_code,
+        final_dt_name: result.result.final_dt_name,
+        evolution_path: result.result.evolution_path,
+        ai_summary: result.result.ai_summary,
+        fun_fact: result.result.fun_fact,
+        model: result.model,
+        usage: result.usage
+      });
+
+      res.end();
+      return;
+    }
+
+    // ── 普通JSON模式（原有逻辑）──
+    const result = await runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season });
+
+    if (!result.success) {
+      return res.status(500).json(result);
+    }
+
+    res.json({
+      success: true,
+      result: result.result,
+      model: result.model,
+      usage: result.usage
+    });
+
+  } catch (error) {
+    console.error('[进化沙盒] Error:', error.message);
+    if (useStream) {
+      res.write(`event: error\ndata: ${JSON.stringify({ error: error.message })}\n\n`);
+      res.end();
+    } else {
+      res.status(500).json({ error: error.message });
+    }
+  }
+});
+
+// ── 核心AI调用函数（复用）──
+async function runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season }) {
+  try {
 
     const evolveSystemPrompt = `你是一位进化生物学家、古昆虫学家和植物生态学家，专精于植食性昆虫与植物之间的协同进化（coevolutionary arms race）。
 
@@ -598,6 +675,7 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
       "narrative": "该世代的详细演化叙事（中文80-150字），包含发生了什么、为什么发生",
       "damage_type": "当前主导的DT编码（如DT1/DT41/DT61等）",
       "damage_type_name": "DT名称",
+      "damage_svg": "该世代痕迹的SVG代码（仅<path>/<circle>/<ellipse>/<rect>/<polygon>标签，放在<g>容器内，viewBox 0 0 400 300，颜色使用rgba格式，必须与damage_type描述一致）",
       "leaf_state": {
         "health": 0.0-1.0,
         "thickness": 0.0-1.0,
@@ -630,7 +708,9 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
 - fitness 应有波动（不是单调递增）
 - 可能出现种群瓶颈（bottleneck）事件
 - narrative 要生动有趣，像讲故事而不是写论文
-- 每个世代的 damage_type 应该合理过渡`;
+- 每个世代的 damage_type 应该合理过渡
+- ⚠️ 每个世代必须包含 damage_svg 字段，这是用于在叶子上渲染痕迹的SVG代码
+- ⚠️ SVG要求：仅使用<path>/<circle>/<ellipse>/<rect>/<polygon>/<g>标签，viewBox基于400x300叶子坐标系，颜色用rgba格式，视觉上必须与该世代的damage_type描述一致`;
 
     // 参数映射表
     const mpMap = { mandibulate: '咀嚼式', piercing_sucking: '刺吸式', rasping_sucking: '锉吸式', siphoning: '虹吸式' };
@@ -664,7 +744,7 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
         'Authorization': `Bearer ${ZHIPU_API_KEY}`
       },
       body: JSON.stringify({
-        model: ZHIPU_MODEL,
+        model: 'glm-5',  // 进化沙盒用纯文本模型，更快更便宜
         messages: [
           { role: 'system', content: evolveSystemPrompt },
           { role: 'user', content: evolveUserPrompt }
@@ -677,7 +757,7 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
     if (!response.ok) {
       const errText = await response.text();
       console.error('[进化沙盒] Zhipu API error:', response.status, errText);
-      return res.status(500).json({ error: 'AI模型调用失败', details: errText });
+      return { success: false, error: 'AI模型调用失败', details: errText };
     }
 
     const data = await response.json();
@@ -697,18 +777,13 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
 
     console.log(`[进化沙盒] model=${data.model} usage=${JSON.stringify(data.usage || {})}`);
 
-    res.json({
-      success: true,
-      result: result,
-      model: data.model,
-      usage: data.usage
-    });
+    return { success: true, result, model: data.model, usage: data.usage };
 
   } catch (error) {
     console.error('[进化沙盒] Error:', error.message);
-    res.status(500).json({ error: error.message });
+    return { success: false, error: error.message };
   }
-});
+}
 
 // Sitemap
 app.get('/sitemap.xml', (req, res) => {

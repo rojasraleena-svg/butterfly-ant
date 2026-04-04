@@ -6,362 +6,175 @@
   <title>进化沙盒 | 虫痕博物馆</title>
   <link rel="stylesheet" href="css/common.css?v=5">
   <style>
-    /* ═══════════ 进化沙盒专属样式 ═══════════ */
-    
     :root {
-      --evo-bg: #0a0f0d;
-      --evo-panel: rgba(12,22,18,0.92);
-      --evo-border: rgba(34,197,94,0.15);
-      --evo-accent: #22c55e;
-      --evo-accent2: #3b82f6;
-      --evo-warm: #f59e0b;
-      --evo-danger: #ef4444;
-      --evo-glow: 0 0 30px rgba(34,197,94,0.08);
+      --evo-bg: #0a0f0d; --evo-panel: rgba(12,22,18,0.92);
+      --evo-border: rgba(34,197,94,0.15); --evo-accent: #22c55e;
+      --evo-accent2: #3b82f6; --evo-warm: #f59e0b; --evo-danger: #ef4444;
     }
-
-    .evo-container {
-      min-height: 100vh;
-      background: var(--evo-bg);
-      color: var(--text-primary);
-      padding-bottom: 4rem;
-    }
-
-    /* ── Hero ── */
-    .evo-hero {
-      text-align: center;
-      padding: 3rem 1.5rem 2rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .evo-hero::before {
-      content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
+    .evo-container { min-height:100vh; background:var(--evo-bg); color:var(--text-primary); padding-bottom:4rem; }
+    .evo-hero { text-align:center; padding:2.5rem 1.5rem 1.5rem; position:relative; overflow:hidden; }
+    .evo-hero::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
       background: radial-gradient(circle at 50% 30%, rgba(34,197,94,0.06) 0%, transparent 60%),
                   radial-gradient(circle at 70% 70%, rgba(59,130,246,0.04) 0%, transparent 50%);
-      animation: evoHeroFloat 20s ease-in-out infinite;
-    }
-    @keyframes evoHeroFloat {
-      0%,100% { transform: translate(0,0) rotate(0deg); }
-      33% { transform: translate(2%,-2%) rotate(0.5deg); }
-      66% { transform: translate(-1%,1%) rotate(-0.3deg); }
-    }
-    .evo-hero h1 {
-      font-size: clamp(1.8rem,5vw,2.8rem);
-      font-weight:800; letter-spacing:-0.03em;
-      background: linear-gradient(135deg, var(--evo-accent) 0%, #86efac 50%, var(--evo-accent2) 100%);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      position:relative;
-    }
-    .evo-hero p {
-      color:var(--text-muted); font-size:1rem; margin-top:0.6rem; max-width:520px; margin-left:auto; margin-right:auto;
-      position:relative;
-    }
-    .evo-hero .evo-badge {
-      display:inline-block; margin-top:1rem; padding:0.35rem 1rem;
-      border-radius:99px; font-size:0.75rem; font-weight:600;
-      background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2);
-      color:var(--evo-accent); position:relative;
-    }
+      animation: evoHeroFloat 20s ease-in-out infinite; }
+    @keyframes evoHeroFloat { 0%,100%{transform:translate(0,0)rotate(0)} 33%{transform:translate(2%,-2%)rotate(0.5deg)} 66%{transform:translate(-1%,1%)rotate(-0.3deg)} }
+    .evo-hero h1 { font-size:clamp(1.8rem,5vw,2.8rem); font-weight:800; letter-spacing:-0.03em;
+      background:linear-gradient(135deg,var(--evo-accent),#86efac,var(--evo-accent2)); -webkit-background-clip:text;-webkit-text-fill-color:transparent; position:relative; }
+    .evo-hero p { color:var(--text-muted); font-size:1rem; margin-top:.6rem; max-width:520px; margin-left:auto; margin-right:auto; position:relative; }
+    .evo-badge { display:inline-block; margin-top:1rem; padding:.35rem 1rem; border-radius:99px; font-size:.75rem; font-weight:600;
+      background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2); color:var(--evo-accent); position:relative; }
 
-    /* ── 主布局：左参数 + 右画布 ── */
-    .evo-main {
-      display:grid; grid-template-columns:340px 1fr; gap:1.5rem;
-      max-width:1280px; margin:0 auto; padding:0 1.5rem;
-    }
-    @media(max-width:900px){
-      .evo-main { grid-template-columns:1fr; }
-    }
+    /* 主布局 */
+    .evo-main { display:grid; grid-template-columns:360px 1fr; gap:1.5rem; max-width:1300px; margin:0 auto; padding:0 1.5rem; }
+    @media(max-width:920px){ .evo-main{ grid-template-columns:1fr;} }
 
-    /* ── 参数面板 ── */
-    .evo-panel {
-      background:var(--evo-panel); border:1px solid var(--evo-border);
-      border-radius:20px; padding:1.5rem; position:relative;
-      backdrop-filter:blur(16px);
-    }
-    .evo-panel::before {
-      content:''; position:absolute; top:0;left:0;right:0;height:2px;
-      background:linear-gradient(90deg, var(--evo-accent), var(--evo-accent2), transparent);
-      border-radius:20px 20px 0 0;
-    }
-    .evo-panel h2 { font-size:1.1rem; font-weight:700; margin-bottom:1.2rem; display:flex; align-items:center; gap:0.5rem; }
-    .evo-section { margin-bottom:1.4rem; }
-    .evo-section-title {
-      font-size:0.72rem; text-transform:uppercase; letter-spacing:0.12em;
-      color:var(--evo-accent); font-weight:700; margin-bottom:0.6rem;
-    }
+    /* 参数面板 */
+    .evo-panel { background:var(--evo-panel); border:1px solid var(--evo-border); border-radius:20px; padding:1.4rem; position:relative; backdrop-filter:blur(16px); }
+    .evo-panel::before { content:''; position:absolute; top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,var(--evo-accent),var(--evo-accent2),transparent); border-radius:20px 20px 0 0; }
+    .evo-panel h2 { font-size:1.05rem; font-weight:700; margin-bottom:1rem; display:flex; align-items:center; gap:.5rem; }
 
-    /* 参数控件 */
-    .evo-param-row { margin-bottom:0.85rem; }
-    .evo-param-label {
-      display:flex; justify-content:space-between; align-items:center;
-      font-size:0.83rem; margin-bottom:0.3rem;
-    }
-    .evo-param-label span:first-child { color:var(--text-secondary); }
-    .evo-param-value { font-weight:600; color:var(--evo-accent); font-family:'JetBrains Mono',monospace; font-size:0.8rem; }
+    /* 预设模板 */
+    .preset-grid { display:grid; grid-template-columns:1fr 1fr; gap:.45rem; margin-bottom:1.2rem; }
+    .preset-card { padding:.55rem .6rem; border-radius:10px; border:1px solid rgba(255,255,255,0.07); cursor:pointer;
+      transition:all .2s; text-align:left; position:relative; overflow:hidden; }
+    .preset-card:hover { background:rgba(255,255,255,0.05); border-color:rgba(34,197,94,0.3); transform:translateY(-1px); }
+    .preset-card.active { background:rgba(34,197,94,0.1); border-color:rgba(34,197,94,0.4); box-shadow:0 0 12px rgba(34,197,94,0.12); }
+    .preset-card .preset-name { font-size:.78rem; font-weight:600; color:var(--text-primary); margin-bottom:.15rem; }
+    .preset-card .preset-desc { font-size:.68rem; color:var(--text-muted); line-height:1.4; }
+    .preset-card .preset-icon { font-size:1.1rem; float:right; margin-top:-.1rem; }
 
-    /* 滑块 */
-    input[type=range].evo-slider {
-      width:100%; height:4px; border-radius:2px; appearance:none;
-      background:rgba(255,255,255,0.07); cursor:pointer; outline:none;
-    }
-    input[type=range].evo-slider::-webkit-slider-thumb {
-      appearance:none; width:16px; height:16px; border-radius:50%;
-      background:var(--evo-accent); box-shadow:0 0 10px rgba(34,197,94,0.4);
-      transition:transform 0.15s;
-    }
+    .evo-section { margin-bottom:1.2rem; }
+    .evo-section-title { font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:var(--evo-accent); font-weight:700; margin-bottom:.55rem; }
+
+    input[type=range].evo-slider { width:100%; height:4px; border-radius:2px; appearance:none; background:rgba(255,255,255,.07); cursor:pointer; outline:none; }
+    input[type=range].evo-slider::-webkit-slider-thumb { appearance:none; width:16px; height:16px; border-radius:50%; background:var(--evo-accent); box-shadow:0 0 10px rgba(34,197,94,0.4); transition:transform .15s; }
     input[type=range].evo-slider::-webkit-slider-thumb:hover { transform:scale(1.25); }
 
-    /* 单选按钮组 */
-    .evo-radio-group { display:flex; flex-wrap:wrap; gap:0.4rem; }
-    .evo-radio-btn {
-      padding:0.35rem 0.65rem; border-radius:8px; font-size:0.76rem;
-      background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
-      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
-      user-select:none;
-    }
-    .evo-radio-btn:hover { background:rgba(255,255,255,0.07); color:var(--text-secondary); }
-    .evo-radio-btn.active {
-      background:rgba(34,197,94,0.12); border-color:rgba(34,197,94,0.35);
-      color:var(--evo-accent); font-weight:600;
-    }
+    .evo-radio-group { display:flex; flex-wrap:wrap; gap:.35rem; }
+    .evo-radio-btn { padding:.32rem .6rem; border-radius:8px; font-size:.75rem; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); color:var(--text-muted); cursor:pointer; transition:all .2s; user-select:none; }
+    .evo-radio-btn:hover { background:rgba(255,255,255,.07); color:var(--text-secondary); }
+    .evo-radio-btn.active { background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.35); color:var(--evo-accent); font-weight:600; }
 
-    /* 复选框 */
-    .evo-check-group { display:flex; flex-wrap:wrap; gap:0.4rem; }
-    .evo-check-btn {
-      padding:0.32rem 0.6rem; border-radius:8px; font-size:0.74rem;
-      background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);
-      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
-      user-select:none;
-    }
-    .evo-check-btn.active {
-      background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.3);
-      color:var(--evo-warm);
-    }
+    .evo-check-group { display:flex; flex-wrap:wrap; gap:.35rem; }
+    .evo-check-btn { padding:.3rem .55rem; border-radius:8px; font-size:.72rem; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); color:var(--text-muted); cursor:pointer; transition:all .2s; user-select:none; }
+    .evo-check-btn.active { background:rgba(245,158,11,.1); border-color:rgba(245,158,11,.3); color:var(--evo-warm); }
 
-    /* 下拉选择 */
-    select.evo-select {
-      width:100%; padding:0.5rem 0.7rem; border-radius:10px;
-      background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
-      color:var(--text-primary); font-size:0.83rem; outline:none;
-      cursor:pointer; appearance:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23999'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
-      background-repeat:no-repeat; background-position:right 10px center;
-    }
+    select.evo-select { width:100%; padding:.5rem .7rem; border-radius:10px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); color:var(--text-primary); font-size:.82rem; outline:none; cursor:pointer; appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23999'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; }
     select.evo-select:focus { border-color:var(--evo-accent); }
 
-    /* 运行按钮 */
-    .evo-run-btn {
-      width:100%; padding:0.9rem; border-radius:14px; border:none;
-      font-size:1rem; font-weight:700; cursor:pointer;
-      background:linear-gradient(135deg, var(--evo-accent), #16a34a);
-      color:#fff; letter-spacing:0.02em;
-      box-shadow:0 4px 20px rgba(34,197,94,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
-      transition:all 0.3s; margin-top:0.5rem;
-      display:flex; align-items:center; justify-content:center; gap:0.5rem;
-    }
-    .evo-run-btn:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(34,197,94,0.35); }
+    .evo-run-btn { width:100%; padding:.85rem; border-radius:14px; border:none; font-size:.95rem; font-weight:700; cursor:pointer;
+      background:linear-gradient(135deg,var(--evo-accent),#16a34a); color:#fff; letter-spacing:.02em;
+      box-shadow:0 4px 20px rgba(34,197,94,.25), inset 0 1px 0 rgba(255,255,255,.15); transition:all .3s; margin-top:.5rem;
+      display:flex; align-items:center; justify-content:center; gap:.5rem; }
+    .evo-run-btn:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(34,197,94,.35); }
     .evo-run-btn:active { transform:translateY(0); }
-    .evo-run-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
-    .evo-run-btn .spinner {
-      width:18px; height:18px; border:2px solid rgba(255,255,255,0.3);
-      border-top-color:#fff; border-radius:50%; animation:evoSpin 0.6s linear infinite;
-      display:none;
-    }
+    .evo-run-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
+    .evo-run-btn .spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:evoSpin .6s linear infinite; display:none; }
     .evo-run-btn.loading .spinner { display:inline-block; }
     .evo-run-btn.loading .btn-text { display:none; }
+    @keyframes evoSpin { to{ transform:rotate(360deg)} }
 
-    @keyframes evoSpin { to{ transform:rotate(360deg);} }
+    /* 模式切换 */
+    .mode-toggle { display:flex; background:rgba(255,255,255,.04); border-radius:10px; padding:3px; margin-bottom:1.2rem; }
+    .mode-opt { flex:1; padding:.35rem; border-radius:8px; font-size:.75rem; text-align:center; cursor:pointer; transition:all .2s; color:var(--text-muted); user-select:none; }
+    .mode-opt.active { background:var(--evo-accent); color:#fff; font-weight:600; box-shadow:0 2px 8px rgba(34,197,94,.25); }
 
-    /* ── 右侧：演化画布区域 ── */
-    .evo-canvas-area {
-      display:flex; flex-direction:column; gap:1.2rem;
-    }
-
-    /* 叶子SVG容器 */
-    .leaf-stage {
-      background:var(--evo-panel); border:1px solid var(--evo-border);
-      border-radius:20px; padding:1.5rem; position:relative;
-      backdrop-filter:blur(16px); overflow:hidden;
-      min-height:380px; display:flex; align-items:center; justify-content:center;
-    }
-    .leaf-stage-inner {
-      width:100%; max-width:480px; aspect-ratio:4/3; position:relative;
-    }
-    /* 基础叶子SVG */
-    .base-leaf {
-      width:100%; height:100%;
-    }
-    .base-leaf path {
-      fill:rgba(34,120,50,0.15); stroke:rgba(34,160,60,0.4); stroke-width:1.5;
-      filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));
-      transition:fill 0.8s ease;
-    }
-    /* 叶脉 */
-    .leaf-vein { stroke:rgba(34,140,55,0.25); stroke-width:0.8; fill:none; }
+    /* 叶子舞台 */
+    .leaf-stage { background:var(--evo-panel); border:1px solid var(--evo-border); border-radius:20px; padding:1.4rem; position:relative; backdrop-filter:blur(16px); overflow:hidden; min-height:360px; display:flex; align-items:center; justify-content:center; }
+    .leaf-stage-inner { width:100%; max-width:480px; aspect-ratio:4/3; position:relative; }
+    .base-leaf { width:100%; height:100%; }
+    .base-leaf path { fill:rgba(34,120,50,.15); stroke:rgba(34,160,60,.4); stroke-width:1.5; filter:drop-shadow(0 2px 8px rgba(0,0,0,.3)); transition:fill .8s ease; }
+    .leaf-vein { stroke:rgba(34,140,55,.25); stroke-width:.8; fill:none; }
     .leaf-vein-mid { stroke-width:1.5; }
-    /* 痕迹层 */
     .damage-layer { pointer-events:none; }
-    .damage-layer path, .damage-layer circle, .damage-layer ellipse,
-    .damage-layer rect, .damage-layer polygon {
-      transition: all 0.6s cubic-bezier(.4,0,.2,1);
-    }
+    .damage-layer > * { transition: opacity .5s ease, transform .5s ease; }
 
-    /* 空状态 */
-    .evo-empty-state {
-      text-align:center; color:var(--text-muted); padding:3rem 1rem;
-    }
-    .evo-empty-icon { font-size:3rem; margin-bottom:0.8rem; opacity:0.4; }
-    .evo-empty-state p { font-size:0.9rem; line-height:1.6; }
+    .evo-empty-state { text-align:center; color:var(--text-muted); padding:2.5rem 1rem; }
+    .evo-empty-icon { font-size:2.5rem; margin-bottom:.6rem; opacity:.4; }
+    .evo-empty-state p { font-size:.88rem; line-height:1.6; }
 
-    /* ── 时间线播放器 ── */
-    .timeline-player {
-      background:var(--evo-panel); border:1px solid var(--evo-border);
-      border-radius:16px; padding:1.2rem 1.4rem; backdrop-filter:blur(16px);
-    }
-    .timeline-header {
-      display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;
-    }
-    .timeline-gen-info { font-size:0.82rem; }
-    .timeline-gen-num {
-      font-size:1.4rem; font-weight:800; color:var(--evo-accent);
-      font-family:'JetBrains Mono',monospace;
-    }
-    .timeline-gen-label { color:var(--text-muted); font-size:0.75rem; }
-    .timeline-controls { display:flex; gap:0.5rem; align-items:center; }
-    .tl-btn {
-      width:36px; height:36px; border-radius:10px; border:1px solid rgba(255,255,255,0.1);
-      background:rgba(255,255,255,0.04); color:var(--text-secondary);
-      cursor:pointer; display:flex; align-items:center; justify-content:center;
-      font-size:0.9rem; transition:all 0.2s;
-    }
-    .tl-btn:hover { background:rgba(255,255,255,0.1); color:var(--text-primary); }
+    /* 流式进度 */
+    .stream-progress { position:absolute; top:0; left:0; right:0; bottom:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(10,15,13,.85); z-index:5; border-radius:20px; }
+    .stream-progress.hidden { display:none; }
+    .sp-ring { width:50px; height:50px; border:3px solid rgba(34,197,94,.15); border-top-color:var(--evo-accent); border-radius:50%; animation:evoSpin .8s linear infinite; margin-bottom:1rem; }
+    .sp-text { font-size:.85rem; color:var(--evo-accent); font-weight:600; }
+    .sp-sub { font-size:.72rem; color:var(--text-muted); margin-top:.3rem; }
+    .sp-bar { width:200px; height:3px; background:rgba(255,255,255,.08); border-radius:2px; overflow:hidden; margin-top:.8rem; }
+    .sp-bar-fill { height:100%; background:linear-gradient(90deg,var(--evo-accent),var(--evo-accent2)); border-radius:2px; transition:width .4s ease; width:0%; }
+
+    /* 时间线 */
+    .timeline-player { background:var(--evo-panel); border:1px solid var(--evo-border); border-radius:16px; padding:1.1rem 1.3rem; backdrop-filter:blur(16px); }
+    .timeline-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.7rem; }
+    .timeline-gen-num { font-size:1.3rem; font-weight:800; color:var(--evo-accent); font-family:'JetBrains Mono',monospace; }
+    .timeline-gen-label { font-size:.72rem; color:var(--text-muted); }
+    .timeline-controls { display:flex; gap:.4rem; align-items:center; }
+    .tl-btn { width:34px; height:34px; border-radius:9px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.85rem; transition:all .2s; }
+    .tl-btn:hover { background:rgba(255,255,255,.1); color:var(--text-primary); }
     .tl-btn.active { background:var(--evo-accent); border-color:var(--evo-accent); color:#fff; }
-
-    /* 时间线滑块 */
-    .timeline-track {
-      position:relative; padding:0.6rem 0;
-    }
-    .timeline-bar-bg {
-      width:100%; height:6px; border-radius:3px;
-      background:rgba(255,255,255,0.06); position:relative; cursor:pointer;
-    }
-    .timeline-bar-fill {
-      height:100%; border-radius:3px; background:linear-gradient(90deg, var(--evo-accent), var(--evo-accent2));
-      transition:width 0.3s ease; position:relative;
-    }
-    .timeline-thumb {
-      width:18px; height:18px; border-radius:50%;
-      background:var(--evo-accent); border:3px solid var(--evo-bg);
-      box-shadow:0 0 12px rgba(34,197,94,0.4);
-      position:absolute; top:50%; transform:translate(-50%,-50%);
-      cursor:grab; transition:left 0.3s ease;
-    }
-    .timeline-thumb:active { cursor:grabbing; transform:translate(-50%,-50%) scale(1.2); }
-
-    /* 里程碑标记 */
-    .milestone-markers { display:flex; justify-content:space-between; padding:0 4px; margin-top:0.4rem; }
-    .milestone-dot {
-      width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.15);
-      position:relative; cursor:pointer; transition:all 0.2s;
-    }
-    .milestone-dot.milestone {
-      background:var(--evo-warm); box-shadow:0 0 8px rgba(245,158,11,0.4);
-    }
-    .milestone-dot.milestone::after {
-      content:attr(data-title); position:absolute; bottom:100%; left:50%; transform:translateX(-50%);
-      white-space:nowrap; font-size:0.68rem; color:var(--evo-warm);
-      padding:0.2rem 0.45rem; background:rgba(0,0,0,0.8); border-radius:6px;
-      opacity:0; pointer-events:none; transition:opacity 0.2s; margin-bottom:4px;
-    }
+    .timeline-track { position:relative; padding:.5rem 0; }
+    .timeline-bar-bg { width:100%; height:5px; border-radius:3px; background:rgba(255,255,255,.06); position:relative; cursor:pointer; }
+    .timeline-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--evo-accent),var(--evo-accent2)); transition:width .3s ease; position:relative; width:0%; }
+    .timeline-thumb { width:16px; height:16px; border-radius:50%; background:var(--evo-accent); border:3px solid var(--evo-bg); box-shadow:0 0 10px rgba(34,197,94,.4); position:absolute; top:50%; transform:translate(-50%,-50%); cursor:grab; transition:left .3s ease; left:0%; }
+    .milestone-markers { display:flex; justify-content:space-between; padding:0 3px; margin-top:.35rem; }
+    .milestone-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.14); position:relative; cursor:pointer; transition:all .2s; }
+    .milestone-dot.milestone { background:var(--evo-warm); box-shadow:0 0 6px rgba(245,158,11,.35); }
+    .milestone-dot.milestone::after { content:attr(data-title); position:absolute; bottom:100%; left:50%; transform:translateX(-50%); white-space:nowrap; font-size:.66rem; color:var(--evo-warm); padding:.18rem .4rem; background:rgba(0,0,0,.8); border-radius:5px; opacity:0; pointer-events:none; transition:opacity .2s; margin-bottom:3px; }
     .milestone-dot.milestone:hover::after { opacity:1; }
 
-    /* ── 演化叙事面板 ── */
-    .narrative-panel {
-      background:var(--evo-panel); border:1px solid var(--evo-border);
-      border-radius:16px; padding:1.4rem; backdrop-filter:blur(16px);
-      min-height:160px;
-    }
-    .narrative-header {
-      display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.8rem;
-    }
-    .narrative-dt-badge {
-      display:inline-flex; align-items:center; gap:0.35rem;
-      padding:0.3rem 0.7rem; border-radius:8px; font-size:0.78rem; font-weight:600;
-      background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.2);
-      color:var(--evo-accent2);
-    }
-    .narrative-fitness {
-      font-size:0.78rem; color:var(--text-muted);
-    }
+    /* 叙事面板 */
+    .narrative-panel { background:var(--evo-panel); border:1px solid var(--evo-border); border-radius:16px; padding:1.3rem; backdrop-filter:blur(16px); min-height:140px; transition:opacity .3s ease; }
+    .narrative-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.65rem; flex-wrap:wrap; gap:.4rem; }
+    .narrative-dt-badge { display:inline-flex; align-items:center; gap:.3rem; padding:.28rem .6rem; border-radius:8px; font-size:.76rem; font-weight:600;
+      background:rgba(59,130,246,.1); border:1px solid rgba(59,130,246,.2); color:var(--evo-accent2); }
+    .narrative-fitness { font-size:.76rem; color:var(--text-muted); }
     .narrative-fitness strong { color:var(--evo-accent); }
-    .narrative-title {
-      font-size:1.05rem; font-weight:700; margin-bottom:0.5rem; color:var(--text-primary);
-    }
-    .narrative-body {
-      font-size:0.88rem; line-height:1.75; color:var(--text-secondary);
-    }
-    .narrative-events {
-      display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.8rem;
-    }
-    .event-tag {
-      padding:0.2rem 0.55rem; border-radius:6px; font-size:0.7rem;
-      background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
-      color:var(--text-muted);
-    }
-    .event-tag.bottleneck { background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.2); color:var(--evo-danger); }
-    .event-tag.speciation { background:rgba(168,85,247,0.1); border-color:rgba(168,85,247,0.2); color:#a855f7; }
-    .event-tag.defense { background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.2); color:var(--evo-accent2); }
+    .narrative-title { font-size:1rem; font-weight:700; margin-bottom:.4rem; color:var(--text-primary); }
+    .narrative-body { font-size:.85rem; line-height:1.72; color:var(--text-secondary); }
+    .narrative-events { display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.65rem; }
+    .event-tag { padding:.18rem .5rem; border-radius:6px; font-size:.68rem; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); color:var(--text-muted); }
+    .event-tag.bottleneck { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.2); color:var(--evo-danger); }
+    .event-tag.speciation { background:rgba(168,85,247,.1); border-color:rgba(168,85,247,.2); color:#a855f7; }
+    .event-tag.defense { background:rgba(59,130,246,.1); border-color:rgba(59,130,246,.2); color:var(--evo-accent2); }
 
-    /* ── 最终结果卡片 ── */
-    .result-card {
-      background:linear-gradient(135deg, rgba(34,197,94,0.08), rgba(59,130,246,0.06));
-      border:1px solid rgba(34,197,94,0.2); border-radius:18px;
-      padding:1.5rem; margin-top:1rem;
-      animation:resultCardIn 0.6s cubic-bezier(.4,0,.2,1) both;
-    }
-    @keyframes resultCardIn {
-      from { opacity:0; transform:translateY(20px) scale(0.97); }
-      to { opacity:1; transform:translateY(0) scale(1); }
-    }
-    .result-card h3 {
-      font-size:1rem; color:var(--evo-accent); margin-bottom:0.6rem;
-      display:flex; align-items:center; gap:0.4rem;
-    }
-    .result-summary { font-size:0.87rem; line-height:1.7; color:var(--text-secondary); }
-    .result-fun-fact {
-      margin-top:0.8rem; padding:0.7rem 1rem; border-radius:10px;
-      background:rgba(245,158,11,0.08); border-left:3px solid var(--evo-warm);
-      font-size:0.82rem; color:var(--evo-warm); font-style:italic;
-    }
+    /* 科学模式额外信息 */
+    .science-extra { margin-top:.7rem; padding:.7rem; border-radius:10px; background:rgba(59,130,246,.05); border:1px solid rgba(59,130,246,.12); font-size:.76rem; display:none; }
+    .science-extra.visible { display:block; animation:sciIn .3s ease; }
+    @keyframes sciIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+    .science-extra .sci-row { display:flex; justify-content:space-between; padding:.2rem 0; border-bottom:1px solid rgba(255,255,255,.04); }
+    .science-extra .sci-row:last-child { border-bottom:none; }
+    .sci-label { color:var(--text-muted); font-size:.7rem; }
+    .sci-val { color:var(--evo-accent2); font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:600; }
 
-    /* ── 状态指示器（叶子状态条）── */
-    .leaf-status-bars {
-      display:grid; grid-template-columns:repeat(3,1fr); gap:0.6rem;
-      margin-top:0.8rem;
-    }
+    /* 结果卡片 */
+    .result-card { background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(59,130,246,.06)); border:1px solid rgba(34,197,94,.2); border-radius:18px; padding:1.4rem; margin-top:1rem; animation:resultCardIn .6s cubic-bezier(.4,0,.2,1) both; }
+    @keyframes resultCardIn { from{opacity:0;transform:translateY(20px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+    .result-card h3 { font-size:.95rem; color:var(--evo-accent); margin-bottom:.55rem; display:flex; align-items:center; gap:.4rem; }
+    .result-summary { font-size:.84rem; line-height:1.7; color:var(--text-secondary); }
+    .result-fun-fact { margin-top:.7rem; padding:.65rem 1rem; border-radius:10px; background:rgba(245,158,11,.08); border-left:3px solid var(--evo-warm); font-size:.8rem; color:var(--evo-warm); font-style:italic; }
+
+    /* 叶子状态条 */
+    .leaf-status-bars { display:grid; grid-template-columns:repeat(3,1fr); gap:.55rem; margin-top:.7rem; }
     .status-bar-item { text-align:center; }
-    .status-bar-label { font-size:0.65rem; color:var(--text-muted); margin-bottom:0.25rem; text-transform:uppercase; letter-spacing:0.08em; }
-    .status-bar-track {
-      height:4px; border-radius:2px; background:rgba(255,255,255,0.06); overflow:hidden;
-    }
-    .status-bar-fill {
-      height:100%; border-radius:2px; transition:width 0.6s ease;
-      background:linear-gradient(90deg, var(--evo-accent), var(--evo-accent2));
-    }
-    .status-bar-value { font-size:0.72rem; font-weight:600; color:var(--text-muted); margin-top:0.2rem; font-family:'JetBrains Mono',monospace; }
+    .status-bar-label { font-size:.62rem; color:var(--text-muted); margin-bottom:.2rem; text-transform:uppercase; letter-spacing:.07em; }
+    .status-bar-track { height:4px; border-radius:2px; background:rgba(255,255,255,.06); overflow:hidden; }
+    .status-bar-fill { height:100%; border-radius:2px; transition:width .6s ease; background:linear-gradient(90deg,var(--evo-accent),var(--evo-accent2)); }
+    .status-bar-value { font-size:.7rem; font-weight:600; color:var(--text-muted); margin-top:.15rem; font-family:'JetBrains Mono',monospace; }
 
-    /* ── 移动端适配 ── */
+    /* 新世代动画 */
+    .gen-enter { animation:genPopIn .4s cubic-bezier(.4,0,.2,1) both; }
+    @keyframes genPopIn { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:scale(1)} }
+
     @media(max-width:600px){
-      .evo-hero { padding:2rem 1rem 1.5rem; }
-      .evo-main { padding:0 1rem; gap:1rem; }
-      .evo-panel { padding:1.2rem; border-radius:16px; }
-      .leaf-stage { min-height:280px; padding:1rem; }
-      .timeline-player { padding:1rem; }
-      .leaf-status-bars { grid-template-columns:repeat(3,1fr); gap:0.4rem; }
+      .evo-hero{padding:2rem 1rem 1.2rem} .evo-main{padding:0 1rem;gap:1rem} .evo-panel{padding:1.1rem;border-radius:16px}
+      .leaf-stage{min-height:260px;padding:1rem} .timeline-player{padding:.9rem}
+      .preset-grid{grid-template-columns:1fr} .leaf-status-bars{grid-template-columns:repeat(3,1fr);gap:.35rem}
+      .mode-toggle{flex-wrap:wrap}
     }
   </style>
 </head>
 <body>
-  <!-- 导航栏 -->
   <nav class="navbar">
     <div class="nav-brand">🦋 <span>虫痕博物馆</span></div>
     <div class="nav-links" id="navLinks"></div>
@@ -373,14 +186,51 @@
     <div class="evo-hero">
       <h1>🧬 进化沙盒</h1>
       <p>设计一只昆虫，观察它在千万年时间中如何与植物协同进化，看痕迹类型如何在军备竞赛中诞生</p>
-      <span class="evo-badge">⚡ AI驱动的演化模拟引擎</span>
+      <span class="evo-badge">⚡ AI驱动的演化模拟引擎 v2.0</span>
     </div>
 
-    <!-- 主布局 -->
     <div class="evo-main">
       <!-- 左：参数面板 -->
       <div class="evo-panel">
         <h2>🔬 设计你的取食者</h2>
+
+        <!-- 模式切换 -->
+        <div class="mode-toggle" id="modeToggle">
+          <div class="mode-opt active" data-mode="story" onclick="switchMode('story')">🎬 故事模式</div>
+          <div class="mode-opt" data-mode="science" onclick="switchMode('science')">🔬 科学模式</div>
+        </div>
+
+        <!-- 预设模板 -->
+        <div class="evo-section">
+          <div class="evo-section-title">🎮 快速开始</div>
+          <div class="preset-grid" id="presetGrid">
+            <div class="preset-card" data-preset="lycaenid" onclick="applyPreset('lycaenid')">
+              <span class="preset-icon">🦋</span>
+              <div class="preset-name">灰蝶模拟</div>
+              <div class="preset-desc">小型·刺吸·隐蔽 → 蚁访关系</div>
+            </div>
+            <div class="preset-card" data-preset="predator" onclick="applyPreset('predator')">
+              <span class="preset-icon">🦁</span>
+              <div class="preset-name">暴食者</div>
+              <div class="preset-desc">大型·咀嚼·公开 → 强防御触发</div>
+            </div>
+            <div class="preset-card" data-preset="miner" onclick="applyPreset('miner')">
+              <span class="preset-icon">🕵️</span>
+              <div class="preset-name">潜行者</div>
+              <div class="preset-desc">中型·潜叶·隐蔽 → 内部特化</div>
+            </div>
+            <div class="preset-card" data-preset="chemical" onclick="applyPreset('chemical')">
+              <span class="preset-icon">☠️</span>
+              <div class="preset-name">化学战专家</div>
+              <div class="preset-desc">小型·刺吸·毒素 → 军备竞赛</div>
+            </div>
+            <div class="preset-card" data-preset="random" onclick="applyPreset('random')">
+              <span class="preset-icon">🎲</span>
+              <div class="preset-name">随机演化</div>
+              <div class="preset-desc">完全随机参数 → 惊喜未知</div>
+            </div>
+          </div>
+        </div>
 
         <!-- 口器类型 -->
         <div class="evo-section">
@@ -402,7 +252,7 @@
           </div>
         </div>
 
-        <!-- 取食速度 & 隐蔽性 -->
+        <!-- 行为策略 -->
         <div class="evo-section">
           <div class="evo-section-title">行为策略 Behavior</div>
           <div class="evo-param-row">
@@ -436,114 +286,71 @@
         <!-- 环境 -->
         <div class="evo-section">
           <div class="evo-section-title">环境 Environment</div>
-          <div class="evo-param-row">
-            <select class="evo-select" id="hostPlant">
-              <option value="百里香 (Thymus)">百里香 (Thymus)</option>
-              <option value="橡树 (Quercus)">橡树 (Quercus)</option>
-              <option value="桦木 (Betula)">桦木 (Betula)</option>
-              <option value="豆科植物 (Fabaceae)">豆科植物 (Fabaceae)</option>
-              <option value="松树 (Pinus)">松树 (Pinus)</option>
-              <option value="蔷薇科 (Rosaceae)">蔷薇科 (Rosaceae)</option>
-              <option value="禾本科 (Poaceae)">禾本科 (Poaceae)</option>
-              <option value="十字花科 (Brassicaceae)">十字花科 (Brassicaceae)</option>
+          <select class="evo-select" id="hostPlant">
+            <option value="百里香 (Thymus)">百里香 (Thymus)</option><option value="橡树 (Quercus)">橡树 (Quercus)</option>
+            <option value="桦木 (Betula)">桦木 (Betula)</option><option value="豆科植物 (Fabaceae)">豆科植物 (Fabaceae)</option>
+            <option value="松树 (Pinus)">松树 (Pinus)</option><option value="蔷薇科 (Rosaceae)">蔷薇科 (Rosaceae)</option>
+            <option value="禾本科 (Poaceae)">禾本科 (Poaceae)</option><option value="十字花科 (Brassicaceae)">十字花科 (Brassicaceae)</option>
+          </select>
+          <div class="evo-param-row" style="margin-top:.5rem">
+            <select class="evo-select" id="biome" style="width:48%;display:inline-block">
+              <option value="温带森林">温带森林</option><option value="热带雨林">热带雨林</option>
+              <option value="草原">草原</option><option value="地中海灌丛">地中海灌丛</option><option value="高山草甸">高山草甸</option><option value="荒漠绿洲">荒漠绿洲</option>
             </select>
-          </div>
-          <div class="evo-param-row">
-            <select class="evo-select" id="biome">
-              <option value="温带森林">温带森林</option>
-              <option value="热带雨林">热带雨林</option>
-              <option value="草原">草原</option>
-              <option value="地中海灌丛">地中海灌丛</option>
-              <option value="高山草甸">高山草甸</option>
-              <option value="荒漠绿洲">荒漠绿洲</option>
-            </select>
-          </div>
-          <div class="evo-param-row">
-            <select class="evo-select" id="season">
-              <option value="春季">春季</option>
-              <option value="夏季" selected>夏季</option>
-              <option value="秋季">秋季</option>
+            <select class="evo-select" id="season" style="width:48%;display:inline-block;float:right">
+              <option value="春季">春季</option><option value="夏季" selected>夏季</option><option value="秋季">秋季</option>
             </select>
           </div>
         </div>
 
-        <!-- 运行按钮 -->
         <button class="evo-run-btn" id="runBtn" onclick="runEvolution()">
-          <span class="btn-text">▶ 运行 1000 代演化模拟</span>
-          <span class="spinner"></span>
+          <span class="btn-text">▶ 运行 1000 代演化模拟</span><span class="spinner"></span>
         </button>
       </div>
 
-      <!-- 右：画布 + 时间线 + 叙事 -->
+      <!-- 右侧：画布区域 -->
       <div class="evo-canvas-area">
         <!-- 叶子舞台 -->
         <div class="leaf-stage" id="leafStage">
+          <!-- 流式加载遮罩 -->
+          <div class="stream-progress hidden" id="streamProgress">
+            <div class="sp-ring"></div>
+            <div class="sp-text" id="spText">正在连接演化引擎...</div>
+            <div class="sp-sub" id="spSub">准备进入千万年时光</div>
+            <div class="sp-bar"><div class="sp-bar-fill" id="spBarFill"></div></div>
+          </div>
           <div class="leaf-stage-inner" id="leafStageInner">
-            <!-- 空状态 -->
             <div class="evo-empty-state" id="emptyState">
               <div class="evo-empty-icon">🌿</div>
-              <p>调整左侧参数<br>点击「运行演化」开始模拟</p>
+              <p>选择预设或调整参数<br>点击「运行演化」开始模拟</p>
             </div>
-            <!-- SVG叶子（运行后显示） -->
             <svg class="base-leaf" id="leafSvg" viewBox="0 0 400 300" style="display:none">
               <defs>
-                <filter id="leafGlow">
-                  <feGaussianBlur stdDeviation="3" result="blur"/>
-                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-                <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="rgba(40,140,60,0.2)"/>
-                  <stop offset="100%" stop-color="rgba(30,110,45,0.12)"/>
-                </linearGradient>
+                <filter id="leafGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(40,140,60,.2)"/><stop offset="100%" stop-color="rgba(30,110,45,.12)"/></linearGradient>
               </defs>
-              <!-- 叶片主体 -->
-              <path id="leafBody" d="M200,20 C260,20 320,60 350,120 C380,180 360,250 290,275 C220,300 150,280 100,240 C50,200 40,140 80,90 C120,40 160,20 200,20 Z"
-                    fill="url(#leafGrad)" stroke="rgba(50,170,70,0.5)" stroke-width="1.5"/>
-              <!-- 中脉 -->
+              <path id="leafBody" d="M200,20 C260,20 320,60 350,120 C380,180 360,250 290,275 C220,300 150,280 100,240 C50,200 40,140 80,90 C120,40 160,20 200,20 Z" fill="url(#leafGrad)" stroke="rgba(50,170,70,.5)" stroke-width="1.5"/>
               <path class="leaf-vein leaf-vein-mid" d="M200,20 Q205,150 210,275"/>
-              <!-- 侧脉 -->
               <g id="lateralVeins">
-                <path class="leaf-vein" d="M205,70 Q260,65 310,85"/>
-                <path class="leaf-vein" d="M206,115 Q265,115 320,140"/>
-                <path class="leaf-vein" d="M207,165 Q260,175 305,200"/>
-                <path class="leaf-vein" d="M208,210 Q250,225 285,245"/>
-                <path class="leaf-vein" d="M204,70 Q150,65 95,88"/>
-                <path class="leaf-vein" d="M203,115 Q145,118 90,148"/>
-                <path class="leaf-vein" d="M202,165 Q148,178 98,208"/>
-                <path class="leaf-vein" d="M201,210 Q145,228 95,252"/>
+                <path class="leaf-vein" d="M205,70 Q260,65 310,85"/><path class="leaf-vein" d="M206,115 Q265,115 320,140"/><path class="leaf-vein" d="M207,165 Q260,175 305,200"/><path class="leaf-vein" d="M208,210 Q250,225 285,245"/>
+                <path class="leaf-vein" d="M204,70 Q150,65 95,88"/><path class="leaf-vein" d="M203,115 Q145,118 90,148"/><path class="leaf-vein" d="M202,165 Q148,178 98,208"/><path class="leaf-vein" d="M201,210 Q145,228 95,252"/>
               </g>
-              <!-- 痕迹层（动态注入） -->
               <g class="damage-layer" id="damageLayer"></g>
             </svg>
           </div>
         </div>
 
-        <!-- 叶子状态指示器 -->
+        <!-- 叶子状态条 -->
         <div class="leaf-status-bars" id="leafStatusBars" style="display:none">
-          <div class="status-bar-item">
-            <div class="status-bar-label">健康度</div>
-            <div class="status-bar-track"><div class="status-bar-fill" id="barHealth" style="width:100%"></div></div>
-            <div class="status-bar-value" id="valHealth">100%</div>
-          </div>
-          <div class="status-bar-item">
-            <div class="status-bar-label">叶片厚度</div>
-            <div class="status-bar-track"><div class="status-bar-fill" id="barThickness" style="width:30%"></div></div>
-            <div class="status-bar-value" id="valThickness">薄</div>
-          </div>
-          <div class="status-bar-item">
-            <div class="status-bar-label">毒素浓度</div>
-            <div class="status-bar-track"><div class="status-bar-fill" id="barToxicity" style="width:5%"></div></div>
-            <div class="status-bar-value" id="valToxicity">低</div>
-          </div>
+          <div class="status-bar-item"><div class="status-bar-label">健康度</div><div class="status-bar-track"><div class="status-bar-fill" id="barHealth" style="width:100%"></div></div><div class="status-bar-value" id="valHealth">100%</div></div>
+          <div class="status-bar-item"><div class="status-bar-label">叶片厚度</div><div class="status-bar-track"><div class="status-bar-fill" id="barThickness" style="width:30%"></div></div><div class="status-bar-value" id="valThickness">薄</div></div>
+          <div class="status-bar-item"><div class="status-bar-label">毒素浓度</div><div class="status-bar-track"><div class="status-bar-fill" id="barToxicity" style="width:5%"></div></div><div class="status-bar-value" id="valToxicity">低</div></div>
         </div>
 
         <!-- 时间线播放器 -->
         <div class="timeline-player" id="timelinePlayer" style="display:none">
           <div class="timeline-header">
-            <div class="timeline-gen-info">
-              <div class="timeline-gen-num" id="genNum">—</div>
-              <div class="timeline-gen-label" id="genLabel">等待模拟</div>
-            </div>
+            <div><div class="timeline-gen-num" id="genNum">—</div><div class="timeline-gen-label" id="genLabel">等待模拟</div></div>
             <div class="timeline-controls">
               <button class="tl-btn" id="tlReset" onclick="seekGen(0)" title="重置">⏮</button>
               <button class="tl-btn" id="tlPrev" onclick="stepPrev()" title="上一步">◀</button>
@@ -552,16 +359,11 @@
               <button class="tl-btn" id="tlEnd" onclick="seekGen(-1)" title="跳到最后">⏭</button>
             </div>
           </div>
-          <div class="timeline-track">
-            <div class="timeline-bar-bg" id="timelineBg">
-              <div class="timeline-bar-fill" id="timelineFill" style="width:0%"></div>
-              <div class="timeline-thumb" id="timelineThumb" style="left:0%"></div>
-            </div>
-          </div>
+          <div class="timeline-track"><div class="timeline-bar-bg" id="timelineBg"><div class="timeline-bar-fill" id="timelineFill" style="width:0%"></div><div class="timeline-thumb" id="timelineThumb" style="left:0%"></div></div></div>
           <div class="milestone-markers" id="milestoneMarkers"></div>
         </div>
 
-        <!-- 演化叙事面板 -->
+        <!-- 叙事面板 -->
         <div class="narrative-panel" id="narrativePanel" style="display:none">
           <div class="narrative-header">
             <div class="narrative-dt-badge" id="dtBadge">—</div>
@@ -569,333 +371,386 @@
           </div>
           <div class="narrative-title" id="narrativeTitle">等待模拟...</div>
           <div class="narrative-body" id="narrativeBody">调整参数并点击运行按钮开始演化模拟。</div>
+          <!-- 科学模式额外数据 -->
+          <div class="science-extra" id="scienceExtra">
+            <div class="sci-row"><span class="sci-label">选择系数(s)</span><span class="sci-val" id="sciSelCoef">—</span></div>
+            <div class="sci-row"><span class="sci-label">遗传力(h²)</span><span class="sci-val" id="sciHerit">—</span></div>
+            <div class="sci-row"><span class="sci-label">代际间隔</span><span class="sci-val" id="sciGenTime">—</span></div>
+            <div class="sci-row"><span class="sci-label">有效种群(Ne)</span><span class="sci-val" id="sciEffPop">—</span></div>
+          </div>
           <div class="narrative-events" id="narrativeEvents"></div>
         </div>
 
-        <!-- 最终结果（完成后显示） -->
+        <!-- 最终结果 -->
         <div class="result-card" id="resultCard" style="display:none"></div>
       </div>
     </div>
   </div>
 
-  <!-- 页脚 -->
-  <footer class="footer">
-    <p>🦋 虫痕博物馆 · 进化沙盒 · 基于 DTM 分类体系与协同进化理论</p>
-  </footer>
+  <footer class="footer"><p>🦋 虫痕博物馆 · 进化沙盒 · 基于 DTM 分类体系与协同进化理论</p></footer>
 
   <script src="js/nav.js"></script>
   <script>
     // ══════════════════════════════════════
-    // 🧬 进化沙盒 - 核心逻辑
+    // 🧬 进化沙盒 v2.0 — 核心逻辑
     // ══════════════════════════════════════
 
-    let evolutionData = null;   // 完整演化数据
-    let currentGenIdx = 0;       // 当前显示的世代索引
-    let isPlaying = false;       // 是否正在播放
-    let playTimer = null;        // 播放定时器
-    const PLAY_INTERVAL = 2500;  // 每步播放间隔(ms)
+    let evolutionData = null, currentGenIdx = 0, isPlaying = false, playTimer = null;
+    let currentMode = 'story'; // 'story' | 'science'
+    const PLAY_INTERVAL = 2500;
 
-    // ── 参数收集 ──
-    function getParams() {
-      return {
-        mouthpart: getActiveRadio('mouthpartGroup'),
-        bodySize: parseFloat(document.getElementById('bodySize').value),
-        feedingSpeed: getActiveRadio('speedGroup'),
-        stealth: getActiveRadio('stealthGroup'),
-        chemicals: getActiveChecks('chemGroup'),
-        hostPlant: document.getElementById('hostPlant').value,
-        biome: document.getElementById('biome').value,
-        season: document.getElementById('season').value
-      };
+    // ── 预设模板定义 ──
+    const PRESETS = {
+      lycaenid:   { mouthpart:'piercing_sucking', bodySize:3,  feedingSpeed:'slow',  stealth:'hidden', chemicals:['toxin'],       hostPlant:'豆科植物 (Fabaceae)', biome:'温带森林', season:'夏季' },
+      predator:   { mouthpart:'mandibulate',     bodySize:14, feedingSpeed:'fast',  stealth:'open',    chemicals:[],               hostPlant:'橡树 (Quercus)',    biome:'温带森林', season:'夏季' },
+      miner:      { mouthpart:'mandibulate',     bodySize:5,  feedingSpeed:'slow',  stealth:'hidden',  chemicals:[],               hostPlant:'桦木 (Betula)',    biome:'温带森林', season:'春季' },
+      chemical:   { mouthpart:'piercing_sucking', bodySize:3,  feedingSpeed:'medium',stealth:'hidden',  chemicals:['toxin','pheromone'],hostPlant:'百里香 (Thymus)',   biome:'地中海灌丛',season:'夏季' },
+      random:     null
+    };
+
+    function applyPreset(name) {
+      // 清除所有预设高亮
+      document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+      if (name === 'random') {
+        // 随机生成
+        const mouths = ['mandibulate','piercing_sucking','rasping_sucking','siphoning'];
+        const speeds = ['slow','medium','fast'];
+        const stealths = ['open','balanced','hidden'];
+        const chemOptions = [['toxin'],['pheromone'],['silicification'],['toxin','pheromone'],['toxin','silicification'],['pheromone','silicification'],['toxin','pheromone','silicification'],[]];
+        const plants = Array.from(document.getElementById('hostPlant').options).map(o=>o.value);
+        const biomes = Array.from(document.getElementById('biome').options).map(o=>o.value);
+        const seasons = ['春季','夏季','秋季'];
+        const p = {
+          mouthpart: mouths[Math.floor(Math.random()*mouths.length)],
+          bodySize: Math.round((Math.random()*19 + 1)*2)/2,
+          feedingSpeed: speeds[Math.floor(Math.random()*speeds.length)],
+          stealth: stealths[Math.floor(Math.random()*stealths.length)],
+          chemicals: chemOptions[Math.floor(Math.random()*chemOptions.length)],
+          hostPlant: plants[Math.floor(Math.random()*plants.length)],
+          biome: biomes[Math.floor(Math.random()*biomes.length)],
+          season: seasons[Math.floor(Math.random()*seasons.length)]
+        };
+        applyParams(p);
+        event.target.closest('.preset-card')?.classList.add('active');
+        return;
+      }
+      const p = PRESETS[name];
+      if (!p) return;
+      applyParams(p);
+      event.target.closest('.preset-card')?.classList.add('active');
+    }
+
+    function applyParams(p) {
+      // 设置单选
+      setRadio('mouthpartGroup', p.mouthpart);
+      setRadio('speedGroup', p.feedingSpeed);
+      setRadio('stealthGroup', p.stealth);
+      // 设置滑块
+      const sizeSlider = document.getElementById('bodySize');
+      sizeSlider.value = p.bodySize;
+      document.getElementById('sizeVal').textContent = p.bodySize + 'mm';
+      // 设置复选框
+      document.querySelectorAll('#chemGroup .evo-check-btn').forEach(btn => {
+        btn.classList.toggle('active', p.chemicals.includes(btn.dataset.val));
+      });
+      // 设置下拉
+      document.getElementById('hostPlant').value = p.hostPlant;
+      document.getElementById('biome').value = p.biome;
+      document.getElementById('season').value = p.season;
+    }
+
+    function setRadio(groupId, val) {
+      document.querySelectorAll(`#${groupId} .evo-radio-btn`).forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.val === val);
+      });
     }
 
     function getActiveRadio(groupId) {
-      const group = document.getElementById(groupId);
-      const active = group.querySelector('.evo-radio-btn.active');
-      return active ? active.dataset.val : null;
+      const el = document.querySelector(`#${groupId} .evo-radio-btn.active`);
+      return el ? el.dataset.val : null;
     }
-
     function getActiveChecks(groupId) {
-      const group = document.getElementById(groupId);
-      return Array.from(group.querySelectorAll('.evo-check-btn.active')).map(el => el.dataset.val);
+      return Array.from(document.querySelectorAll(`#${groupId} .evo-check-btn.active`)).map(el => el.dataset.val);
+    }
+    function getParams() {
+      return {
+        mouthpart: getActiveRadio('mouthpartGroup'), bodySize: parseFloat(document.getElementById('bodySize').value),
+        feedingSpeed: getActiveRadio('speedGroup'), stealth: getActiveRadio('stealthGroup'),
+        chemicals: getActiveChecks('chemGroup'), hostPlant: document.getElementById('hostPlant').value,
+        biome: document.getElementById('biome').value, season: document.getElementById('season').value
+      };
     }
 
-    // ── 运行演化 ──
+    // ── 模式切换 ──
+    function switchMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.mode-opt').forEach(o => o.classList.toggle('active', o.dataset.mode === mode));
+      const sci = document.getElementById('scienceExtra');
+      if (mode === 'science') sci.classList.add('visible'); else sci.classList.remove('visible');
+      // 如果有数据，刷新当前显示
+      if (evolutionData && evolutionData.generations) seekGen(currentGenIdx);
+    }
+
+    // ── 运行演化（SSE流式）──
     async function runEvolution() {
-      const btn = document.getElementById('runBtn');
-      btn.disabled = true;
-      btn.classList.add('loading');
+      const btn = document.getElementById('runBtn'), prog = document.getElementById('streamProgress');
+      btn.disabled = true; btn.classList.add('loading');
+
+      // 显示流式进度
+      prog.classList.remove('hidden');
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('spText').textContent = '正在连接演化引擎...';
+      document.getElementById('spSub').textContent = '准备进入千万年时光';
+      document.getElementById('spBarFill').style.width = '0%';
 
       const params = getParams();
-
       try {
-        const resp = await fetch('/api/evolve', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(params)
+        const resp = await fetch('/api/evolve?stream=true', {
+          method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(params)
         });
-        const data = await resp.json();
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
-        if (!data.success) throw new Error(data.error || '演化失败');
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
 
-        evolutionData = data.result;
+          // 解析SSE事件
+          const lines = buffer.split('\n');
+          buffer = lines.pop(); // 保留不完整的行
 
-        // 初始化UI
-        initTimeline();
-        showLeafStage();
-        seekGen(0);
-
-        // 自动播放前几步
-        isPlaying = true;
-        updatePlayBtn();
-        autoPlay();
-
+          for (const line of lines) {
+            if (!line.startsWith('data: ') && !line.startsWith('event: ')) continue;
+            if (line.startsWith('event: ')) continue; // 跳过事件名行
+            try {
+              const data = JSON.parse(line.slice(6));
+              handleSSEEvent(data);
+            } catch(e) {}
+          }
+        }
       } catch(err) {
-        alert('❌ 演化模拟失败: ' + err.message);
         console.error('[Evo]', err);
+        alert('❌ 演化失败: ' + err.message);
       } finally {
-        btn.disabled = false;
-        btn.classList.remove('loading');
+        btn.disabled = false; btn.classList.remove('loading');
+        prog.classList.add('hidden');
       }
     }
 
-    // ── 初始化时间线 ──
-    function initTimeline() {
-      if (!evolutionData || !evolutionData.generations) return;
-      const gens = evolutionData.generations;
+    // ── SSE事件处理 ──
+    let streamedGens = [];
 
-      // 显示时间线
+    function handleSSEEvent(data) {
+      if (data.step === 'calling_ai') {
+        document.getElementById('spText').textContent = '正在连接演化引擎...';
+        document.getElementById('spSub').textContent = 'AI正在分析你的昆虫设计';
+        document.getElementById('spBarFill').style.width = '10%';
+      }
+      else if (data.step === 'streaming') {
+        document.getElementById('spText').textContent = `演化完成！共 ${data.total} 个世代`;
+        document.getElementById('spSub').textContent = '正在逐代渲染...';
+        document.getElementById('spBarFill').style.width = '30%';
+        // 初始化UI
+        initTimelineUI();
+        showLeafStage();
+      }
+      else if (data.event === 'generation') {
+        // 收到一个新世代
+        streamedGens.push(data.data);
+        const pct = Math.round((streamedGens.length / data.total) * 70) + 30;
+        document.getElementById('spBarFill').style.width = pct + '%';
+        document.getElementById('spSub').textContent = `渲染第 ${streamedGens.length}/${data.total} 代...`;
+
+        // 立即显示最新世代
+        evolutionData = { generations: streamedGens };
+        if (streamedGens.length === 1) {
+          // 第一个世代：初始化完整UI
+          initTimelineUI(); showLeafStage();
+        }
+        seekGen(streamedGens.length - 1);
+
+        // 新世代动画
+        const panel = document.getElementById('narrativePanel');
+        panel.classList.remove('gen-enter');
+        void panel.offsetWidth; // force reflow
+        panel.classList.add('gen-enter');
+      }
+      else if (data.event === 'complete') {
+        // 完成！补充最终数据
+        evolutionData = {
+          generations: streamedGens,
+          final_dt_code: data.final_dt_code,
+          final_dt_name: data.final_dt_name,
+          evolution_path: data.evolution_path,
+          ai_summary: data.ai_summary,
+          fun_fact: data.fun_fact
+        };
+        document.getElementById('spBarFill').style.width = '100%';
+        document.getElementById('spText').textContent = '✅ 演化完成！';
+        document.getElementById('spSub').textContent = `共 ${streamedGens.length} 个世代`;
+        setTimeout(() => {
+          document.getElementById('streamProgress').classList.add('hidden');
+          seekGen(streamedGens.length - 1);
+          showResultCard();
+        }, 800);
+      }
+      else if (data.error) {
+        document.getElementById('spText').textContent = '❌ 出错了';
+        document.getElementById('spSub').textContent = data.error || '未知错误';
+      }
+    }
+
+    // ── 初始化时间线UI ──
+    function initTimelineUI() {
+      const gens = evolutionData.generations;
+      if (!gens || !gens.length) return;
       document.getElementById('timelinePlayer').style.display = 'block';
       document.getElementById('narrativePanel').style.display = 'block';
       document.getElementById('leafStatusBars').style.display = 'grid';
 
-      // 生成里程碑标记
       const markersEl = document.getElementById('milestoneMarkers');
       markersEl.innerHTML = '';
       gens.forEach((g, i) => {
         const dot = document.createElement('div');
         dot.className = 'milestone-dot' + (g.is_milestone ? ' milestone' : '');
         if (g.is_milestone) dot.setAttribute('data-title', g.key_event || '');
-        dot.onclick = () => { seekGen(i); };
+        dot.onclick = () => seekGen(i);
         markersEl.appendChild(dot);
       });
 
-      // 隐藏空状态
       document.getElementById('emptyState').style.display = 'none';
       document.getElementById('leafSvg').style.display = 'block';
-    }
 
-    // ── 显示叶子舞台 ──
-    function showLeafStage() {
-      // 已经通过CSS切换了，这里可以加入场动画
+      // 入场动画
       const svg = document.getElementById('leafSvg');
-      svg.style.opacity = '0';
-      svg.style.transform = 'scale(0.95)';
+      svg.style.opacity = '0'; svg.style.transform = 'scale(.95)';
       requestAnimationFrame(() => {
-        svg.style.transition = 'opacity 0.6s, transform 0.6s';
-        svg.style.opacity = '1';
-        svg.style.transform = 'scale(1)';
+        svg.style.transition = 'opacity .6s, transform .6s';
+        svg.style.opacity = '1'; svg.style.transform = 'scale(1)';
       });
     }
 
-    // ── 跳转到指定世代 ──
+    function showLeafStage() { /* already handled in initTimelineUI */ }
+
+    // ── 跳转世代 ──
     function seekGen(idx) {
       if (!evolutionData || !evolutionData.generations) return;
       const gens = evolutionData.generations;
-
       if (idx < 0) idx = gens.length - 1;
       if (idx >= gens.length) idx = gens.length - 1;
       currentGenIdx = idx;
-
       const g = gens[idx];
 
-      // 更新世代数字
       document.getElementById('genNum').textContent = '第' + g.gen + '代';
       document.getElementById('genLabel').textContent =
-        idx === gens.length - 1 ? '最终世代' :
-        g.is_milestone ? '★ 关键世代' : '';
-
-      // 更新时间线位置
+        idx === gens.length - 1 ? '最终世代' : g.is_milestone ? '★ 关键世代' : '';
       const pct = gens.length > 1 ? (idx / (gens.length - 1)) * 100 : 0;
       document.getElementById('timelineFill').style.width = pct + '%';
       document.getElementById('timelineThumb').style.left = pct + '%';
 
-      // 更新叙事面板
       updateNarrative(g);
-
-      // 更新叶子状态
       updateLeafState(g);
-
-      // 更新痕迹渲染
       renderDamage(g);
 
-      // 高亮当前里程碑
-      const dots = document.querySelectorAll('.milestone-dot');
-      dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      document.querySelectorAll('.milestone-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
 
-      // 最后一个世代时显示最终结果
       if (idx === gens.length - 1) showResultCard();
       else document.getElementById('resultCard').style.display = 'none';
     }
 
     // ── 更新叙事面板 ──
     function updateNarrative(g) {
-      document.getElementById('dtBadge').innerHTML =
-        '<span>' + (g.damage_type || '?') + '</span> ' + (g.damage_type_name || '');
-      document.getElementById('fitnessDisplay').innerHTML =
-        '适应度 <strong>' + Math.round((g.fitness||0)*100) + '%</strong>';
+      document.getElementById('dtBadge').innerHTML = '<span>' + (g.damage_type || '?') + '</span> ' + (g.damage_type_name || '');
+      document.getElementById('fitnessDisplay').innerHTML = '适应度 <strong>' + Math.round((g.fitness || 0) * 100) + '%</strong>';
       document.getElementById('narrativeTitle').textContent = g.title || '';
       document.getElementById('narrativeBody').textContent = g.narrative || '';
 
       // 事件标签
       const eventsEl = document.getElementById('narrativeEvents');
       eventsEl.innerHTML = '';
+      const tags = [];
       if (g.key_event) {
         const tag = document.createElement('span');
-        tag.className = 'event-tag' +
-          (g.population_trend === 'bottleneck' ? ' bottleneck' : '') +
+        tag.className = 'event-tag' + (g.population_trend === 'bottleneck' ? ' bottleneck' : '') +
           (g.damage_type !== evolutionData?.generations[0]?.damage_type ? ' speciation' : '') +
           (g.leaf_state?.toxicity > 0.5 ? ' defense' : '');
-        tag.textContent = g.key_event;
-        eventsEl.appendChild(tag);
+        tag.textContent = g.key_event; eventsEl.appendChild(tag);
       }
       if (g.insect_traits?.new_adaptation && g.gen > 0) {
         const tag = document.createElement('span');
-        tag.className = 'event-tag speciation';
-        tag.textContent = '✨ ' + g.insect_traits.new_adaptation;
+        tag.className = 'event-tag speciation'; tag.textContent = '✨ ' + g.insect_traits.new_adaptation;
         eventsEl.appendChild(tag);
+      }
+
+      // 科学模式数据
+      if (currentMode === 'science') {
+        const fit = g.fitness || 0.5;
+        document.getElementById('sciSelCoef').textContent = ((1 - fit) * 0.3).toFixed(3);
+        document.getElementById('sciHerit').textContent = (fit * 0.6 + 0.2).toFixed(3);
+        document.getElementById('sciGenTime').textContent = (g.gen > 0 ? Math.max(1, Math.round(g.gen / 5)) : 1) + ' 年';
+        document.getElementById('sciEffPop').textContent = Math.round(fit * 1000 + 200);
       }
     }
 
-    // ── 更新叶子状态条 ──
+    // ── 更新叶子状态 ──
     function updateLeafState(g) {
       const ls = g.leaf_state || {};
-      const health = Math.round((ls.health ?? 0.9) * 100);
-      const thick = Math.round((ls.thickness ?? 0.3) * 100);
-      const tox = Math.round((ls.toxicity ?? 0.05) * 100);
-
-      document.getElementById('barHealth').style.width = health + '%';
-      document.getElementById('valHealth').textContent = health + '%';
-      document.getElementById('barThickness').style.width = thick + '%';
-      document.getElementById('valThickness').textContent = thick < 30 ? '薄' : thick < 60 ? '中等' : '厚实';
-      document.getElementById('barToxicity').style.width = Math.min(tox, 100) + '%';
-      document.getElementById('valToxicity').textContent = tox < 10 ? '低' : tox < 40 ? '中等' : '高';
-
-      // 叶子颜色随健康度变化
+      const health = Math.round((ls.health || 0.9) * 100), thick = Math.round((ls.thickness || 0.3) * 100), tox = Math.round((ls.toxicity || 0.05) * 100);
+      document.getElementById('barHealth').style.width = health + '%'; document.getElementById('valHealth').textContent = health + '%';
+      document.getElementById('barThickness').style.width = thick + '%'; document.getElementById('valThickness').textContent = thick < 30 ? '薄' : thick < 60 ? '中等' : '厚实';
+      document.getElementById('barToxicity').style.width = Math.min(tox, 100) + '%'; document.getElementById('valToxicity').textContent = tox < 10 ? '低' : tox < 40 ? '中等' : '高';
       const leafBody = document.getElementById('leafBody');
-      const alpha = 0.08 + (health / 100) * 0.15;
-      const green = 50 + (health / 100) * 30;
-      leafBody.setAttribute('fill', 'rgba(30,' + green + ',45,' + alpha.toFixed(2) + ')');
+      leafBody.setAttribute('fill', `rgba(30,${50 + health / 2.5},45,${0.08 + health / 700})`);
     }
 
-    // ── 渲染痕迹（根据DT类型）──
+    // ── 渲染痕迹（优先AI SVG，fallback程序化）──
     function renderDamage(g) {
       const layer = document.getElementById('damageLayer');
       layer.innerHTML = '';
-
       if (!g.damage_type) return;
 
-      const dt = g.damage_type.toLowerCase();
-      const fitness = g.fitness || 0.5;
-      const intensity = 0.3 + fitness * 0.7; // 适应度越高，痕迹越明显
-
-      // DT类型 → SVG路径映射
-      const dtSvgMap = {
-        // 边缘取食
-        'dt1': () => {
-          const side = Math.random() > 0.5 ? 'left' : 'right';
-          const startX = side === 'left' ? 80 : 320;
-          const depth = 20 + intensity * 60;
-          return `<path d="M${startX},90 Q${startX+(side==='left'?depth:-depth)},120 ${startX+(side==='left'?depth*0.7:-depth*0.7)},150"
-                   fill="rgba(180,120,60,${intensity*0.6})" stroke="rgba(200,150,80,${intensity*0.8})" stroke-width="1.5"/>`;
-        },
-        // 洞孔
-        'dt2': () => {
-          const cx = 120 + Math.random()*160, cy = 80 + Math.random()*120, r = 10+intensity*25;
-          return `<circle cx="${cx}" cy="${cy}" r="${r}"
-                   fill="rgba(40,40,40,${intensity*0.7})" stroke="rgba(100,80,60,${intensity})" stroke-width="1"/>`;
-        },
-        // 骨架化
-        'dt3': () => {
-          let paths = '';
-          const regions = [[140,100,80,60], [220,130,70,50], [170,180,90,70]];
-          regions.forEach(r => {
-            paths += `<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" rx="4"
-                      fill="rgba(200,220,180,${intensity*0.3})" stroke="rgba(80,150,60,${intensity*0.5})" stroke-width="0.8"/>`;
-          });
-          return paths;
-        },
-        // 表面刮擦
-        'dt4': () => {
-          return `<ellipse cx="200" cy="140" rx="${60+intensity*40}" ry="${30+intensity*20}"
-                   fill="rgba(220,230,200,${intensity*0.25})" stroke="rgba(150,170,120,${intensity*0.4})" stroke-width="1"/>`;
-        },
-        // 潜叶隧道
-        'dt41': () => {
-          const startX = 100 + Math.random()*150, startY = 90 + Math.random()*80;
-          let d = `M${startX},${startY}`;
-          for(let i=0;i<6;i++){
-            d += ` Q${startX+20+i*25},${startY+(i%2?25:-20)} ${startX+30+i*28},${startY}`;
-          }
-          return `<path d="${d}" fill="none" stroke="rgba(180,160,60,${intensity*0.7})" stroke-width="${2+intensity*3}" stroke-linecap="round"/>
-                  <circle cx="${startX+5}" cy="${startY+3}" r="2" fill="rgba(80,60,20,${intensity*0.5})"/>
-                  <circle cx="${startX+80}" cy="${startY-2}" r="2" fill="rgba(80,60,20,${intensity*0.5})"/>
-                  <circle cx="${startX+150}" cy="${startY+4}" r="2" fill="rgba(80,60,20,${intensity*0.5})"/>`;
-        },
-        // 斑块潜叶
-        'dt42': () => {
-          const cx = 150 + Math.random()*100, cy = 100 + Math.random()*80;
-          return `<ellipse cx="${cx}" cy="${cy}" rx="${30+intensity*30}" ry="${20+intensity*20}"
-                   fill="rgba(200,190,140,${intensity*0.35})" stroke="rgba(160,150,80,${intensity*0.5})" stroke-width="1.2"/>`;
-        },
-        // 虫瘿
-        'dt51': () => {
-          const cx = 130 + Math.random()*140, cy = 90 + Math.random()*100, r = 8+intensity*18;
-          return `<circle cx="${cx}" cy="${cy}" r="${r}"
-                   fill="rgba(100,180,120,${intensity*0.4})" stroke="rgba(60,140,80,${intensity*0.6})" stroke-width="1.2"/>
-                  <circle cx="${cx}" cy="${cy-r*0.3}" r="${r*0.15}" fill="rgba(60,140,80,${intensity*0.5})"/>`;
-        },
-        // 刺吸损伤
-        'dt61': () => {
-          let dots = '';
-          for(let i=0; i<15+Math.floor(intensity*20); i++){
-            const x = 90+Math.random()*220, y = 60+Math.random()*170;
-            dots += `<circle cx="${x}" cy="${y}" r="${1+Math.random()*2}" fill="rgba(220,200,150,${intensity*0.6})"/>`;
-          }
-          return dots;
-        },
-        // 产卵痕
-        'dt71': () => {
-          const side = Math.random() > 0.5;
-          const x = side ? 90+Math.random()*50 : 260+Math.random()*50;
-          const y = 70+Math.random()*140;
-          return `<line x1="${x}" y1="${y}" x2="${x+(side?30:-30)}" y2="${y+5+Math.random()*15}"
-                   stroke="rgba(180,160,140,${intensity*0.6})" stroke-width="1.2"/>`;
+      // 优先使用AI生成的SVG
+      if (g.damage_svg && g.damage_svg.trim()) {
+        // 安全过滤：只允许特定标签
+        const sanitized = g.damage_svg.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+          .replace(/on\w+\s*=/gi, '');
+        // 检查是否包含危险标签
+        if (!/<(script|iframe|object|embed|form|input|style|link|meta|base)[\s>]/i.test(sanitized)) {
+          layer.innerHTML = sanitized;
+          return;
         }
+      }
+
+      // Fallback：程序化SVG渲染
+      const dt = g.damage_type.toLowerCase();
+      const fitness = g.fitness || 0.5, intensity = 0.3 + fitness * 0.7;
+
+      const dtMap = {
+        'dt1': () => `<path d="M${80 + Math.random()*40},${80 + Math.random()*30} Q${80 + intensity*50},${110 + Math.random()*20} ${80 + intensity*35},${145 + Math.random()*15}" fill="rgba(180,120,60,${intensity*.6})" stroke="rgba(200,150,80,${intensity*.8})" stroke-width="1.5"/>`,
+        'dt2': () => `<circle cx="${120+Math.random()*160}" cy="${80+Math.random()*120}" r="${10+intensity*25}" fill="rgba(40,40,40,${intensity*.7})" stroke="rgba(100,80,60,${intensity})" stroke-width="1"/>`,
+        'dt3': () => [[140,100,80,60],[220,130,70,50],[170,180,90,70]].map(r =>
+          `<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" rx="4" fill="rgba(200,220,180,${intensity*.3})" stroke="rgba(80,150,60,${intensity*.5})" stroke-width=".8"/>`).join(''),
+        'dt4': () => `<ellipse cx="200" cy="140" rx="${60+intensity*40}" ry="${30+intensity*20}" fill="rgba(220,230,200,${intensity*.25})" stroke="rgba(150,170,120,${intensity*.4})" stroke-width="1"/>`,
+        'dt41': () => { let sx=100+Math.random()*150,sy=90+Math.random()*80,d=`M${sx},${sy}`; for(let i=0;i<6;i++)d+=` Q${sx+20+i*25},${sy+(i%2?25:-20)} ${sx+30+i*28},${sy}`; return `<path d="${d}" fill="none" stroke="rgba(180,160,60,${intensity*.7})" stroke-width="${2+intensity*3}" stroke-linecap="round"/><circle cx="${sx+5}" cy="${sy+3}" r="2" fill="rgba(80,60,20,${intensity*.5})"/><circle cx="${sx+80}" cy="${sy-2}" r="2" fill="rgba(80,60,20,${intensity*.5})"/><circle cx="${sx+150}" cy="${sy+4}" r="2" fill="rgba(80,60,20,${intensity*.5})"/>`; },
+        'dt42': () => `<ellipse cx="${150+Math.random()*100}" cy="${100+Math.random()*80}" rx="${30+intensity*30}" ry="${20+intensity*20}" fill="rgba(200,190,140,${intensity*.35})" stroke="rgba(160,150,80,${intensity*.5})" stroke-width="1.2"/>`,
+        'dt51': () => { let cx=130+Math.random()*140,cy=90+Math.random()*100,r=8+intensity*18; return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(100,180,120,${intensity*.4})" stroke="rgba(60,140,80,${intensity*.6})" stroke-width="1.2"/><circle cx="${cx}" cy="${cy-r*.3}" r="${r*.15}" fill="rgba(60,140,80,${intensity*.5})"/>`; },
+        'dt61': () => Array.from({length:15+Math.floor(intensity*20)},()=>`<circle cx="${90+Math.random()*220}" cy="${60+Math.random()*170}" r="${1+Math.random()*2.5}" fill="rgba(220,200,150,${intensity*.6})"/>`).join(''),
+        'dt71': () => { let x=90+Math.random()*50,y=70+Math.random()*140; return Math.random()>.5 ? '' : `<line x1="${x}" y1="${y}" x2="${x+(Math.random()>.5?30:-30)}" y2="${y+5+Math.random()*15}" stroke="rgba(180,160,140,${intensity*.6})" stroke-width="1.2"/>`; }
       };
 
-      // 匹配DT编码（支持模糊匹配）
       let renderer = null;
-      for(const [key, fn] of Object.entries(dtSvgMap)){
-        if(dt.includes(key.replace('dt','')) || dt.startsWith(key)){
-          renderer = fn; break;
-        }
+      for (const [key, fn] of Object.entries(dtMap)) {
+        if (dt.includes(key.replace('dt',''))) { renderer = fn; break; }
       }
-
-      // 默认渲染：通用损伤
-      if(!renderer){
-        renderer = () => {
-          const n = 2 + Math.floor(intensity*4);
-          let shapes = '';
-          for(let i=0;i<n;i++){
-            const x = 100+Math.random()*200, y = 70+Math.random()*150;
-            shapes += `<circle cx="${x}" cy="${y}" r="${5+intensity*15}"
-                        fill="rgba(180,150,100,${intensity*0.4})" stroke="rgba(150,120,80,${intensity*0.5})" stroke-width="1"/>`;
-          }
-          return shapes;
-        };
+      if (!renderer) {
+        const n = 2 + Math.floor(intensity * 4);
+        renderer = () => Array.from({length:n},()=>{
+          const x=100+Math.random()*200,y=70+Math.random()*150;
+          return `<circle cx="${x}" cy="${y}" r="${5+intensity*15}" fill="rgba(180,150,100,${intensity*.4})" stroke="rgba(150,120,80,${intensity*.5})" stroke-width="1"/>`;
+        }).join('');
       }
-
       layer.innerHTML = renderer();
     }
 
@@ -904,95 +759,54 @@
       if (!evolutionData) return;
       const card = document.getElementById('resultCard');
       card.style.display = 'block';
+      const pathMap = {'coevolutionary_arms_race':'🔄 协同进化军备竞赛','directional_change':'↗️ 定向演化','extinction':'💀 灭绝','speciation':'✨ 物种形成','stable_equilibrium':'⚖️ 稳定平衡'};
       card.innerHTML = `
         <h3>🏆 演化完成</h3>
         <div class="result-summary">
           <p><strong>最终DT编码：</strong>${evolutionData.final_dt_code || '?'} (${evolutionData.final_dt_name || ''})</p>
-          <p><strong>演化路径：</strong>${getEvolutionPathLabel(evolutionData.evolution_path)}</p>
+          <p><strong>演化路径：</strong>${pathMap[evolutionData.evolution_path] || evolutionData.evolution_path}</p>
           <p>${evolutionData.ai_summary || ''}</p>
         </div>
         ${evolutionData.fun_fact ? `<div class="result-fun-fact">💡 ${evolutionData.fun_fact}</div>` : ''}
-      `;
-    }
-
-    function getEvolutionPathLabel(path) {
-      const map = {
-        coevolutionary_arms_race: '🔄 协同进化军备竞赛',
-        directional_change: '↗️ 定向演化',
-        extinction: '💀 灭绝',
-        speciation: '✨ 物种形成',
-        stable_equilibrium: '⚖️ 稳定平衡'
-      };
-      return map[path] || path;
+        <p style="margin-top:.6rem;font-size:.76rem;color:var(--text-muted)">
+          共 ${evolutionData.generations?.length || 0} 个世代 · 
+          ${(evolutionData.generations||[]).filter(g=>g.is_milestone).length} 个关键事件 ·
+          DT类型演变 ${new Set((evolutionData.generations||[]).map(g=>g.damage_type)).size} 种
+        </p>`;
     }
 
     // ── 播放控制 ──
-    function togglePlay() {
-      isPlaying = !isPlaying;
-      updatePlayBtn();
-      if(isPlaying) autoPlay();
-      else clearTimeout(playTimer);
-    }
-
-    function autoPlay() {
-      if (!isPlaying) return;
-      if (currentGenIdx >= (evolutionData?.generations?.length||1) - 1) {
-        isPlaying = false;
-        updatePlayBtn();
-        return;
-      }
-      playTimer = setTimeout(() => {
-        stepNext();
-        autoPlay();
-      }, PLAY_INTERVAL);
-    }
-
-    function updatePlayBtn() {
-      const btn = document.getElementById('tlPlay');
-      btn.textContent = isPlaying ? '⏸' : '▶';
-      btn.classList.toggle('active', isPlaying);
-    }
-
-    function stepNext() { seekGen(currentGenIdx + 1); }
-    function stepPrev() { seekGen(currentGenIdx - 1); }
+    function togglePlay() { isPlaying=!isPlaying; updatePlayBtn(); if(isPlaying) autoPlay(); else clearTimeout(playTimer); }
+    function autoPlay() { if(!isPlaying)return; if(currentGenIdx >= (evolutionData?.generations?.length||1)-1){isPlaying=false;updatePlayBtn();return} playTimer=setTimeout(()=>{stepNext();autoPlay()},PLAY_INTERVAL); }
+    function updatePlayBtn() { const b=document.getElementById('tlPlay'); b.textContent=isPlaying?'⏸':'▶'; b.classList.toggle('active',isPlaying); }
+    function stepNext(){seekGen(currentGenIdx+1)}
+    function stepPrev(){seekGen(currentGenIdx-1)}
 
     // ── 时间线拖拽 ──
-    document.getElementById('timelineBg')?.addEventListener('click', function(e) {
-      if (!evolutionData) return;
-      const rect = this.getBoundingClientRect();
-      const pct = (e.clientX - rect.left) / rect.width;
-      const idx = Math.round(pct * (evolutionData.generations.length - 1));
-      seekGen(idx);
+    document.getElementById('timelineBg')?.addEventListener('click',function(e){
+      if(!evolutionData)return; const rect=this.getBoundingClientRect(), pct=(e.clientX-rect.left)/rect.width;
+      seekGen(Math.round(pct*(evolutionData.generations.length-1)));
     });
 
     // ── 体长实时显示 ──
-    document.getElementById('bodySize').addEventListener('input', function(){
-      document.getElementById('sizeVal').textContent = this.value + 'mm';
+    document.getElementById('bodySize').addEventListener('input',function(){
+      document.getElementById('sizeVal').textContent=this.value+'mm';
     });
 
-    // ── 单选按钮交互 ──
-    document.querySelectorAll('.evo-radio-group').forEach(group => {
-      group.addEventListener('click', function(e) {
-        const btn = e.target.closest('.evo-radio-btn');
-        if (!btn) return;
-        this.querySelectorAll('.evo-radio-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      });
-    });
-
-    // ── 复选框交互 ──
-    document.getElementById('chemGroup').addEventListener('click', function(e) {
-      const btn = e.target.closest('.evo-check-btn');
-      if (!btn) return;
+    // ── 单选/复选交互 ──
+    document.querySelectorAll('.evo-radio-group').forEach(g=>g.addEventListener('click',function(e){
+      const btn=e.target.closest('.evo-radio-btn');if(!btn)return;
+      this.querySelectorAll('.evo-radio-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+    }));
+    document.getElementById('chemGroup').addEventListener('click',function(e){
+      const btn=e.target.closest('.evo-check-btn');if(!btn)return;
       btn.classList.toggle('active');
     });
 
     // ── 键盘快捷键 ──
-    document.addEventListener('keydown', function(e) {
-      if (!evolutionData) return;
-      if (e.key === 'ArrowRight') stepNext();
-      else if (e.key === 'ArrowLeft') stepPrev();
-      else if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+    document.addEventListener('keydown',function(e){
+      if(!evolutionData)return;
+      if(e.key==='ArrowRight')stepNext(); else if(e.key==='ArrowLeft')stepPrev(); else if(e.key===' '){e.preventDefault();togglePlay();}
     });
   </script>
 </body>
