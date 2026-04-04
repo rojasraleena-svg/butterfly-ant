@@ -16,7 +16,7 @@
     <a href="mutualism.html" class="nav-link">互作类型</a>
     <a href="lab.html" class="nav-link">虫痕鉴定</a>
     <a href="lifecycle.html" class="nav-link">生命循环</a>
-    <a href="chemical.html" class="nav-link">化学通讯</a>
+    <a href="chemical.html" class="nav-link active">化学通讯</a>
     <a href="gallery.html" class="nav-link">图鉴</a>
     <a href="quiz.html" class="nav-link">测验</a>
     <a href="about.html" class="nav-link">关于</a>
@@ -61,17 +61,8 @@
     <div class="chc-game" id="chcGame">
       <h3>🎮 小游戏：帮蝴蝶找到正确的"化学密码"</h3>
       <p style="color:var(--text-muted);font-size:0.9em;text-align:center;">不同蝴蝶需要模拟不同蚂蚁的CHC信号才能成功混入蚁巢。点击正确的化合物卡片到对应的蚂蚁槽位。</p>
-      <div class="chc-slots" id="chcSlots">
-        <div class="chc-slot" data-answer="alc" data-label="红蚁 Myrmica">🔴 红蚁 (Myrmica)</div>
-        <div class="chc-slot" data-answer="las" data-label="黑蚁 Lasius">⚫ 黑蚁 (Lasius)</div>
-        <div class="chc-slot" data-answer="cam" data-label="弓背蚁 Camponotus">🟤 弓背蚁 (Camponotus)</div>
-      </div>
-      <div class="chc-options" id="chcOptions">
-        <button class="chc-opt" data-type="alc" onclick="selectCHC(this)">C21-C33 烷烃 + 高比例甲基烷烃</button>
-        <button class="chc-opt" data-type="las" onclick="selectCHC(this)">C23-C35 n-烷烃为主 + 少量烯烃</button>
-        <button class="chc-opt" data-type="cam" onclick="selectCHC(this)">支链烷烃 + 环丙基化合物丰富</button>
-        <button class="chc-opt" data-type="wrong" onclick="selectCHC(this)">短链脂肪酸 + 酯类混合物</button>
-      </div>
+      <div class="chc-slots" id="chcSlots"></div>
+      <div class="chc-options" id="chcOptions"></div>
       <div class="chc-result" id="chcResult">选择一个化合物卡片开始配对 ↑</div>
     </div>
   </div>
@@ -80,35 +71,7 @@
 <footer class="footer"><p><a href="/">← 返回首页</a></p><p style="margin-top:12px;">Made with 💙 · 2026</p></footer>
 
 <script src="/js/common.js?v=3"></script>
-<script>
-let selectedOpt = null;
-let chcScore = 0;
-
-function selectCHC(btn){
-  if(btn.classList.contains('used')) return;
-  document.querySelectorAll('.chc-opt').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected'); selectedOpt = btn;
-  document.getElementById('chcResult').innerHTML = '现在点击上方一个空槽位放入这个化合物 →';
-}
-
-document.querySelectorAll('.chc-slot').forEach(slot => {
-  slot.addEventListener('click', function(){
-    if(!selectedOpt){ document.getElementById('chcResult').innerHTML = '<span style="color:var(--accent-gold)">⚠️ 请先选择一个化合物卡片！</span>'; return; }
-    if(this.classList.contains('filled')) return;
-    const type = selectedOpt.dataset.type, answer = this.dataset.answer;
-    this.innerHTML = selectedOpt.innerHTML; this.classList.add('filled');
-    selectedOpt.classList.add('used');
-    if(type === answer){ this.classList.add('correct'); chcScore++;
-      document.getElementById('chcResult').innerHTML = `<span style="color:var(--accent-green)">✅ 正确！${this.dataset.label}需要这种CHC特征。</span>`;
-    } else { this.classList.add('wrong');
-      document.getElementById('chcResult').innerHTML = `<span style="color:var(--accent-red)">❌ 不对哦。${this.dataset.label}不使用这种化合物组合。</span>`;}
-    selectedOpt = null;
-    if(document.querySelectorAll('.chc-slot.filled').length === 3){
-      setTimeout(() => { document.getElementById('chcResult').innerHTML = chcScore >= 2 ? `🎉 太棒了！匹配对了 ${chcScore}/3 个！` : `😅 匹对了 ${chcScore}/3 个。再试试吧！`; }, 500);
-    }
-  });
-});
-sharedInit(); loadDataImages(); initReveal();
-</script>
+<script src="/js/chc-game.js?v=3"></script>
+<script>sharedInit(); loadDataImages(); initReveal(); initCHCGame();</script>
 </body>
 </html>

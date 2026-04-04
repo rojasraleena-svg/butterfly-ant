@@ -10,6 +10,10 @@ const ZHIPU_API_KEY = process.env.ZHIPU_API_KEY;
 const ZHIPU_BASE_URL = process.env.ZHIPU_BASE_URL || 'https://open.bigmodel.cn/api/coding/paas/v4/chat/completions';
 const ZHIPU_MODEL = process.env.ZHIPU_MODEL || 'glm-5v-turbo';
 
+// Rate Limiting
+const { createRateLimit } = require('./middleware/rateLimit');
+const identifyBiteLimiter = createRateLimit();
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(BASE_DIR, 'public'), {
   maxAge: '1h',
@@ -25,7 +29,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // ===== 虫痕鉴定 API =====
-app.post('/api/identify-bite', async (req, res) => {
+app.post('/api/identify-bite', identifyBiteLimiter, async (req, res) => {
   try {
     const { imageData, filename } = req.body;
     
@@ -194,7 +198,20 @@ app.get('/api/damage-examples', (req, res) => {
   });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🦋 Butterfly-Ant Mutualism site running on http://0.0.0.0:${PORT}`);
-  console.log(`🧪 Insect Bite Mark Identification API ready at /api/identify-bite`);
+// Sitemap
+app.get('/sitemap.xml', (req, res) => {
+  const { generateSitemap } = require('./lib/sitemap');
+  const baseUrl = process.env.SITE_BASE_URL || `http://localhost:${PORT}`;
+  res.header('Content-Type', 'application/xml');
+  res.send(generateSitemap(baseUrl));
 });
+
+// 仅在直接运行时启动服务器（测试导入时不自动监听）
+if (require.main === module) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🦋 Butterfly-Ant Mutualism site running on http://0.0.0.0:${PORT}`);
+    console.log(`🧪 Insect Bite Mark Identification API ready at /api/identify-bite`);
+  });
+}
+
+module.exports = { app };
