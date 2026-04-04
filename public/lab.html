@@ -6,10 +6,23 @@
 <title>🧪 虫痕鉴定实验室 | 🦋 蝴蝶与蚂蚁</title>
 <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
     <link rel="stylesheet" href="/css/common.css?v=2">
+  <meta name="description" content="上传叶片照片，AI（GLM-5V视觉模型）自动识别昆虫取食痕迹类型、推测昆虫种类。支持洞孔、边缘啃食、骨架化等7种痕迹类型。">
+  <meta property="og:title" content="🔬 虫痕鉴定实验室 | 🦋 蝴蝶与蚂蚁">
+  <meta property="og:description" content="上传叶片照片，AI（GLM-5V视觉模型）自动识别昆虫取食痕迹类型、推测昆虫种类。支持洞孔、边缘啃食、骨架化等7种痕迹类型。">
+  <meta property="og:image" content="https://butterfly.gqy25.top/img/species.jpg">
+  <meta property="og:url" content="https://butterfly.gqy25.top/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="蝴蝶与蚂蚁 · 共生的艺术">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="🔬 虫痕鉴定实验室 | 🦋 蝴蝶与蚂蚁">
+  <meta name="twitter:description" content="上传叶片照片，AI（GLM-5V视觉模型）自动识别昆虫取食痕迹类型、推测昆虫种类。支持洞孔、边缘啃食、骨架化等7种痕迹类型。">
+  <meta name="twitter:image" content="https://butterfly.gqy25.top/img/species.jpg">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"🔬 虫痕鉴定实验室 | 🦋 蝴蝶与蚂蚁","description":"上传叶片照片，AI（GLM-5V视觉模型）自动识别昆虫取食痕迹类型、推测昆虫种类。支持洞孔、边缘啃食、骨架化等7种痕迹类型。","url":"https://butterfly.gqy25.top/lab.html","isPartOf":{"@type":"WebSite","name":"蝴蝶与蚂蚁 · 共生的艺术","url":"https://butterfly.gqy25.top/"},"inLanguage":"zh-CN"},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://butterfly.gqy25.top/"},{"@type":"ListItem","position":2,"name":"虫痕鉴定","item":"https://butterfly.gqy25.top/lab.html"}]}]</script>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
 
-<nav class="nav">
+<nav class="nav" aria-label="主导航">
   <div class="nav-inner">
     <a href="/" class="nav-logo"><img src="/img/logo.svg" alt="蝴蝶与蚂蚁"></a>
     <a href="/" class="nav-link">首页</a>
@@ -76,16 +89,18 @@
 
       <!-- 右侧默认：示例图鉴 -->
       <div class="lab-right" id="labExamples">
-        <h3 style="margin-bottom:16px;color:var(--text-muted);font-size:0.95em;">📚 痕迹类型图鉴（点击了解）</h3>
-        <div class="example-grid" id="exampleGrid"></div>
-        <div style="margin-top:20px;padding:16px;background:rgba(212,168,67,0.08);border-radius:12px;border:1px solid rgba(212,168,67,0.2);">
-          <p style="color:var(--accent-gold);font-size:0.88em;font-weight:600;margin-bottom:6px;">💡 小贴士</p>
-          <ul style="color:var(--text-muted);font-size:0.82em;padding-left:16px;line-height:1.8">
-            <li>拍照时尽量让光线均匀，避免阴影遮挡痕迹</li>
-            <li>如果痕迹很小，可以靠近拍摄后裁剪</li>
-            <li>一张照片可以包含多种痕迹，AI会逐一分析</li>
-            <li>鉴定结果仅供参考，精确鉴定需要标本采集</li>
-          </ul>
+        <h3>📚 痕迹类型图鉴（点击了解）</h3>
+        <div class="lab-examples-wrap">
+          <div class="example-grid" id="exampleGrid"></div>
+          <div style="margin-top:18px;padding:14px 16px;background:rgba(212,168,67,0.06);border-radius:10px;border:1px solid rgba(212,168,67,0.15);">
+            <p style="color:var(--accent-gold);font-size:0.85em;font-weight:600;margin-bottom:6px;">💡 小贴士</p>
+            <ul style="color:var(--text-muted);font-size:0.8em;padding-left:16px;line-height:1.75;margin:0">
+              <li>拍照时让光线均匀，避免阴影遮挡痕迹</li>
+              <li>痕迹很小时可靠近拍摄后裁剪</li>
+              <li>一张照片可含多种痕迹，AI会逐一分析</li>
+              <li>鉴定结果仅供参考，精确鉴定需标本采集</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

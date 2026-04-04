@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: http://localhost:3242/sitemap.xml
+Sitemap: https://butterfly.gqy25.top/sitemap.xml

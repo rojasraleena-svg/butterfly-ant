@@ -201,7 +201,7 @@ app.get('/api/damage-examples', (req, res) => {
 // Sitemap
 app.get('/sitemap.xml', (req, res) => {
   const { generateSitemap } = require('./lib/sitemap');
-  const baseUrl = process.env.SITE_BASE_URL || `http://localhost:${PORT}`;
+  const baseUrl = process.env.SITE_BASE_URL || 'https://butterfly.gqy25.top';
   res.header('Content-Type', 'application/xml');
   res.send(generateSitemap(baseUrl));
 });

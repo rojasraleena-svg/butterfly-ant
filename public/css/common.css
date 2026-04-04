@@ -320,10 +320,12 @@ body {
 /* ===== LAB / BITE MARK ===== */
 .lab-layout { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start; }
 @media(max-width:768px){ .lab-layout { grid-template-columns:1fr; } }
+.lab-left, .lab-right { display:flex; flex-direction:column; gap:16px; }
 .upload-zone {
   border:2px dashed var(--card-border); border-radius:var(--radius-lg); padding:36px;
   text-align:center; cursor:pointer; transition:all 0.3s; background:var(--card-bg);
   position:relative; min-height:280px; display:flex; align-items:center; justify-content:center;
+  flex:1;
 }
 .upload-zone:hover { border-color:var(--primary); background:rgba(59,125,216,0.04); }
 .upload-zone.dragover { border-color:var(--accent-green); background:rgba(58,157,92,0.06); }
@@ -334,6 +336,15 @@ body {
   display:flex; align-items:center; justify-content:center; gap:10px; padding:16px;
   background:rgba(59,125,216,0.07); border-radius:var(--radius-md);
   color:var(--primary); font-size:0.9em; margin-top:18px;
+}
+
+/* 右侧面板统一卡片容器 */
+.lab-right > h3:first-child {
+  font-size:0.9em; color:var(--text-muted); margin:0 0 2px 0; font-weight:500;
+}
+.lab-examples-wrap {
+  background:var(--card-bg); border:1px solid var(--card-border);
+  border-radius:var(--radius-lg); padding:18px 20px 20px;
 }
 .status-spinner {
   width:20px; height:20px; border:2.5px solid rgba(59,125,216,0.2);
@@ -368,8 +379,9 @@ body {
 .guild-sucker { background:rgba(59,125,216,0.1); color:var(--primary); }
 .guild-miner { background:rgba(58,157,92,0.1); color:var(--accent-green); }
 .guild-borer { background:rgba(201,162,39,0.1); color:var(--accent-gold); }
-.example-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; }
-.example-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius-md); padding:16px; cursor:pointer; transition:all 0.25s; text-align:center; }
+.example-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+@media(max-width:768px){ .example-grid { grid-template-columns:repeat(2,1fr); } }
+.example-card { background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:var(--radius-md); padding:14px 10px; cursor:pointer; transition:all 0.25s; text-align:center; }
 .example-card:hover { transform:translateY(-3px); border-color:var(--card-border-hover); }
 .example-icon { font-size:1.7em; margin-bottom:8px; }
 .example-card h4 { font-size:0.84em; margin-bottom:5px; font-weight:600; }
