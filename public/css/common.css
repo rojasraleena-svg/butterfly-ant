@@ -1025,3 +1025,80 @@ body {
   .spectrum-track { margin:0 10px; }
   .spectrum-labels { padding:0 10px; }
 }
+
+
+/* ══════════════════════════════════════
+   🦋 Lab v3: DT-code + Lycaenid Detection Styles
+   ══════════════════════════════════════ */
+
+/* DT-code badge (shown next to damage type) */
+.dt-code-badge {
+  display:inline-block;
+  font-size:0.7em;
+  font-weight:700;
+  font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+  color:#00d4ff;
+  padding:2px 8px;
+  border-radius:10px;
+  margin-left:8px;
+  vertical-align:middle;
+  letter-spacing:0.5px;
+  border:1px solid rgba(0,212,255,0.25);
+  box-shadow:0 0 6px rgba(0,212,255,0.15);
+}
+
+/* Lycaenid fingerprint tags */
+.fp-tag {
+  display:inline-block;
+  font-size:0.72em;
+  background:linear-gradient(135deg,rgba(91,141,239,0.18),rgba(255,140,140,0.12));
+  color:#5b8def;
+  border:1px solid rgba(91,141,239,0.3);
+  padding:2px 8px;
+  border-radius:10px;
+  font-weight:600;
+}
+
+/* Severity section */
+#severitySection p {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:0.92em !important;
+}
+
+/* Confusion warning animation */
+@keyframes confusion-pulse {
+  0%,100% { opacity:1; }
+  50% { opacity:0.7; }
+}
+#confusionSection {
+  animation: confusion-pulse 3s ease-in-out infinite;
+}
+
+/* Guild badge - FFG variant */
+.guild-unknown { background:#6c757d; color:#fff; }
+.guild-chewer { background:var(--accent-green); color:#fff; }
+.guild-sucker { background:var(--accent-red); color:#fff; }
+.guild-miner { background:var(--primary); color:#fff; }
+.guild-borer { background:#8b5cf6; color:#fff; }
+
+/* Result header: DT code emphasis */
+.result-header h3 {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:4px;
+}
+
+/* Responsive: lycaenid card on mobile */
+@media(max-width:600px) {
+  .lycaenid-card {
+    padding:12px !important;
+  }
+  .lycaenid-card a {
+    display:block;
+    text-align:center;
+  }
+}

@@ -49,125 +49,229 @@ app.post('/api/identify-bite', identifyBiteLimiter, async (req, res) => {
     //     Root RB (1973). Organization of a plant-arthropod association in simple and diverse habitats. Ecol Monogr 43(1):95–124.
     // [3] Godfray HCJ (1984) Insect life histories & feeding strategies
     // [4] Coley PD & Barone JA (1996) Herbivory and plant defenses in tropical forests. Ecol Monogr 66(4):501–522.
-    const systemPrompt = `你是一位昆虫学和植物生态学专家，专门研究昆虫对植物的取食痕迹（herbivory / feeding damage）。
-你熟悉 Labandeira 的 DTM（Damage Type Model）取食痕迹分类体系和 Root-Godfray 功能群（feeding guild）分类框架。
+    const systemPrompt = `你是一位昆虫学、古生物学和植物生态学交叉领域的专家，专门研究昆虫对植物的取食痕迹（herbivory / insect herbivory damage）。
+你的核心知识体系建立在以下金标准框架之上：
+1. Labandeira CC 的 DTM（Damage Type Model, 2002 PNAS / 2007 Annu Rev Ecol Evol Syst）— 全球通用的昆虫取食痕迹分类体系，同时适用于化石和现生叶片
+2. Root RB (1973) 的功能群（Functional Feeding Guild）概念
+3. Godfray HCJ (1984) 昆虫生活史与取食策略理论
+4. Coley PD & Barone JA (1996) 热带森林植食量化方法
+5. Smithsonian National Museum of Natural History 的 FFG 教育材料
 
-【任务】根据用户上传的叶片照片，分析上面的昆虫取食痕迹，按指定JSON格式返回。
+═══════════════════════════════════════════════════════════════
+🏛️ 第一部分：DTM Damage Type 分类标准（Smithsonian/Labandeira 金标准）
+═══════════════════════════════════════════════════════════════
 
-═══════════════════════════════════════
-📐 分类标准（基于学术文献）
-═══════════════════════════════════════
+你必须使用以下 DTM 标准对损伤进行分类。每个类型都有唯一的 DT 编码。
 
-一、痕迹类型（Damage Types, 基于 Labandeira DTM 框架）
+【外部取食 External Foliage Feeding — DT1 到 DT7】
 
-必须从以下8种中选择最匹配的一种：
+DT1 — 边缘取食 (Margin Feeding)
+  诊断要点：从叶缘向内取食；缺口呈半圆形、扇形、扇贝形或不规则形；
+           缺口边缘通常不规则（咀嚼式口器的咬痕）；可深达中脉或仅限叶缘；
+           最常见的取食模式。
+  典型昆虫：鳞翅目幼虫（多种）、直翅目若虫、叶蜂幼虫
 
-┌──────┬──────────────────────────┬──────────────────────────────────────────┐
-│ 代码 │ 中文名称                 │ 形态特征（诊断要点）                      │
-├──────┼──────────────────────────┼──────────────────────────────────────────┤
-│ hole │ 洞孔式 (Hole feeding)   │ ● 贯穿叶片全层的圆形/不规则穿孔           │
-│      │                          │ ● 边缘可能光滑（甲虫）或锯齿状（毛虫）      │
-│      │                          │ ● 可分布在叶面任何位置                     │
-├──────┼──────────────────────────┼──────────────────────────────────────────┤
-│ marg │ 边缘啃食 (Margin feeding)│ ● 从叶缘开始向内取食                      │
-│      │                          │ ● 缺口呈半圆形、扇形或锯齿形               │
-│      │                          │ ● 最常见的咀嚼式取食模式                   │
-├──────┼──────────────────────────┼──────────────────────────────────────────┤
-│ skel │ 骨架化 (Skeletonization) │ ● 叶肉被选择性取食，完整保留叶脉网         │
-│      │                          │ ● 呈现典型的"网状骨架"外观                  │
-│      │                          │ ● 多为叶蜂幼虫或小型甲虫幼虫               │
-├──────┼──────────────────────────┼──────────────────────────────────────────┤
-│ mine │ 潜叶隧道 (Leaf mining)   │ ● 在上下表皮之间形成蜿蜒/蛇形隧道          │
-│      │                          │ ● 可见黑色粪便线（frass trail）             │
-│      │                          │ ● 隧道逐渐加宽是潜叶蛾典型特征              │
-├──────┼──────────────────────────┼──────────────────────────────────────────┤
-│ gall │ 虫瘿 (Galling)           │ ● 植物组织异常增生形成的球形/不规则肿块    │
-│      │                          │ ● 表面可能有开口（瘿孔）                    │
-│      │                          │ ● 是植物对昆虫刺激的反应性生长               │
-├──────┼──────────────────────────┼──────────────────────────────────────────┤
-│ spot │ 斑点状 (Piercing/sucking)│ ● 小型失绿斑点或褪色区域（不穿透叶片）    │
-│      │                          │ ● 可能伴随蜜露分泌（光亮黏性物质）          │
-│      │                          │ ● 刺吸式口器特征                           │
-├──────┼──────────────────────────┼──────────────────────────────────────────┤
-│ surf │ 表面刮擦 (Surface scrap.)│ ● 仅上表皮或浅层叶肉被刮除                │
-│      │                          │ ● 形成半透明窗口状斑                       │
-│      │                          │ ● 典型：蓟马、蛞蝓                         │
-├──────┼──────────────────────────┼──────────────────────────────────────────┤
-│ ?    │ 无法确定 (Unknown)       │ ● 图像模糊 / 痕迹不典型 / 多种混合        │
-└──────┴──────────────────────────┴──────────────────────────────────────────┘
+DT2 — 洞孔取食 (Hole Feeding)
+  诊断要点：贯穿叶片全层的圆形/椭圆形/不规则穿孔；
+           孔洞位于叶面中部（区别于DT1的边缘起始）；
+           孔洞边缘可能光滑（甲虫，如叶甲Chrysomelidae）或锯齿状（鳞翅目幼虫）；
+           可单个散布或成簇出现。
+  典型昆虫：叶甲(Chrysomelidae)、象甲(Curculionidae)、鳞翅目幼虫
 
-二、功能群（Feeding Guilds, 基于 Root 1973 + Godfray 1984 框架）
+DT3 — 骨架化 (Skeletonization)
+  诊断要点：选择性取食叶肉组织（mesophyll），完整保留叶脉网状结构；
+           呈现典型的"窗格状"或"骨架状"外观；
+           叶脉之间的区域变薄呈半透明；
+           ⚠️ 注意区分晚期骨架化（残留细脉断裂后类似DT2洞孔）——关键看是否有规则排列的残留叶脉走向。
+  典型昆虫：叶蜂幼虫(Tenthredinidae)、某些叶甲幼虫、象甲幼虫
 
-┌───────────┬──────────────────────────────────────────────────────────────┐
-│ guild代码 │ 定义与代表类群                                                  │
-├───────────┼──────────────────────────────────────────────────────────────┤
-│ chewer    │ 咀嚼式口器（mandibulate）：鳞翅目幼虫、叶蜂、甲虫、直翅目等    │
-│ sucker    │ 刺吸式口器（haustellate）：蚜虫、蝉、蝽象、叶螨、粉虱等       │
-│ miner     │ 潜叶者（internal feeder）：潜叶蛾(Lepidoptera)、潜叶蝇(Diptera)、│
-│           │ 潜叶蜂(Hymenoptera)                                         │
-│ borer     │ 钻蛀者（stem/twig borer）：天牛、小蠹、木蠹蛾等              │
-└───────────┴──────────────────────────────────────────────────────────────┘
+DT4 — 表面刮擦/窗口化 (Surface Feeding / Windowing)
+  诊断要点：仅刮除上表皮或部分叶肉，不穿透下表皮；
+           形成半透明的"窗口"状斑；
+           与DT3的区别：DT3保留完整叶脉网，DT4是无规则的半透明区域，通常不涉及系统性避开叶脉。
+  典型昆虫：蓟马(Thysanoptera)、蛞蝓(Slug)、蜗牛、某些叶甲
 
-三、置信度校准指南
+【潜叶 Internal Feeding — DT41 到 DT49】
 
-⚠️ 请诚实评估不确定性！参考以下校准标准：
-- 90-100%: 痕迹非常典型，所有关键特征都清晰可见且唯一指向一种类型
-- 70-89%: 主要特征符合，但有少量模糊或次要特征不完全匹配
-- 50-69%: 大致可判断但存在明显的不确定性（如光线差、图像模糊）
-- <50%: 高度不确定，建议标注为 unknown 或请求更清晰的图片
+DT41 — 蛇形潜叶 (Serpentine Leaf Mine)
+  诊断要点：在上下表皮之间形成的逐渐加宽的蛇形/螺旋形隧道；
+           隧道中心常可见黑色粪便线（frass trail）——这是潜叶的关键证据！
+           起始点通常是一个小卵壳或针尖状入口；
+           宽度从<1mm逐渐加宽到3-5mm。
+  典型昆虫：潜叶蛾(Lyonetiidae, Gracillariidae)、潜叶蝇(Agromyzidae)
 
-═══════════════════════════════════════
-📤 输出格式（严格JSON）
-═══════════════════════════════════════
+DT42 — 斑块潜叶 (Blotch Leaf Mine)
+  诊断要点：不规则的圆形/椭圆形大面积斑块状潜叶区；
+           不像DT41那样有明显的蛇形轨迹；
+           整个斑块区域内叶肉被完全消耗；
+           与虫瘿(DT51)的区别：切开可见内部是空的或有粪便，无组织增生。
+  典型昆虫：潜叶蛾(Nepticulidae)、某些卷蛾(Tortricidae)
+
+DT43 — 星状潜叶 (Star-shaped Mine)
+  诊断要点：从中心点向外辐射的多条短隧道，呈星芒状；
+           相对少见但具有高度诊断性。
+
+DT45 — 帐篷状潜叶 (Tentiform Mine)
+  诊断要点：潜叶蛾幼虫将潜叶区的上表皮收缩形成帐篷状隆起；
+           外观为叶面局部隆起的"帐篷"结构；
+           切开后可见内部有幼虫和丝垫。
+  典型昆虫：Gracillariidae 潜叶蛾
+
+【造瘿 Galling — DT51 到 DT55】
+
+DT51 — 叶面虫瘿 (Leaf Gall, adaxial surface)
+  诊断要点：叶面（上表面）异常增生的球形/椭圆形/不规则肿块；
+           是植物组织对昆虫刺激的反应性生长（非昆虫直接啃食！）；
+           表面可能有瘿孔（gall exit hole）——成熟后昆虫钻出的出口；
+           触感通常比周围叶片更厚实。
+  典型昆虫：瘿蚊(Cecidomyiidae)、瘿蜂(Cynipidae)、瘿蚜(Aphididae部分)
+
+DT52 — 叶背虫瘿 (Leaf Gall, abaxial surface)
+  诊断要点：同DT51但发生在叶背（下表面），需要翻看叶片背面才能发现。
+
+【刺吸 Piercing and Sucking — DT61 到 DT67】
+
+DT61 — 点状刺吸损伤 (Piercing/Sucking Damage, stippling)
+  诊断要点：大量密集的小型失绿斑点（通常0.1-0.5mm）；
+           斑点不穿透叶片，仅为褪色/失绿；
+           可能伴随蜜露分泌（光亮的黏性物质）→ 可能进一步导致煤污病（sooty mold）；
+           ⚠️ 极难与真菌病害、营养缺乏区分！需要结合分布模式和其他迹象综合判断。
+  典型昆虫：蚜虫(Aphidoidea)、叶螨(Tetranychidae)、蝉若虫、粉虱(Aleyrodidae)
+
+【产卵 Ovipositioning — DT71 到 DT76】
+
+DT71 — 线形产卵切口 (Oviposition Slit / Egg Clutch)
+  诊断要点：叶缘或叶面的线形切口/刻痕；
+           植物组织可能有坏死反应（切口周围变色）；
+           可能含有或曾经含有卵块；
+           与机械划伤的区别：产卵痕通常有组织的生理反应（变色/肿胀/愈合组织）。
+
+═══════════════════════════════════════════════════════════════
+🦋 第二部分：灰蝶科（Lycaenidae）取食痕迹专项检测
+═══════════════════════════════════════════════════════════════
+
+灰蝶科幼虫的取食行为具有独特的"指纹"组合，当检测到以下特征时必须标记为疑似灰蝶取食：
+
+【灰蝶取食指纹清单】
+✦ FP1 — 取食部位偏好：损伤集中在花蕾、嫩芽、嫩叶顶端（不在老叶中部）
+✦ FP2 — 缺刻尺度：缺刻小而干净（通常<5mm），因为灰蝶幼虫体型小(<2cm)
+✦ FP3 — 清洁区现象（最强指纹！）：损伤叶片周围有一圈异常干净的"无菌区"——
+     这是蚂蚁驱赶其他植食者的证据，暗示蚁访关系存在
+✦ FP4 — 蚂蚁伴随：图像中可见蚂蚁在损伤附近活动（或在追问中确认）
+✦ FP5 — 蜜露/分泌物迹象：取食点周围有发亮或黏性物质（DNO背蜜腺分泌物）
+✦ FP6 — 寄主植物线索：如果寄主植物是豆科(Fabaceae)、鼠李科(Rhamnaceae)、
+     百里香属(Thymus)/牛至属(Origanum)等已知灰蝶寄主 → 提高灰蝶可能性
+
+判定规则：
+- 匹配 ≥3 个指纹 → 高度疑似灰蝶科取食（lycaenid_confidence: high）
+- 匹配 2 个指纹 → 中度疑似（lycaenid_confidence: medium）
+- 匹配 1 个指纹 → 低度可能（lycaenid_confidence: low），仅在备注中提及
+
+═══════════════════════════════════════════════════════════════
+⚖️ 第三部分：天然混淆矩阵（鉴定难度警告）
+═══════════════════════════════════════════════════════════════
+
+以下损伤对即使专家也难以纯视觉区分，必须在输出中诚实标注：
+
+混淆组A（高难）：DT2(洞孔) vs DT3(骨架化晚期) — 细脉是否规则排列是唯一判据
+混淆组B（高难）：DT42(斑块潜叶) vs DT51(虫瘿) — 一个是空的/有粪，一个是实心增生组织
+混淆组C（极高难）：DT61(刺吸) vs 真菌病害 vs 营养缺乏 — 需要病史+显微镜
+混淆组D（中等）：DT1(边缘取食) vs 机械损伤/风害 — 缺口边缘是否不规则
+混淆组E（中等）：DT71(产卵痕) vs 机械划伤 — 是否有组织反应带
+
+═══════════════════════════════════════════════════════════════
+📊 第四部分：损伤量化估算
+═══════════════════════════════════════════════════════════════
+
+除了分类，你还必须估算损伤严重程度：
+- 目测受损面积占整片可见叶片面积的百分比
+- 参考 Johnson et al. (2016) 和 Myers et al. (2018) 的标准化协议：
+  · 轻度：<10% 叶面积损失
+  · 中度：10-25%
+  · 重度：>25%
+
+═══════════════════════════════════════════════════════════════
+📤 输出格式（严格 JSON）
+═══════════════════════════════════════════════════════════════
 
 {
-  "damage_type": "痕迹代码（hole|marg|skel|mine|gall|spot|surf|unknown）",
+  "dt_code": "DT编号（如 DT1/DT2/DT3/DT41/DT42/DT51/DT61 等）",
+  "dt_code_name": "DT英文学术名称（如 Margin Feeding / Hole Feeding / Skeletonization / Serpentine Mining 等）",
+  "damage_type": "简码（marg/hole/skel/mine/gall/spot/surf/ovip/unknown）",
   "damage_type_cn": "中文名称",
   "confidence": 置信度整数(0-100),
+  "confidence_note": "置信度校准说明（一句话解释为什么是这个置信度）",
+  "ffg_category": "功能性取食组（external_feeding/internal_mining/galling/piercing_sucking/oviposition/boring）",
   "feeding_guild": "功能群（chewer|sucker|miner|borer）",
+  "severity_percent": 损伤面积占比估算(0-100整数),
+  "severity_level": "轻度/中度/重度",
+  "confusion_group": "如果属于天然混淆组则标注（如'A:DT2vsDT3'），否则null",
   "insects_possible": [
-    "具体到科或属的候选昆虫（如'凤蝶科幼虫'而非'毛虫'）",
+    "具体到科或属的候选昆虫（中国境内常见种优先）",
     "至少2个候选，按可能性排序"
   ],
-  "description": "详细描述痕迹特征（中文80-150字），需包含：形状→边缘→分布→与其他类型的区分依据",
-  "ecological_context": "生态学背景（中文100-180字），包含：该取食策略的适应意义、在食物网中的位置、季节性规律",
-  "key_features": ["3-6个可观察的具体形态特征", "每个应是可直接验证的视觉线索"],
-  "plant_defense_response": "植物可能/已展现的防御反应（次生化合物、愈伤组织、VOC释放等）",
-  "differential_diagnosis": "需要排除的其他类型及排除理由（2-3条）",
-  "limitations": "本次鉴定的局限性说明（如图像质量、视角限制、需要额外信息等）"
+  "description": "详细描述痕迹特征（中文80-150字），形状→边缘→分布→与相似类型的区分依据",
+  "ecological_context": "生态学背景（中文100-180字）",
+  "key_features": ["3-6个可直接验证的视觉形态特征"],
+  "plant_defense_response": "植物的防御反应",
+  "differential_diagnosis": "需要排除的类型及理由（2-3条）",
+  "limitations": "局限性说明",
+
+  "lycaenid_detection": {
+    "is_detected": true/false,
+    "confidence": "high|medium|low|null",
+    "matched_fingerprints": ["匹配到的指纹编号列表，如['FP1','FP3']"],
+    "reasoning": "为什么判断为/不是灰蝶取食（中文30-60字）",
+    "actionable_hint": "给用户的提示（如'请检查叶片附近是否有蚂蚁活动'）"
+  }
 }
 
-【重要】如果同时存在多种痕迹类型，选择最主要的一种作为damage_type，在description中提及其他共存类型。`;
+【重要规则】
+1. dt_code 必须使用上述 DTM 标准编码，不可自创
+2. 如果同时存在多种痕迹类型，选最主要的作为主类型，在 description 中提及其他
+3. 灰蝶检测对所有请求都必须执行（即使结果为 negative）
+4. 必须填写 confusion_group —— 诚实告知用户这个鉴定是否存在天然混淆风险
+5. severity_percent 必须基于实际像素观察给出合理估算，不要总是写10%
+`;
 
-    const userPrompt = `请以昆虫学家和植物生态学家的双重身份，仔细分析这张叶片照片上的昆虫取食痕迹。${filename ? `文件名：${filename}` : ''}
+    const userPrompt = `请以昆虫学家、古生物学家和植物生态学家的三重身份，仔细分析这张叶片照片上的昆虫取食痕迹。${filename ? `文件名：${filename}` : ''}
 
-【观察步骤 — 请逐步推理】
+【观察步骤 — 请严格按DTM标准逐步推理】
 
 第一步：整体评估
-- 图片质量和光照条件如何？
-- 能看到完整的叶片吗？还是只有局部？
-- 叶片形态是什么（单叶/复叶/针形/肉质）？
+- 图片质量（分辨率、光照、对焦）、叶片完整性
+- 叶片形态（单叶/复叶/针形/肉质/有无托叶）
 
-第二步：损伤特征提取
-- 形状：穿孔/缺口/隧道/斑点/增生？
-- 位置：叶面中部 vs 边缘 vs 叶脉附近？
-- 边缘：光滑整齐 vs 不规则锯齿 vs 波浪状？
-- 分布：集中一处 vs 分散多处 vs 规律排列？
-- 特殊迹象：粪便颗粒(frass)？丝网？蜜露？变色晕圈？
+第二步：损伤特征提取（逐维度记录）
+- 形状：穿孔/缺口/隧道/斑点/增生/线痕？
+- 位置：叶面中部 vs 叶缘 vs 叶脉附近 vs 嫩芽/花蕾？
+- 边缘质地：光滑整齐 vs 不规则锯齿 vs 波浪状 vs 有组织反应带？
+- 分布模式：集中一处 vs 分散多处 vs 规律排列？
+- 特殊迹象：粪便颗粒(frass)？丝网？蜜露？煤污病？蜕皮壳？蚂蚁？
 
-第三步：分类型逐一比对（基于DTM标准）
-- 对每种damage_type给出匹配度评分(1-5)
-- 排除不可能的类型并记录排除理由
+第三步：DTM标准逐一比对
+- 对每个DT编码给出匹配度评分(1-5分)
+- 记录排除理由和保留理由
+- 标注所属混淆组（如有）
 
-第四步：昆虫推断
-- 结合痕迹类型+叶片形态+常见昆虫区系推断
-- 给出具体到科的候选（中国境内常见种优先考虑）
-- 注意：不同地区优势种群差异很大
+第四步：灰蝶专项检测（必须执行！）
+- 逐一检查6个灰蝶指纹(FP1-FP6)
+- 统计匹配数量和置信度等级
+- 即使结果为negative也要输出lycaenid_detection字段
 
-第五步：综合判断与不确定性声明
-- 最终判定 + 置信度 + 必须说明的局限性
+第五步：昆虫区系推断
+- 结合痕迹类型 + 叶片形态 + 中国境内常见昆虫区系
+- 给出到科/属级的候选列表
+- 注意季节性和地域性差异
 
-请输出JSON格式的鉴定报告。`;
+第六步：损伤量化
+- 目测估算受损面积占可见叶面积的百分比
+- 判定严重程度等级（轻/中/重）
+
+第七步：综合判断 + 不确定性声明
+- 最终DT编码判定 + 置信度 + 混淆组警告 + 局限性
+
+请严格按照JSON格式输出鉴定报告。`;
 
     const response = await fetch(ZHIPU_BASE_URL, {
       method: 'POST',
@@ -184,7 +288,7 @@ app.post('/api/identify-bite', identifyBiteLimiter, async (req, res) => {
             { type: 'image_url', image_url: { url: imageData } }
           ]}
         ],
-        max_tokens: 2000,
+        max_tokens: 6000,
         temperature: 0.3
       })
     });
@@ -227,65 +331,86 @@ app.post('/api/identify-bite', identifyBiteLimiter, async (req, res) => {
   }
 });
 
-// 示例图库信息
+// 示例图库信息（DTM金标准版本）
 app.get('/api/damage-examples', (req, res) => {
   res.json({
     examples: [
       {
-        type: 'hole',
-        cn: '洞孔式 (Hole feeding)',
-        icon: '⭕',
-        desc: '贯穿叶片的圆形或不规则穿孔，边缘可能光滑（甲虫）或锯齿状（鳞翅目幼虫）。基于Labandeira DTM DT-Hole分类。',
-        insects: ['鳞翅目幼虫(凤蝶/粉蝶/夜蛾)', '叶甲(Chrysomelidae)', '叶蜂幼虫(Tenthredinidae)'],
-        guild: 'chewer'
+        type: 'marg',
+        dt_code: 'DT1',
+        cn: '边缘取食 (Margin Feeding)',
+        icon: '📐',
+        ffg: '外部取食 (External Foliage Feeding)',
+        desc: '从叶缘向内取食，形成半圆形、扇形、扇贝形或不规则缺口。最常见的咀嚼式取食模式。缺口边缘通常不规则（咀嚼式口器咬痕）。',
+        insects: ['鳞翅目幼虫（多种）', '直翅目若虫', '叶蜂幼虫(Tenthredinidae)'],
+        guild: 'chewer',
+        confusion_note: '与机械损伤/风害可能混淆——关键看缺口边缘是否不规则'
       },
       {
-        type: 'marg',
-        cn: '边缘啃食 (Margin feeding)',
-        icon: '📐',
-        desc: '从叶缘向内取食，形成半圆形、扇形或锯齿状缺口。最常见的咀嚼式取食模式。DT-Margin。',
-        insects: ['多种鳞翅目幼虫', '蝗虫/直翅目若虫', '叶蜂幼虫'],
-        guild: 'chewer'
+        type: 'hole',
+        dt_code: 'DT2',
+        cn: '洞孔取食 (Hole Feeding)',
+        icon: '⭕',
+        ffg: '外部取食 (External Foliage Feeding)',
+        desc: '贯穿叶片全层的圆形/椭圆形/不规则穿孔，位于叶面中部。边缘光滑（叶甲）或锯齿状（鳞翅目幼虫）。',
+        insects: ['叶甲(Chrysomelidae)', '象甲(Curculionidae)', '鳞翅目幼虫', '叶蜂幼虫'],
+        guild: 'chewer',
+        confusion_note: '⚠️ 与DT3骨架化晚期易混淆——需检查残留叶脉走向是否规则'
       },
       {
         type: 'skel',
+        dt_code: 'DT3',
         cn: '骨架化 (Skeletonization)',
         icon: '🕸️',
-        desc: '选择性取食叶肉组织，保留完整叶脉网状结构。典型"窗格状"外观。DT-Skeletonization。',
-        insects: ['叶蜂幼虫(Sawflies)', '某些叶甲幼虫', '象甲幼虫'],
-        guild: 'chewer'
+        ffg: '外部取食 (External Foliage Feeding)',
+        desc: '选择性取食叶肉组织(mesophyll)，完整保留叶脉网状结构。呈现"窗格状"外观，叶脉间区域变薄呈半透明。',
+        insects: ['叶蜂幼虫(Sawflies)', '叶甲幼虫', '象甲幼虫'],
+        guild: 'chewer',
+        confusion_note: '⚠️ 晚期细脉断裂后类似DT2洞孔——这是天然混淆组A'
       },
       {
         type: 'mine',
-        cn: '潜叶隧道 (Leaf mining)',
+        dt_code: 'DT41-49',
+        cn: '潜叶隧道 (Leaf Mining)',
         icon: '〰️',
-        desc: '在上下表皮之间取食叶肉，形成可见的蜿蜒隧道。常伴黑色粪便线(frass trail)。DT-Mining。',
-        insects: ['潜叶蛾(Lyonetiidae/Gracillariidae)', '潜叶蝇(Agromyzidae)', '潜叶蜂(Tenthredinidae)'],
-        guild: 'miner'
+        ffg: '潜叶取食 (Internal Mining)',
+        desc: '在上下表皮之间形成的蜿蜒/斑块状隧道。蛇形(DT41)有粪便线(frass trail)；斑块式(DT42)无轨迹；帐篷状(DT45)呈隆起结构。',
+        insects: ['潜叶蛾(Gracillariidae/Lyonetiidae)', '潜叶蝇(Agromyzidae)', '潜叶蜂(Tenthredinidae)'],
+        guild: 'miner',
+        confusion_note: '⚠️ DT42斑块潜叶 vs DT51虫瘿易混淆——切开看内部是否有粪/空腔'
       },
       {
         type: 'gall',
+        dt_code: 'DT51-55',
         cn: '虫瘿 (Galling)',
         icon: '🔵',
-        desc: '昆虫诱导植物组织异常增生形成的球形或不规则肿块。表面可能有瘿孔。DT-Galling。',
+        ffg: '造瘿 (Galling)',
+        desc: '昆虫刺激植物组织异常增生的球形/椭圆形肿块。是植物的反应性生长（非直接啃食！），触感比周围叶片更厚实。',
         insects: ['瘿蚊(Cecidomyiidae)', '瘿蜂(Cynipidae)', '瘿蚜(Aphididae部分)'],
-        guild: 'sucker'
+        guild: 'sucker',
+        confusion_note: '注意：虫瘿背面也可能有(DT52)，需要翻看叶片两面'
       },
       {
         type: 'spot',
-        cn: '刺吸斑点 (Piercing/sucking)',
+        dt_code: 'DT61-67',
+        cn: '刺吸损伤 (Piercing/Sucking)',
         icon: '🔘',
-        desc: '刺吸式口器造成的小型失绿斑点或褪色区域。可能伴随蜜露分泌。DT-Piercing&sucking。',
-        insects: ['蚜虫(Aphidoidea)', '蝉(Cicadidae)', '蝽象(Pentatomidae)', '叶螨(Tetranychidae)'],
-        guild: 'sucker'
+        ffg: '刺吸 (Piercing & Sucking)',
+        desc: '大量密集的小型失绿斑点(0.1-0.5mm)，不穿透叶片。可能伴蜜露分泌→煤污病。极难与真菌病害区分！',
+        insects: ['蚜虫(Aphidoidea)', '叶螨(Tetranychidae)', '蝉若虫', '粉虱(Aleyrodidae)'],
+        guild: 'sucker',
+        confusion_note: '⚠️⚠️ 极高难度混淆组C：与真菌病害+营养缺乏几乎无法纯视觉区分'
       },
       {
         type: 'surf',
-        cn: '表面刮擦 (Surface scraping)',
+        dt_code: 'DT4',
+        cn: '表面刮擦 (Surface Feeding)',
         icon: '📏',
-        desc: '刮去叶片上表皮或部分叶肉，形成半透明窗口状斑。DT-Surface feeding。',
+        ffg: '外部取食 (External Foliage Feeding)',
+        desc: '仅刮除上表皮或部分叶肉，不穿透下表皮，形成半透明"窗口"斑。与DT3区别：不系统性避开叶脉。',
         insects: ['蓟马(Thysanoptera)', '蛞蝓(Slug)', '蜗牛', '某些叶甲'],
-        guild: 'chewer'
+        guild: 'chewer',
+        confusion_note: ''
       }
     ]
   });
