@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🦋 蝴蝶与蚂蚁 · 共生的艺术</title>
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+    <link rel="stylesheet" href="/css/common.css">
+<style>.hero { min-height:88vh; }</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-img" id="heroImg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🔬 进化生物学 · 科普互动</div>
+    <h1>蝴蝶与蚂蚁<br>共生的艺术</h1>
+    <p class="subtitle">
+      在自然界最精妙的跨物种合作中，灰蝶科蝴蝶与蚂蚁上演着一场
+      延续千万年的进化之舞——从互利共生到社会性寄生，从化学通讯到基因协同进化。
+    </p>
+    <div class="hero-cta">
+      <a href="lifecycle.html" class="btn btn-primary">🦋 探索生命循环</a>
+      <a href="lab.html" class="btn btn-outline">🧪 虫痕鉴定实验室</a>
+    </div>
+  </div>
+  <div class="scroll-hint">↓ 探索各模块 ↓</div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/img/logo.svg" alt="蝴蝶与蚂蚁"></a>
+    <a href="/" class="nav-link active">首页</a>
+    <a href="mutualism.html" class="nav-link">互作类型</a>
+    <a href="lab.html" class="nav-link">虫痕鉴定</a>
+    <a href="lifecycle.html" class="nav-link">生命循环</a>
+    <a href="chemical.html" class="nav-link">化学通讯</a>
+    <a href="gallery.html" class="nav-link">图鉴</a>
+    <a href="quiz.html" class="nav-link">测验</a>
+    <a href="about.html" class="nav-link">关于</a>
+  </div>
+</nav>
+
+<!-- MODULE CARDS -->
+<div class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-icon">🗺️</div>
+      <h2>探索模块</h2>
+      <p class="section-desc">点击进入每个独立模块，深入探索蝴蝶与蚂蚁的世界</p>
+    </div>
+    <div class="module-grid">
+
+      <a href="mutualism.html" class="mod-card fade-in">
+        <span class="mod-arrow">→</span>
+        <div class="mod-icon">🤝</div>
+        <h3>互作类型光谱</h3>
+        <p>从互利共生到社会性寄生，了解灰蝶科与蚂蚁之间三种截然不同的关系模式。</p>
+      </a>
+
+      <a href="lab.html" class="mod-card fade-in delay-1">
+        <span class="mod-arrow">→</span>
+        <div class="mod-icon">🧪</div>
+        <h3>虫痕鉴定实验室 ⭐</h3>
+        <p>上传叶片照片，AI（GLM-5V）自动识别昆虫取食痕迹类型、推测昆虫种类。基于真实科学研究。</p>
+      </a>
+
+      <a href="lifecycle.html" class="mod-card fade-in delay-2">
+        <span class="mod-arrow">→</span>
+        <div class="mod-icon">🔄</div>
+        <h3>大蓝蝶生命循环</h3>
+        <p>5个阶段的交互式时间轴——从产卵到羽化，每一步都是进化的奇迹。点击查看详情。</p>
+      </a>
+
+      <a href="chemical.html" class="mod-card fade-in delay-3">
+        <span class="mod-arrow">→</span>
+        <div class="mod-icon">🧪</div>
+        <h3>化学通讯实验室</h3>
+        <p>DNO蜜腺、CHC拟态、振动信号——分子层面的跨物种对话。还有互动小游戏！</p>
+      </a>
+
+      <a href="gallery.html" class="mod-card fade-in delay-4">
+        <span class="mod-arrow">→</span>
+        <div class="mod-icon">🖼️</div>
+        <h3>生态图鉴</h3>
+        <p>9张AI生成的视觉日记——记录蝴蝶-蚂蚁互作的关键场景和生态系统全貌。</p>
+      </a>
+
+      <a href="quiz.html" class="mod-card fade-in">
+        <span class="mod-arrow">→</span>
+        <div class="mod-icon">❓</div>
+        <h3>知识测验</h3>
+        <p>5道题目测试你的掌握程度——从基础概念到前沿研究，看看你能答对几题？</p>
+      </a>
+
+      <a href="about.html" class="mod-card fade-in delay-1">
+        <span class="mod-arrow">→</span>
+        <div class="mod-icon">📖</div>
+        <h3>关于本项目</h3>
+        <p>项目初衷、参考文献、技术栈——以及为什么做这个科普网站。</p>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <p>🦋 蝴蝶与蚂蚁 · 共生的艺术 | Butterfly-Ant Mutualism</p>
+  <p style="margin-top:10px;">Powered by OpenClaw · GLM-5V Vision · 2026</p>
+</footer>
+
+<div class="lb" id="lightbox" onclick="closeLB()">
+  <button class="lb-close" onclick="closeLB()">✕</button>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-caption" id="lbCaption"></div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>sharedInit();</script>
+</body>
+</html>

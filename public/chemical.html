@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧪 化学通讯 | 🦋 蝴蝶与蚂蚁</title>
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+    <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/img/logo.svg" alt="蝴蝶与蚂蚁"></a>
+    <a href="/" class="nav-link">首页</a>
+    <a href="mutualism.html" class="nav-link">互作类型</a>
+    <a href="lab.html" class="nav-link">虫痕鉴定</a>
+    <a href="lifecycle.html" class="nav-link">生命循环</a>
+    <a href="chemical.html" class="nav-link">化学通讯</a>
+    <a href="gallery.html" class="nav-link">图鉴</a>
+    <a href="quiz.html" class="nav-link">测验</a>
+    <a href="about.html" class="nav-link">关于</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>🧪 化学通讯实验室</h1>
+  <p>蝴蝶如何"说"蚂蚁的语言？答案藏在分子层面——<strong>碳氢化合物（CHC）拟态</strong>和<strong>振动信号</strong></p>
+</div>
+
+<div class="section">
+  <div class="container">
+    <div class="chem-lab">
+      <div class="chem-viz">
+        <img src="" data-img="chemical" alt="化学通讯可视化" loading="lazy">
+        <div class="chem-caption">✨ 蝴蝶与蚂蚁之间的化学信号交流</div>
+      </div>
+      <div class="chem-info">
+        <div class="chem-card fade-in">
+          <h4>🔬 DNO — 背部蜜腺</h4>
+          <p>位于第7腹节背面的腺体器官。分泌含麦芽糖、蔗糖、葡萄糖和多种氨基酸的蜜露。不同物种的成分差异显著，用于吸引特定种类的蚂蚁。</p>
+          <div class="chem-bar"><div class="chem-fill" style="width:90%;background:linear-gradient(90deg,#4CAF7F,#2ecc71)"></div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.78em;color:var(--text-dim)"><span>糖含量</span><span>高达30%</span></div>
+        </div>
+        <div class="chem-card fade-in delay-1">
+          <h4>🎵 振动通讯</h4>
+          <p>2026年最新研究发现：毛毛虫用身体敲击地面/植物茎秆，产生特定频率的振动信号（约100-1000Hz）。这模仿了蚂蚁之间的交流频率，让蚂蚁把它当成"自己人"。</p>
+          <div class="chem-bar"><div class="chem-fill" style="width:75%;background:linear-gradient(90deg,#9B7ED9,#8e44ad)"></div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.78em;color:var(--text-dim)"><span>拟态相似度</span><span>~75%</span></div>
+        </div>
+        <div class="chem-card fade-in delay-2">
+          <h4>🎭 CHC化学拟态</h4>
+          <p>蝴蝶幼虫合成与宿主蚂蚁几乎相同的表皮碳氢化合物（Cuticular Hydrocarbons）。蚂蚁靠嗅觉识别"自己人"，蝴蝶就是利用这个"密码"混入蚁群。</p>
+          <div class="chem-bar"><div class="chem-fill" style="width:85%;background:linear-gradient(90deg,#D4A843,#f39c12)"></div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.78em;color:var(--text-dim)"><span>匹配精度</span><span>~85%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHC Game -->
+    <div class="chc-game" id="chcGame">
+      <h3>🎮 小游戏：帮蝴蝶找到正确的"化学密码"</h3>
+      <p style="color:var(--text-muted);font-size:0.9em;text-align:center;">不同蝴蝶需要模拟不同蚂蚁的CHC信号才能成功混入蚁巢。点击正确的化合物卡片到对应的蚂蚁槽位。</p>
+      <div class="chc-slots" id="chcSlots">
+        <div class="chc-slot" data-answer="alc" data-label="红蚁 Myrmica">🔴 红蚁 (Myrmica)</div>
+        <div class="chc-slot" data-answer="las" data-label="黑蚁 Lasius">⚫ 黑蚁 (Lasius)</div>
+        <div class="chc-slot" data-answer="cam" data-label="弓背蚁 Camponotus">🟤 弓背蚁 (Camponotus)</div>
+      </div>
+      <div class="chc-options" id="chcOptions">
+        <button class="chc-opt" data-type="alc" onclick="selectCHC(this)">C21-C33 烷烃 + 高比例甲基烷烃</button>
+        <button class="chc-opt" data-type="las" onclick="selectCHC(this)">C23-C35 n-烷烃为主 + 少量烯烃</button>
+        <button class="chc-opt" data-type="cam" onclick="selectCHC(this)">支链烷烃 + 环丙基化合物丰富</button>
+        <button class="chc-opt" data-type="wrong" onclick="selectCHC(this)">短链脂肪酸 + 酯类混合物</button>
+      </div>
+      <div class="chc-result" id="chcResult">选择一个化合物卡片开始配对 ↑</div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer"><p><a href="/">← 返回首页</a></p><p style="margin-top:12px;">Made with 💙 · 2026</p></footer>
+
+<script src="/js/common.js"></script>
+<script>
+let selectedOpt = null;
+let chcScore = 0;
+
+function selectCHC(btn){
+  if(btn.classList.contains('used')) return;
+  document.querySelectorAll('.chc-opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected'); selectedOpt = btn;
+  document.getElementById('chcResult').innerHTML = '现在点击上方一个空槽位放入这个化合物 →';
+}
+
+document.querySelectorAll('.chc-slot').forEach(slot => {
+  slot.addEventListener('click', function(){
+    if(!selectedOpt){ document.getElementById('chcResult').innerHTML = '<span style="color:var(--accent-gold)">⚠️ 请先选择一个化合物卡片！</span>'; return; }
+    if(this.classList.contains('filled')) return;
+    const type = selectedOpt.dataset.type, answer = this.dataset.answer;
+    this.innerHTML = selectedOpt.innerHTML; this.classList.add('filled');
+    selectedOpt.classList.add('used');
+    if(type === answer){ this.classList.add('correct'); chcScore++;
+      document.getElementById('chcResult').innerHTML = `<span style="color:var(--accent-green)">✅ 正确！${this.dataset.label}需要这种CHC特征。</span>`;
+    } else { this.classList.add('wrong');
+      document.getElementById('chcResult').innerHTML = `<span style="color:var(--accent-red)">❌ 不对哦。${this.dataset.label}不使用这种化合物组合。</span>`;}
+    selectedOpt = null;
+    if(document.querySelectorAll('.chc-slot.filled').length === 3){
+      setTimeout(() => { document.getElementById('chcResult').innerHTML = chcScore >= 2 ? `🎉 太棒了！匹配对了 ${chcScore}/3 个！` : `😅 匹对了 ${chcScore}/3 个。再试试吧！`; }, 500);
+    }
+  });
+});
+sharedInit(); loadDataImages(); initReveal();
+</script>
+</body>
+</html>

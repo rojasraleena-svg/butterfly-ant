@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🖼️ 生态图鉴 | 🦋 蝴蝶与蚂蚁</title>
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+    <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/img/logo.svg" alt="蝴蝶与蚂蚁"></a>
+    <a href="/" class="nav-link">首页</a>
+    <a href="mutualism.html" class="nav-link">互作类型</a>
+    <a href="lab.html" class="nav-link">虫痕鉴定</a>
+    <a href="lifecycle.html" class="nav-link">生命循环</a>
+    <a href="chemical.html" class="nav-link">化学通讯</a>
+    <a href="gallery.html" class="nav-link">图鉴</a>
+    <a href="quiz.html" class="nav-link">测验</a>
+    <a href="about.html" class="nav-link">关于</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>🖼️ 生态图鉴</h1>
+  <p>AI生成的视觉日记——记录蝴蝶-蚂蚁互作的关键场景</p>
+</div>
+
+<div class="section">
+  <div class="container">
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</div>
+
+<footer class="footer"><p><a href="/">← 返回首页</a></p><p style="margin-top:12px;">Made with 💙 · 2026</p></footer>
+
+<div class="lb" id="lightbox" onclick="closeLB()">
+  <button class="lb-close" onclick="closeLB()">✕</button>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-caption" id="lbCaption"></div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>sharedInit(); buildGallery('galleryGrid');</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" fill="none">
+  <defs>
+    <linearGradient id="wg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4A90D9"/>
+      <stop offset="100%" stop-color="#D4A843"/>
+    </linearGradient>
+    <linearGradient id="ag" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#D4A843"/>
+      <stop offset="100%" stop-color="#E07A7A"/>
+    </linearGradient>
+  </defs>
+  <!-- Butterfly wing left -->
+  <path d="M22 18 C14 10, 4 12, 3 20 C2 28, 8 34, 16 32 C20 31, 23 27, 24 24" fill="url(#wg)" opacity="0.9"/>
+  <!-- Butterfly wing right -->
+  <path d="M38 18 C46 10, 56 12, 57 20 C58 28, 52 34, 44 32 C40 31, 37 27, 36 24" fill="url(#wg)" opacity="0.85"/>
+  <!-- Butterfly body -->
+  <ellipse cx="30" cy="24" rx="2.5" ry="6" fill="#2c3e50"/>
+  <!-- Antennae -->
+  <path d="M28.5 18 Q26 13, 24 11" stroke="#2c3e50" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+  <path d="M31.5 18 Q34 13, 36 11" stroke="#2c3e50" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+  <!-- Ant body -->
+  <ellipse cx="66" cy="29" rx="1.5" ry="4" fill="#3d3d3d"/>
+  <ellipse cx="64" cy="26" rx="1.2" ry="3" fill="#4a4a4a"/>
+  <ellipse cx="62" cy="23.5" rx="1" ry="2.5" fill="#5a5a5a"/>
+  <!-- Ant head -->
+  <circle cx="60.5" cy="21.5" r="1.8" fill="#3d3d3d"/>
+  <!-- Ant antennae -->
+  <path d="M59.5 20 Q57 17, 55 16" stroke="#3d3d3d" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+  <path d="M61 19.8 Q60 16.5, 59 15" stroke="#3d3d3d" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+  <!-- Ant legs -->
+  <path d="M65 28 L68 32 M64 27 L66 31 M63 26 L64 30 M61 25 L61 28 M60 24 L58 27" stroke="#3d3d3d" stroke-width="0.5" fill="none" stroke-linecap="round"/>
+  <!-- Text -->
+  <text x="78" y="22" font-family="'Inter',system-ui,-apple-system,sans-serif" font-size="15" font-weight="700" fill="#e0ecf8" letter-spacing="0.5">蝴蝶与蚂蚁</text>
+  <text x="78" y="37" font-family="'Inter',system-ui,-apple-system,sans-serif" font-size="9" font-weight="400" fill="#8aa8c8" letter-spacing="1.5">MUTUALISM</text>
+</svg>

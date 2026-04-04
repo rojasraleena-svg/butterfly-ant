@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔄 生命循环 | 🦋 蝴蝶与蚂蚁</title>
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+    <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/img/logo.svg" alt="蝴蝶与蚂蚁"></a>
+    <a href="/" class="nav-link">首页</a>
+    <a href="mutualism.html" class="nav-link">互作类型</a>
+    <a href="lab.html" class="nav-link">虫痕鉴定</a>
+    <a href="lifecycle.html" class="nav-link">生命循环</a>
+    <a href="chemical.html" class="nav-link">化学通讯</a>
+    <a href="gallery.html" class="nav-link">图鉴</a>
+    <a href="quiz.html" class="nav-link">测验</a>
+    <a href="about.html" class="nav-link">关于</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>🔄 大蓝蝶的生命循环</h1>
+  <p><i>Maculinea arion</i> 拥有昆虫界最戏剧性的生活史之一。点击每个阶段查看详情 →</p>
+</div>
+
+<div class="section lifecycle-section">
+  <div class="container">
+    <div class="lifecycle-timeline">
+      <div class="lc-line"></div>
+      <div class="lc-stage" data-stage="1">
+        <div class="lc-dot s1" onclick="showStage(1)" title="点击查看"></div>
+        <div class="lc-content" id="lc-c1">
+          <div class="lc-num n1">阶段 1</div>
+          <h3>🥚 产卵 — 精准定位</h3>
+          <p>雌蝶在特定的寄主植物上产卵（通常是百里香 Thymus 或牛至 Origanum）。她能"嗅出"哪种植物附近有合适的蚂蚁巢穴——因为只有这样的位置，她的孩子才能生存。</p>
+          <p style="margin-top:6px;color:var(--accent-gold);font-size:0.82em">⏱ 约7-14天孵化</p>
+        </div>
+        <div class="lc-img-wrap"><img src="" data-img="egg" alt="蝴蝶卵" loading="lazy"></div>
+      </div>
+      <div class="lc-stage" data-stage="2">
+        <div class="lc-dot s2" onclick="showStage(2)" title="点击查看"></div>
+        <div class="lc-content" id="lc-c2">
+          <div class="lc-num n2">阶段 2</div>
+          <h3>🐛 取食 & 蜜露交换</h3>
+          <p>幼虫孵化后取食寄主植物的叶子。同时，背部蜜腺（DNO）开始分泌蜜露——一种含糖量高达30%的甜液。蚂蚁被吸引而来，开始像"牧羊人"一样守护这只会产蜜的毛毛虫。</p>
+          <p style="margin-top:6px;color:var(--accent-green);font-size:0.82em">⏱ 持续2-3周</p>
+        </div>
+        <div class="lc-img-wrap"><img src="" data-img="larva" alt="幼虫与蚂蚁" loading="lazy"></div>
+      </div>
+      <div class="lc-stage" data-stage="3">
+        <div class="lc-dot s3" onclick="showStage(3)" title="点击查看"></div>
+        <div class="lc-content" id="lc-c3">
+          <div class="lc-num n3">阶段 3</div>
+          <h3>🐜 蚁巢入侵 — 特洛伊木马</h3>
+          <p>进入4龄后，幼虫的行为发生剧变：停止取食植物，体表化学特征改变（模拟蚂蚁幼虫的气味），并开始用身体敲击地面发出振动信号。蚂蚁误以为这是自己的幼虫，将它搬运回巢穴。</p>
+          <p style="margin-top:6px;color:var(--accent-blue);font-size:0.82em">⏱ 关键转折点！</p>
+        </div>
+        <div class="lc-img-wrap"><img src="" data-img="carry" alt="蚂蚁搬运" loading="lazy"></div>
+      </div>
+      <div class="lc-stage" data-stage="4">
+        <div class="lc-dot s4" onclick="showStage(4)" title="点击查看"></div>
+        <div class="lc-content" id="lc-c4">
+          <div class="lc-num n4">阶段 4</div>
+          <h3>🏠 巢内寄生 — 深层潜伏</h3>
+          <p>在黑暗的蚁巢深处，蝴蝶幼虫展现真正的"特洛伊木马"策略。它不再分泌蜜露，转而开始捕食蚂蚁的幼虫和蛹！更可怕的是——如果蚁后靠近，它会模仿蚁后的声音请求喂食，然后……吃掉送来的蚂蚁宝宝。</p>
+          <p style="margin-top:6px;color:var(--accent-purple);font-size:0.82em">⏱ 持续10-11个月（越冬！）</p>
+        </div>
+        <div class="lc-img-wrap"><img src="" data-img="nest" alt="蚁巢内部" loading="lazy"></div>
+      </div>
+      <div class="lc-stage" data-stage="5">
+        <div class="lc-dot s5" onclick="showStage(5)" title="点击查看"></div>
+        <div class="lc-content" id="lc-c5">
+          <div class="lc-num n5">阶段 5</div>
+          <h3>🦋 羽化 — 重获自由</h3>
+          <p>初夏来临，在蚁巢内度过近一年的蝴蝶终于羽化。成虫必须在蚂蚁反应过来之前爬出巢穴、展开翅膀飞走。整个过程只有几分钟的时间窗口——失败就意味着死亡。</p>
+          <p style="margin-top:6px;color:var(--accent-red);font-size:0.82em">⏱ 成虫寿命仅3-7天</p>
+        </div>
+        <div class="lc-img-wrap"><img src="" data-img="emerge" alt="羽化" loading="lazy"></div>
+      </div>
+    </div>
+    <div style="margin-top:48px;text-align:center;">
+      <a href="chemical.html" class="btn btn-primary">🧪 了解化学通讯机制 →</a>
+    </div>
+  </div>
+</div>
+
+<footer class="footer"><p><a href="/">← 返回首页</a></p><p style="margin-top:12px;">Made with 💙 · 2026</p></footer>
+
+<script src="/js/common.js"></script>
+<script>
+let activeStage = 0;
+function showStage(n){
+  document.querySelectorAll('.lc-dot').forEach(d => d.classList.remove('active'));
+  document.querySelectorAll('.lc-content').forEach(c => c.classList.remove('highlighted'));
+  document.querySelector(`.lc-stage[data-stage="${n}"] .lc-dot`).classList.add('active');
+  document.getElementById(`lc-c${n}`).classList.add('highlighted');
+  activeStage = n;
+}
+sharedInit(); loadDataImages();
+setTimeout(() => showStage(1), 800);
+</script>
+</body>
+</html>

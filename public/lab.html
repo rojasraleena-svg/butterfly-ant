@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧪 虫痕鉴定实验室 | 🦋 蝴蝶与蚂蚁</title>
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+    <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/img/logo.svg" alt="蝴蝶与蚂蚁"></a>
+    <a href="/" class="nav-link">首页</a>
+    <a href="mutualism.html" class="nav-link">互作类型</a>
+    <a href="lab.html" class="nav-link">虫痕鉴定</a>
+    <a href="lifecycle.html" class="nav-link">生命循环</a>
+    <a href="chemical.html" class="nav-link">化学通讯</a>
+    <a href="gallery.html" class="nav-link">图鉴</a>
+    <a href="quiz.html" class="nav-link">测验</a>
+    <a href="about.html" class="nav-link">关于</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>🧪 虫痕鉴定实验室</h1>
+  <p>上传叶片照片，AI 帮你识别昆虫取食痕迹类型、推测可能的昆虫种类，并解读背后的生态学故事。基于 <strong>GLM-5V 视觉模型</strong>驱动。</p>
+</div>
+
+<div class="section">
+  <div class="container">
+    <div class="lab-layout">
+      <!-- 左侧：上传+预览 -->
+      <div class="lab-left">
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+          <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleUpload(event)">
+          <div id="uploadPlaceholder">
+            <div class="upload-icon">📷</div>
+            <p>点击或拖拽上传叶片照片</p>
+            <p class="upload-hint">支持 JPG / PNG / WebP，建议清晰拍摄痕迹区域</p>
+          </div>
+          <img id="previewImg" src="" alt="" style="display:none;max-width:100%;border-radius:12px;">
+        </div>
+
+        <div class="lab-actions" id="labActions" style="display:none">
+          <button class="btn btn-primary" id="analyzeBtn" onclick="analyzeImage()">🔍 AI 鉴定</button>
+          <button class="btn btn-outline" onclick="resetLab()">🔄 重新上传</button>
+        </div>
+
+        <div class="lab-status" id="labStatus" style="display:none">
+          <div class="status-spinner"></div>
+          <span id="statusText">AI 正在分析中...</span>
+        </div>
+      </div>
+
+      <!-- 右侧：结果面板 -->
+      <div class="lab-right" id="labResult" style="display:none">
+        <div class="result-card">
+          <div class="result-header">
+            <span class="result-type-icon" id="resultIcon">❓</span>
+            <div>
+              <h3 id="resultType">分析结果</h3>
+              <span class="result-confidence" id="resultConfidence"></span>
+            </div>
+          </div>
+          <div class="result-body">
+            <div class="result-section"><h4>🔍 痕迹特征</h4><p id="resultDesc"></p><div class="feature-tags" id="resultFeatures"></div></div>
+            <div class="result-section"><h4>🐛 可能的昆虫</h4><div class="insect-list" id="resultInsects"></div></div>
+            <div class="result-section"><h4>🌿 取食功能群</h4><span class="guild-badge" id="resultGuild"></span></div>
+            <div class="result-section"><h4>📖 生态学背景</h4><p id="resultEco"></p></div>
+            <div class="result-section"><h4>🛡️ 植物防御反应</h4><p id="resultDefense"></p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧默认：示例图鉴 -->
+      <div class="lab-right" id="labExamples">
+        <h3 style="margin-bottom:16px;color:var(--text-muted);font-size:0.95em;">📚 痕迹类型图鉴（点击了解）</h3>
+        <div class="example-grid" id="exampleGrid"></div>
+        <div style="margin-top:20px;padding:16px;background:rgba(212,168,67,0.08);border-radius:12px;border:1px solid rgba(212,168,67,0.2);">
+          <p style="color:var(--accent-gold);font-size:0.88em;font-weight:600;margin-bottom:6px;">💡 小贴士</p>
+          <ul style="color:var(--text-muted);font-size:0.82em;padding-left:16px;line-height:1.8">
+            <li>拍照时尽量让光线均匀，避免阴影遮挡痕迹</li>
+            <li>如果痕迹很小，可以靠近拍摄后裁剪</li>
+            <li>一张照片可以包含多种痕迹，AI会逐一分析</li>
+            <li>鉴定结果仅供参考，精确鉴定需要标本采集</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <p><a href="/">← 返回首页</a></p>
+  <p style="margin-top:12px;">Made with 💙 · 2026</p>
+</footer>
+
+<script src="/js/common.js"></script>
+<script>
+// ===== LAB LOGIC =====
+let uploadedImageData = null;
+let uploadedFilename = '';
+
+const uploadZone = document.getElementById('uploadZone');
+if(uploadZone){
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault(); uploadZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if(file && file.type.startsWith('image/')) processFile(file);
+  });
+}
+
+function handleUpload(event) {
+  const file = event.target.files[0];
+  if(file) processFile(file);
+}
+
+function processFile(file) {
+  if(file.size > 10 * 1024 * 1024){ alert('图片不能超过10MB'); return; }
+  uploadedFilename = file.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    uploadedImageData = e.target.result;
+    document.getElementById('previewImg').src = uploadedImageData;
+    document.getElementById('previewImg').style.display = 'block';
+    document.getElementById('uploadPlaceholder').style.display = 'none';
+    document.getElementById('labActions').style.display = 'flex';
+    document.getElementById('labResult').style.display = 'none';
+    document.getElementById('labExamples').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function analyzeImage() {
+  if(!uploadedImageData){ alert('请先上传图片'); return; }
+  const statusEl = document.getElementById('labStatus');
+  const btn = document.getElementById('analyzeBtn');
+  statusEl.style.display = 'flex'; btn.disabled = true; btn.textContent = '⏳ 分析中...';
+  try {
+    const resp = await fetch('/api/identify-bite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageData: uploadedImageData, filename: uploadedFilename })
+    });
+    const data = await resp.json();
+    statusEl.style.display = 'none'; btn.disabled = false; btn.textContent = '🔍 AI 鉴定';
+    if(!data.success){ alert('分析失败: ' + (data.error || '未知错误')); return; }
+    displayResult(data.result);
+  } catch(err) {
+    statusEl.style.display = 'none'; btn.disabled = false; btn.textContent = '🔍 AI 鉴定';
+    alert('网络错误: ' + err.message);
+  }
+}
+
+function displayResult(r) {
+  document.getElementById('labResult').style.display = 'block';
+  document.getElementById('labExamples').style.display = 'none';
+  const typeMap = {
+    hole:{icon:'⭕',cn:'洞孔式'}, margin:{icon:'📐',cn:'边缘啃食'},
+    skeletonization:{icon:'🕸️',cn:'骨架化'}, mining:{icon:'〰️',cn:'潜叶隧道'},
+    gall:{icon:'🔵',cn:'虫瘿'}, spot:{icon:'·',cn:'斑点状'},
+    surface_scraping:{icon:'📏',cn:'表面刮擦'}, unknown:{icon:'❓',cn:'未知'}
+  };
+  const guildMap = { chewer:'咀嚼式口器', sucker:'刺吸式口器', miner:'潜叶者', borer:'钻蛀者' };
+  const t = typeMap[r.damage_type] || typeMap.unknown;
+  document.getElementById('resultIcon').textContent = t.icon;
+  document.getElementById('resultType').textContent = `痕迹类型：${r.damage_type_cn || t.cn}`;
+  const conf = r.confidence || '?';
+  document.getElementById('resultConfidence').textContent =
+    `置信度 ${conf}%${conf >= 80 ? ' ✅高' : conf >= 60 ? ' ⚠️中' : ' ❌低'}`;
+  document.getElementById('resultDesc').textContent = r.description || '';
+  document.getElementById('resultEco').textContent = r.ecological_context || '';
+  document.getElementById('resultDefense').textContent = r.plant_defense_response || '';
+  const featEl = document.getElementById('resultFeatures'); featEl.innerHTML = '';
+  (r.key_features||[]).forEach(f => { const tag=document.createElement('span');tag.className='feature-tag';tag.textContent=f;featEl.appendChild(tag); });
+  const insectEl = document.getElementById('resultInsects'); insectEl.innerHTML = '';
+  (r.insects_possible||[]).forEach(ins => { const tag=document.createElement('span');tag.className='insect-tag';tag.textContent=ins;insectEl.appendChild(tag); });
+  const guildEl = document.getElementById('resultGuild');
+  guildEl.textContent = guildMap[r.feeding_guild] || r.feeding_guild || '';
+  guildEl.className = 'guild-badge guild-' + (r.feeding_guild || '');
+  if(r.raw_response) document.getElementById('resultDesc').innerHTML = '<pre style="white-space:pre-wrap;font-size:0.85em;color:var(--text-muted)">'+r.raw_response+'</pre>';
+}
+
+function resetLab() {
+  uploadedImageData=null; uploadedFilename='';
+  document.getElementById('previewImg').src=''; document.getElementById('previewImg').style.display='none';
+  document.getElementById('uploadPlaceholder').style.display='block';
+  document.getElementById('labActions').style.display='none';
+  document.getElementById('labResult').style.display='none';
+  document.getElementById('labExamples').style.display='block';
+  document.getElementById('fileInput').value='';
+}
+
+async function loadExamples(){
+  try{
+    const resp=await fetch('/api/damage-examples'), data=await resp.json();
+    const grid=document.getElementById('exampleGrid'); grid.innerHTML='';
+    const gm={chewer:'咀嚼式口器',sucker:'刺吸式口器',miner:'潜叶者',borer:'钻蛀者'};
+    data.examples.forEach(ex=>{
+      const c=document.createElement('div');c.className='example-card';
+      c.innerHTML=`<div class="example-icon">${ex.icon}</div><h4>${ex.cn}</h4><p>${ex.desc.slice(0,30)}...</p>`;
+      c.onclick=()=>alert(`【${ex.cn}】(${ex.type})\n\n${ex.desc}\n\n可能昆虫：${ex.insects.join('、')}\n功能群：${gm[ex.guild]||ex.guild}`);
+      grid.appendChild(c);
+    });
+  }catch(e){}
+}
+loadExamples();
+sharedInit();
+</script>
+</body>
+</html>
