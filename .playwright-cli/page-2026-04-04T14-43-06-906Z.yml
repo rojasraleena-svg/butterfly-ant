@@ -1,0 +1,66 @@
+- generic [active] [ref=e1]:
+  - link "跳转到主要内容" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - navigation "主导航" [ref=e3]:
+    - generic [ref=e4]:
+      - link "蝴蝶与蚂蚁" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "蝴蝶与蚂蚁" [ref=e6]
+      - link "首页" [ref=e7] [cursor=pointer]:
+        - /url: /
+      - link "互作类型" [ref=e8] [cursor=pointer]:
+        - /url: mutualism.html
+      - link "虫痕鉴定" [ref=e9] [cursor=pointer]:
+        - /url: lab.html
+      - link "生命循环" [ref=e10] [cursor=pointer]:
+        - /url: lifecycle.html
+      - link "化学通讯" [ref=e11] [cursor=pointer]:
+        - /url: chemical.html
+      - link "图鉴" [ref=e12] [cursor=pointer]:
+        - /url: gallery.html
+      - link "测验" [ref=e13] [cursor=pointer]:
+        - /url: quiz.html
+      - link "关于" [ref=e14] [cursor=pointer]:
+        - /url: about.html
+  - generic [ref=e15]:
+    - heading "📖 关于本项目" [level=1] [ref=e16]
+    - paragraph [ref=e17]: 一个关于跨物种合作与欺骗的科普互动网站
+  - generic [ref=e20]:
+    - heading "🎯 项目初衷" [level=3] [ref=e21]
+    - paragraph [ref=e22]: 这个网站旨在用互动的方式展示自然界中最迷人的跨物种关系之一——蝴蝶与蚂蚁的共生与寄生。 所有图片由 AI 生成，内容基于真实科学研究。虫痕鉴定功能由 GLM-5V 视觉模型驱动。
+    - heading "📚 主要参考文献" [level=3] [ref=e23]
+    - list [ref=e24]:
+      - listitem [ref=e25]:
+        - text: Pierce NE et al. (2002). The ecology and evolution of ant association in Lycaenidae.
+        - emphasis [ref=e26]: Annu Rev Entomol
+        - text: 47:745–771.
+      - listitem [ref=e27]:
+        - text: Schönrogge K et al. (1999). The capacity of a Myrmica ant nest to support Maculinea butterfly populations.
+        - emphasis [ref=e28]: J Anim Ecol
+        - text: 68(2):265-278.
+      - listitem [ref=e29]:
+        - text: Thomas JA (1980). Why did the Large Blue become extinct in Britain?
+        - emphasis [ref=e30]: Oryx
+        - text: 14(4):393-400.
+      - listitem [ref=e31]:
+        - text: "Barber NA & Schmidt KA (2020). Ant–Butterfly Symbiosis: A Review of Multitrophic Interactions."
+        - emphasis [ref=e32]: Insects
+        - text: 11(11):786.
+      - listitem [ref=e33]:
+        - text: Seymour AS et al. (2023). Larval acoustic signals mediate ant-butterfly communication.
+        - emphasis [ref=e34]: Nature Ecology & Evolution
+        - text: .
+      - listitem [ref=e35]: 科技日报 (2026). 毛毛虫敲击节拍和蚂蚁"聊天".
+    - heading "🛠️ 技术栈" [level=3] [ref=e36]
+    - paragraph [ref=e37]:
+      - text: 纯 HTML / CSS / JavaScript · AI 图像生成 (Coze) · GLM-5V 视觉模型
+      - text: 响应式设计 · 无框架依赖 · 多页面架构
+    - separator [ref=e38]
+    - heading "🔬 科学背景" [level=3] [ref=e39]
+    - paragraph [ref=e40]: 灰蝶科（Lycaenidae）是鳞翅目中最大的科之一，全球约有6000种。 其中约75%的物种在生活史的某个阶段与蚂蚁发生互作关系， 这种关系从简单的互利共生到极端的社会性寄生，构成了进化生物学中最引人入胜的研究领域之一。
+    - paragraph [ref=e41]: 🦋 Made with curiosity for science · Powered by OpenClaw · 2026
+  - contentinfo [ref=e42]:
+    - paragraph [ref=e43]:
+      - link "← 返回首页" [ref=e44] [cursor=pointer]:
+        - /url: /
+    - paragraph [ref=e45]: Made with 💙 · 2026

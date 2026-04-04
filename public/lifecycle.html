@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🔄 生命循环 | 🦋 蝴蝶与蚂蚁</title>
 <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
-    <link rel="stylesheet" href="/css/common.css?v=3">
+    <link rel="stylesheet" href="/css/common.css?v=4">
   <meta name="description" content="Maculinea arion大蓝蝶的5阶段交互式时间轴——从产卵到羽化，每一步都是进化的奇迹。了解特洛伊木马式的蚁巢寄生策略。">
   <meta property="og:title" content="🔄 生命循环 | 🦋 蝴蝶与蚂蚁">
   <meta property="og:description" content="Maculinea arion大蓝蝶的5阶段交互式时间轴——从产卵到羽化，每一步都是进化的奇迹。了解特洛伊木马式的蚁巢寄生策略。">
@@ -41,22 +41,41 @@
   <p><i>Maculinea arion</i> 拥有昆虫界最戏剧性的生活史之一。点击每个阶段查看详情 →</p>
 </div>
 
-<div class="section lifecycle-section">
+<div class="section lifecycle-section" id="main-content">
   <div class="container">
-    <div class="lifecycle-timeline">
+
+    <!-- Stage progress bar -->
+    <div class="lc-progress-bar">
+      <div class="lc-progress-fill" id="lcProgressFill"></div>
+      <div class="lc-progress-stages">
+        <span class="lc-ps dot-active" data-goto="1">产卵</span>
+        <span class="lc-ps" data-goto="2">取食</span>
+        <span class="lc-ps" data-goto="3">入侵</span>
+        <span class="lc-ps" data-goto="4">寄生</span>
+        <span class="lc-ps" data-goto="5">羽化</span>
+      </div>
+    </div>
+
+    <!-- Journey duration badge -->
+    <div class="lc-journey-badge">
+      <span class="lc-journey-icon">🦋</span>
+      <span>完整生命循环历时约 <strong>12-14 个月</strong> — 其中近一年在黑暗的蚁巢中度过</span>
+    </div>
+
+    <div class="lifecycle-timeline" id="lifecycleTimeline">
       <div class="lc-line"></div>
       <div class="lc-stage" data-stage="1">
-        <div class="lc-dot s1" onclick="showStage(1)" title="点击查看"></div>
+        <div class="lc-dot s1" onclick="showStage(1)" title="点击查看" tabindex="0" role="button" aria-label="阶段1：产卵"></div>
         <div class="lc-content" id="lc-c1">
           <div class="lc-num n1">阶段 1</div>
           <h3>🥚 产卵 — 精准定位</h3>
-          <p>雌蝶在特定的寄主植物上产卵（通常是百里香 Thymus 或牛至 Origanum）。她能"嗅出"哪种植物附近有合适的蚂蚁巢穴——因为只有这样的位置，她的孩子才能生存。</p>
+          <p>雌蝶在特定的寄主植物上产卵（通常是百里香 <i>Thymus</i> 或牛至 <i>Origanum</i>）。她能"嗅出"哪种植物附近有合适的蚂蚁巢穴——因为只有这样的位置，她的孩子才能生存。</p>
           <p style="margin-top:6px;color:var(--accent-gold);font-size:0.82em">⏱ 约7-14天孵化</p>
         </div>
         <div class="lc-img-wrap"><img src="" data-img="egg" alt="蝴蝶卵" loading="lazy"></div>
       </div>
       <div class="lc-stage" data-stage="2">
-        <div class="lc-dot s2" onclick="showStage(2)" title="点击查看"></div>
+        <div class="lc-dot s2" onclick="showStage(2)" title="点击查看" tabindex="0" role="button" aria-label="阶段2：取食"></div>
         <div class="lc-content" id="lc-c2">
           <div class="lc-num n2">阶段 2</div>
           <h3>🐛 取食 & 蜜露交换</h3>
@@ -66,17 +85,17 @@
         <div class="lc-img-wrap"><img src="" data-img="larva" alt="幼虫与蚂蚁" loading="lazy"></div>
       </div>
       <div class="lc-stage" data-stage="3">
-        <div class="lc-dot s3" onclick="showStage(3)" title="点击查看"></div>
+        <div class="lc-dot s3" onclick="showStage(3)" title="点击查看" tabindex="0" role="button" aria-label="阶段3：蚁巢入侵"></div>
         <div class="lc-content" id="lc-c3">
           <div class="lc-num n3">阶段 3</div>
           <h3>🐜 蚁巢入侵 — 特洛伊木马</h3>
           <p>进入4龄后，幼虫的行为发生剧变：停止取食植物，体表化学特征改变（模拟蚂蚁幼虫的气味），并开始用身体敲击地面发出振动信号。蚂蚁误以为这是自己的幼虫，将它搬运回巢穴。</p>
-          <p style="margin-top:6px;color:var(--accent-blue);font-size:0.82em">⏱ 关键转折点！</p>
+          <p style="margin-top:6px;color:var(--primary);font-size:0.82em">⏱ 关键转折点！</p>
         </div>
         <div class="lc-img-wrap"><img src="" data-img="carry" alt="蚂蚁搬运" loading="lazy"></div>
       </div>
       <div class="lc-stage" data-stage="4">
-        <div class="lc-dot s4" onclick="showStage(4)" title="点击查看"></div>
+        <div class="lc-dot s4" onclick="showStage(4)" title="点击查看" tabindex="0" role="button" aria-label="阶段4：巢内寄生"></div>
         <div class="lc-content" id="lc-c4">
           <div class="lc-num n4">阶段 4</div>
           <h3>🏠 巢内寄生 — 深层潜伏</h3>
@@ -86,7 +105,7 @@
         <div class="lc-img-wrap"><img src="" data-img="nest" alt="蚁巢内部" loading="lazy"></div>
       </div>
       <div class="lc-stage" data-stage="5">
-        <div class="lc-dot s5" onclick="showStage(5)" title="点击查看"></div>
+        <div class="lc-dot s5" onclick="showStage(5)" title="点击查看" tabindex="0" role="button" aria-label="阶段5：羽化"></div>
         <div class="lc-content" id="lc-c5">
           <div class="lc-num n5">阶段 5</div>
           <h3>🦋 羽化 — 重获自由</h3>
@@ -96,7 +115,15 @@
         <div class="lc-img-wrap"><img src="" data-img="emerge" alt="羽化" loading="lazy"></div>
       </div>
     </div>
-    <div style="margin-top:48px;text-align:center;">
+
+    <!-- Stage navigation -->
+    <div class="lc-nav">
+      <button class="lc-nav-btn" id="lcPrev" onclick="navigateStage(-1)" disabled>← 上一阶段</button>
+      <span class="lc-nav-counter" id="lcCounter">1 / 5</span>
+      <button class="lc-nav-btn" id="lcNext" onclick="navigateStage(1)">下一阶段 →</button>
+    </div>
+
+    <div style="margin-top:40px;text-align:center;">
       <a href="chemical.html" class="btn btn-primary">🧪 了解化学通讯机制 →</a>
     </div>
   </div>
@@ -106,14 +133,70 @@
 
 <script src="/js/common.js?v=4"></script>
 <script>
+const TOTAL_STAGES = 5;
 let activeStage = 0;
+
 function showStage(n){
+  if(n < 1 || n > TOTAL_STAGES) return;
   document.querySelectorAll('.lc-dot').forEach(d => d.classList.remove('active'));
   document.querySelectorAll('.lc-content').forEach(c => c.classList.remove('highlighted'));
-  document.querySelector(`.lc-stage[data-stage="${n}"] .lc-dot`).classList.add('active');
-  document.getElementById(`lc-c${n}`).classList.add('highlighted');
+  const stageEl = document.querySelector(`.lc-stage[data-stage="${n}"]`);
+  if(stageEl) {
+    stageEl.querySelector('.lc-dot').classList.add('active');
+  }
+  const contentEl = document.getElementById(`lc-c${n}`);
+  if(contentEl) contentEl.classList.add('highlighted');
   activeStage = n;
+
+  // Update progress bar
+  const fill = document.getElementById('lcProgressFill');
+  if(fill) fill.style.width = ((n / TOTAL_STAGES) * 100) + '%';
+
+  // Update progress dots
+  document.querySelectorAll('.lc-ps').forEach((el, i) => {
+    el.classList.toggle('dot-active', i + 1 <= n);
+    el.classList.toggle('dot-current', i + 1 === n);
+  });
+
+  // Update counter
+  const counter = document.getElementById('lcCounter');
+  if(counter) counter.textContent = `${n} / ${TOTAL_STAGES}`;
+
+  // Update nav buttons
+  const prevBtn = document.getElementById('lcPrev');
+  const nextBtn = document.getElementById('lcNext');
+  if(prevBtn) prevBtn.disabled = n <= 1;
+  if(nextBtn) nextBtn.disabled = n >= TOTAL_STAGES;
+
+  // Scroll stage into view
+  if(contentEl) {
+    contentEl.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
 }
+
+function navigateStage(dir) {
+  const next = activeStage + dir;
+  if(next >= 1 && next <= TOTAL_STAGES) showStage(next);
+}
+
+// Progress bar click
+document.querySelectorAll('.lc-ps').forEach(el => {
+  el.addEventListener('click', () => showStage(parseInt(el.dataset.goto)));
+});
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); navigateStage(-1); }
+  if(e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); navigateStage(1); }
+});
+
+// Dot keyboard support
+document.querySelectorAll('.lc-dot').forEach(dot => {
+  dot.addEventListener('keydown', e => {
+    if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showStage(parseInt(dot.closest('.lc-stage').dataset.stage)); }
+  });
+});
+
 sharedInit(); loadDataImages();
 document.getElementById('year').textContent = new Date().getFullYear();
 setTimeout(() => showStage(1), 800);

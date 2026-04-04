@@ -1,0 +1,76 @@
+- generic [active] [ref=e1]:
+  - link "跳转到主要内容" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - navigation "主导航" [ref=e3]:
+    - generic [ref=e4]:
+      - link "蝴蝶与蚂蚁" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "蝴蝶与蚂蚁" [ref=e6]
+      - link "首页" [ref=e7] [cursor=pointer]:
+        - /url: /
+      - link "互作类型" [ref=e8] [cursor=pointer]:
+        - /url: mutualism.html
+      - link "虫痕鉴定" [ref=e9] [cursor=pointer]:
+        - /url: lab.html
+      - link "生命循环" [ref=e10] [cursor=pointer]:
+        - /url: lifecycle.html
+      - link "化学通讯" [ref=e11] [cursor=pointer]:
+        - /url: chemical.html
+      - link "图鉴" [ref=e12] [cursor=pointer]:
+        - /url: gallery.html
+      - link "测验" [ref=e13] [cursor=pointer]:
+        - /url: quiz.html
+      - link "关于" [ref=e14] [cursor=pointer]:
+        - /url: about.html
+  - generic [ref=e15]:
+    - heading "🔄 大蓝蝶的生命循环" [level=1] [ref=e16]
+    - paragraph [ref=e17]: Maculinea arion 拥有昆虫界最戏剧性的生活史之一。点击每个阶段查看详情 →
+  - generic [ref=e19]:
+    - generic [ref=e20]:
+      - generic [ref=e22]:
+        - generic "点击查看" [ref=e23] [cursor=pointer]
+        - generic [ref=e24]:
+          - generic [ref=e25]: 阶段 1
+          - heading "🥚 产卵 — 精准定位" [level=3] [ref=e26]
+          - paragraph [ref=e27]: 雌蝶在特定的寄主植物上产卵（通常是百里香 Thymus 或牛至 Origanum）。她能"嗅出"哪种植物附近有合适的蚂蚁巢穴——因为只有这样的位置，她的孩子才能生存。
+          - paragraph [ref=e28]: ⏱ 约7-14天孵化
+        - img "蝴蝶卵" [ref=e30]
+      - generic [ref=e31]:
+        - generic "点击查看" [ref=e32] [cursor=pointer]
+        - generic [ref=e33]:
+          - generic [ref=e34]: 阶段 2
+          - heading "🐛 取食 & 蜜露交换" [level=3] [ref=e35]
+          - paragraph [ref=e36]: 幼虫孵化后取食寄主植物的叶子。同时，背部蜜腺（DNO）开始分泌蜜露——一种含糖量高达30%的甜液。蚂蚁被吸引而来，开始像"牧羊人"一样守护这只会产蜜的毛毛虫。
+          - paragraph [ref=e37]: ⏱ 持续2-3周
+        - img "幼虫与蚂蚁" [ref=e39]
+      - generic [ref=e40]:
+        - generic "点击查看" [ref=e41] [cursor=pointer]
+        - generic [ref=e42]:
+          - generic [ref=e43]: 阶段 3
+          - heading "🐜 蚁巢入侵 — 特洛伊木马" [level=3] [ref=e44]
+          - paragraph [ref=e45]: 进入4龄后，幼虫的行为发生剧变：停止取食植物，体表化学特征改变（模拟蚂蚁幼虫的气味），并开始用身体敲击地面发出振动信号。蚂蚁误以为这是自己的幼虫，将它搬运回巢穴。
+          - paragraph [ref=e46]: ⏱ 关键转折点！
+        - img "蚂蚁搬运" [ref=e48]
+      - generic [ref=e49]:
+        - generic "点击查看" [ref=e50] [cursor=pointer]
+        - generic [ref=e51]:
+          - generic [ref=e52]: 阶段 4
+          - heading "🏠 巢内寄生 — 深层潜伏" [level=3] [ref=e53]
+          - paragraph [ref=e54]: 在黑暗的蚁巢深处，蝴蝶幼虫展现真正的"特洛伊木马"策略。它不再分泌蜜露，转而开始捕食蚂蚁的幼虫和蛹！更可怕的是——如果蚁后靠近，它会模仿蚁后的声音请求喂食，然后……吃掉送来的蚂蚁宝宝。
+          - paragraph [ref=e55]: ⏱ 持续10-11个月（越冬！）
+        - img "蚁巢内部" [ref=e57]
+      - generic [ref=e58]:
+        - generic "点击查看" [ref=e59] [cursor=pointer]
+        - generic [ref=e60]:
+          - generic [ref=e61]: 阶段 5
+          - heading "🦋 羽化 — 重获自由" [level=3] [ref=e62]
+          - paragraph [ref=e63]: 初夏来临，在蚁巢内度过近一年的蝴蝶终于羽化。成虫必须在蚂蚁反应过来之前爬出巢穴、展开翅膀飞走。整个过程只有几分钟的时间窗口——失败就意味着死亡。
+          - paragraph [ref=e64]: ⏱ 成虫寿命仅3-7天
+        - img "羽化" [ref=e66]
+    - link "🧪 了解化学通讯机制 →" [ref=e68] [cursor=pointer]:
+      - /url: chemical.html
+  - contentinfo [ref=e69]:
+    - paragraph [ref=e70]:
+      - link "← 返回首页" [ref=e71] [cursor=pointer]:
+        - /url: /
+    - paragraph [ref=e72]: Made with 💙 ·

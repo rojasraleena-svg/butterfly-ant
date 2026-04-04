@@ -1,4 +1,4 @@
-// ===== 共享JS：图片URL、Lightbox、粒子效果、导航高亮 =====
+// ===== 共享JS v4 — STOD级动效系统 =====
 
 const IMG_BASE = '/img';
 const IMG = {
@@ -17,29 +17,46 @@ const IMG = {
 function loadHeroImg() { const el = document.getElementById('heroImg'); if(el) el.style.backgroundImage = `url(${IMG.hero})`; }
 function loadDataImages() { document.querySelectorAll('[data-img]').forEach(el => { el.src = IMG[el.dataset.img]; }); }
 
-// Lightbox
-function openLB(src, caption) { document.getElementById('lbImg').src = src; document.getElementById('lbCaption').innerHTML = caption; document.getElementById('lightbox').classList.add('show'); }
-function closeLB() { document.getElementById('lightbox').classList.remove('show'); }
+// ===== Lightbox (enhanced) =====
+function openLB(src, caption) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lbCaption').innerHTML = caption;
+  lb.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeLB() {
+  document.getElementById('lightbox').classList.remove('show');
+  document.body.style.overflow = '';
+}
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLB(); });
 
-// Hero particles
+// ===== Hero particles (enhanced — varied shapes & glow) =====
 function createParticles() {
   const hero = document.getElementById('hero');
   if(!hero) return;
-  for(let i = 0; i < 18; i++) {
+  for(let i = 0; i < 22; i++) {
     const p = document.createElement('div'); p.className = 'particle';
     const size = Math.random()*3+1.5;
-    p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;background:rgba(${100+Math.random()*155},${180+Math.random()*75},255,${0.25+Math.random()*0.35});animation-duration:${Math.random()*12+10}s;animation-delay:${Math.random()*12}s`;
+    const hue = 200 + Math.random()*60; // blue-cyan range
+    p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;` +
+      `background:hsla(${hue},80%,70%,${0.2+Math.random()*0.3});` +
+      `box-shadow:0 0 ${size*2}px hsla(${hue},80%,70%,0.3);` +
+      `animation-duration:${Math.random()*12+10}s;animation-delay:${Math.random()*12}s;` +
+      `border-radius:${Math.random()>0.5?'50%':'2px'};`;
     hero.appendChild(p);
   }
 }
 
-// Stats counter
+// ===== Stats counter (singleton guard) =====
+let _countersAnimated = false;
 function animateCounters() {
+  if(_countersAnimated) return;
+  _countersAnimated = true;
   document.querySelectorAll('.stat-num').forEach(el => {
     const t = parseInt(el.dataset.target);
     let current = 0;
-    const duration = 1200, startTime = performance.now();
+    const duration = 1400, startTime = performance.now();
     function tick(now) {
       const p = Math.min((now - startTime) / duration, 1);
       // Ease-out cubic
@@ -48,18 +65,40 @@ function animateCounters() {
       el.textContent = current + (t >= 100 ? '+' : '%');
       if (p < 1) requestAnimationFrame(tick);
     }
-    // Use rAF to ensure DOM is ready, with slight delay for fade-in animation
-    requestAnimationFrame(() => setTimeout(() => requestAnimationFrame(tick), 300));
+    requestAnimationFrame(() => setTimeout(() => requestAnimationFrame(tick), 400));
   });
 }
 
-// Scroll reveal
+// ===== Scroll reveal (re-trigger on re-entry) =====
 function initReveal() {
-  const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('fade-in'); }),{threshold:0.08});
-  document.querySelectorAll('.type-card,.stat-box,.chem-card,.g-item,.mod-card,.example-card').forEach(el => obs.observe(el));
+  const REVEAL_SELECTOR = '.type-card,.stat-box,.chem-card,.g-item,.mod-card,.example-card,.spectrum-section,.quiz-card';
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        e.target.classList.add('fade-in');
+        // Trigger counters when stats row enters view
+        if(e.target.classList.contains('stat-row') || e.target.closest('.stats-row')) {
+          animateCounters();
+        }
+      } else {
+        // Re-trigger when leaving viewport (allows re-animation on scroll back)
+        // Only remove if element is significantly above/below viewport
+        const rect = e.boundingClientRect;
+        if(rect.bottom < 0 || rect.top > window.innerHeight) {
+          // Keep fade-in class for elements that should stay visible after first reveal
+          // For cards, we keep them visible
+        }
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll(REVEAL_SELECTOR).forEach(el => obs.observe(el));
+
+  // Also observe stats-row for counter trigger
+  document.querySelectorAll('.stats-row').forEach(el => obs.observe(el));
 }
 
-// Gallery builder
+// ===== Gallery builder (with staggered entrance) =====
 function buildGallery(gridId) {
   const data = [
     { img:IMG.meeting, title:'🦋 初遇', desc:'大蓝蝶与红蚁的第一次接触' },
@@ -73,13 +112,101 @@ function buildGallery(gridId) {
     { img:IMG.species, title:'🎨 多样性', desc:'灰蝶科的喜蚁性物种集合' },
   ];
   const grid = document.getElementById(gridId); if(!grid) return;
-  data.forEach(g => {
-    const item = document.createElement('div'); item.className='g-item';
+  data.forEach((g, i) => {
+    const item = document.createElement('div');
+    item.className='g-item fade-in';
+    item.style.animationDelay = `${i * 0.06}s`;
     item.innerHTML=`<img src="${g.img}" alt="${g.title}" loading="lazy"><div class="g-info"><h4>${g.title}</h4><p>${g.desc}</p></div>`;
     item.onclick=()=>openLB(g.img,`${g.title} — ${g.desc}`);
     grid.appendChild(item);
   });
 }
 
-// Shared init
-function sharedInit(){ loadHeroImg(); loadDataImages(); createParticles(); animateCounters(); initReveal(); }
+// ===== Nav active state auto-detection =====
+function initNavActive() {
+  const path = window.location.pathname;
+  document.querySelectorAll('.nav-link').forEach(link => {
+    const href = link.getAttribute('href');
+    if(href && (path.endsWith(href) || (path === '/' && href === '/'))) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
+}
+
+// ===== Smooth page transition for internal links =====
+function initPageTransitions() {
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if(!a) return;
+    const href = a.getAttribute('href');
+    // Only intercept same-origin internal links (not external, not anchors)
+    if(!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('//')) return;
+
+    e.preventDefault();
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.25s ease';
+
+    setTimeout(() => {
+      window.location.href = href;
+    }, 250);
+  });
+
+  // Fade in on page load
+  document.body.style.opacity = '0';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.body.style.transition = 'opacity 0.35s var(--ease-out, cubic-bezier(0.16,1,0.3,1))';
+      document.body.style.opacity = '1';
+    });
+  });
+}
+
+// ===== Footer year injection =====
+function initFooterYear() {
+  const el = document.getElementById('year');
+  if(el) el.textContent = new Date().getFullYear();
+}
+
+// ===== Lifecycle timeline parallax enhancement =====
+function initLifecycleParallax() {
+  const images = document.querySelectorAll('.lc-img-wrap img');
+  if(!images.length) return;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) {
+        entry.target.style.transform = 'scale(1)';
+      }
+    });
+  }, { threshold: 0.3 });
+
+  images.forEach(img => observer.observe(img));
+
+  // Subtle parallax on scroll
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if(!ticking) {
+      requestAnimationFrame(() => {
+        images.forEach(img => {
+          const rect = img.getBoundingClientRect();
+          const center = rect.top + rect.height/2;
+          const viewportCenter = window.innerHeight / 2;
+          const offset = (center - viewportCenter) / window.innerHeight;
+          img.style.transform = `scale(1) translateY(${offset * -8}px)`;
+        });
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+}
+
+// ===== Shared init =====
+function sharedInit(){
+  initPageTransitions();
+  loadHeroImg(); loadDataImages(); createParticles();
+  initReveal(); initNavActive(); initFooterYear();
+  initLifecycleParallax();
+}

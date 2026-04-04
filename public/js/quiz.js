@@ -45,10 +45,10 @@ function resetQuiz(state) {
 
 function getScoreMessage(state) {
   const r = state.score / state.data.length;
-  if (r >= 0.8) return '太厉害了！你是蚁蝶互作专家！🦋';
-  if (r >= 0.6) return '不错！已经掌握了核心知识！💪';
-  if (r >= 0.4) return '继续加油！多看看上面的内容哦~ 📖';
-  return '建议从头再看一遍各个模块！🔄';
+  if (r >= 0.8) return { title:'太厉害了！', msg:'你是蚁蝶互作专家！🦋', emoji:'🏆' };
+  if (r >= 0.6) return { title:'做得不错！', msg:'已经掌握了核心知识！💪', emoji:'⭐' };
+  if (r >= 0.4) return { title:'继续加油！', msg:'多看看上面的内容哦~ 📖', emoji:'📚' };
+  return { title:'别灰心！', msg:'建议从头再看一遍各个模块！🔄', emoji:'🌱' };
 }
 
 // ===== DOM 渲染 =====
@@ -125,12 +125,26 @@ function handleAnswer(idx, btn) {
   const nb = document.getElementById('nextBtn');
   if (nb) nb.style.display = 'inline-block';
   else if (quizState.currentIndex === QUIZ_DATA.length - 1) {
-    setTimeout(() => {
-      document.getElementById('quizFeedback').innerHTML +=
-        `<br><br><strong style="font-size:1.1em">🏆 最终得分：${quizState.score}/${QUIZ_DATA.length}</strong><br>${getScoreMessage(quizState)}`;
-      renderQuiz(); // 重新渲染以显示"重新开始"按钮
-    }, 500);
+    setTimeout(() => showResults(), 600);
   }
+}
+
+function showResults() {
+  const card = document.getElementById('quizCard');
+  const msg = getScoreMessage(quizState);
+  const pct = Math.round((quizState.score / QUIZ_DATA.length) * 100);
+
+  card.innerHTML = `
+    <div class="quiz-result-panel">
+      <div style="font-size:3em;margin-bottom:8px;">${msg.emoji}</div>
+      <div class="quiz-score-num">${quizState.score}<small style="font-size:0.4em;color:var(--text-muted)">/${QUIZ_DATA.length}</small></div>
+      <div class="quiz-score-label">正确率 ${pct}%</div>
+      <div class="quiz-result-msg"><strong>${msg.title}</strong>${msg.msg}</div>
+      <div style="margin-top:24px;">
+        <button class="btn btn-primary" onclick="handleReset()" style="margin:0 auto">🔄 再测一次</button>
+        <a href="mutualism.html" class="btn btn-outline" style="margin-left:12px;">📖 复习知识点</a>
+      </div>
+    </div>`;
 }
 
 function handleReset() {
