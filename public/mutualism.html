@@ -100,7 +100,16 @@
       <a href="lifecycle.html" class="btn btn-primary">🔄 查看大蓝蝶生命循环 →</a>
     </div>
   </div>
-</div>
+
+  <div class="container" style="margin-top:36px;padding:20px;background:var(--card-bg);border-radius:var(--radius-lg);border:1px solid var(--card-border);">
+    <h3 style="color:var(--primary);font-size:0.95em;margin-bottom:12px;">📚 参考文献</h3>
+    <div style="color:var(--text-dim);font-size:0.8em;line-height:1.85;">
+      <p>• Pierce NE et al. (2002). The ecology and evolution of ant association in Lepidoptera. <em>Annu Rev Entomol</em> 47:745–771.</p>
+      <p>• Elmes GW et al. (1991). The biology and conservation of the large blue butterfly <em>Maculinea arion</em> in Britain. <em>J Applied Ecology</em> 28:128–153.</p>
+      <p>• Schönrogge K et al. (2004). The biology of the social parasite <em>Maculinea arion</em>. <em>Ann Entomol Soc Am</em> 97:219–231.</p>
+      <p>• Fiedler K (2001). Ants-Lycaenid interactions: recent findings and new directions. <em>Entomological Science</em> 4:183–188.</p>
+    </div>
+  </div>
 
 <footer class="footer">
   <p><a href="/">← 返回首页</a></p>
@@ -112,7 +121,7 @@
 const spectrumData = {
   mutualist: '<b>互利共生（Obligate Mutualism）</b> — 双方形成不可分割的依赖关系。蝴蝶幼虫提供蜜露作为"报酬"，蚂蚁提供全天候保镖服务。这种关系在进化上非常稳定，双方基因协同演化了数千万年。代表：小灰蝶属（Cupido）多数物种。',
   facultative: '<b>兼性共生（Facultative）</b> — "有则更好，无亦可"。蝴蝶可以根据环境灵活选择策略——蚂蚁丰富的区域就合作，没有蚂蚁的区域就独立生存。这种灵活性是适应力进化的体现，让物种能占据更广的生态位。',
-  parasite: '<b>社会性寄生（Social Parasitism）</b> — 进化的终极欺骗。蝴蝶幼虫通过化学拟态和振动信号完美伪装成蚁巢"自己人"，被搬入后开始捕食蚂蚁后代。一只大蓝蝶幼虫可在蚁巢内吃掉多达 500 只蚂蚁幼虫。这是自然界最精妙的特洛伊木马策略。'
+  parasite: '<b>社会性寄生（Social Parasitism）</b> — 进化的终极欺骗。蝴蝶幼虫通过化学拟态和振动信号完美伪装成蚁巢"自己人"，被搬入后开始捕食蚂蚁后代。一只大蓝蝶（<em>Maculinea arion</em>）幼虫在蚁巢内可消耗 <strong>数十至上百个</strong> 蚂蚁蛹或幼虫（Elmes et al., 1991; Schönrogge et al., 2004）。这是自然界最精妙的特洛伊木马策略。'
 };
 function showSpectrum(key) { document.getElementById('spectrumDetail').innerHTML = spectrumData[key]; }
 function hideSpectrum() { document.getElementById('spectrumDetail').innerHTML = '悬停或点击上方节点查看详细信息'; }
