@@ -63,8 +63,39 @@
         </div>
 
         <div class="lab-status" id="labStatus" style="display:none">
-          <div class="status-spinner"></div>
-          <span id="statusText">AI 正在分析中...</span>
+          <!-- 预览图+扫描线 -->
+          <div class="scan-container" id="scanContainer">
+            <img class="scan-preview" id="scanPreview" src="" alt="">
+            <div class="scan-line"></div>
+            <div class="scan-glow"></div>
+          </div>
+          <!-- 分阶段提示 -->
+          <div class="stage-info">
+            <div class="stage-icon" id="stageIcon">🔬</div>
+            <span class="stage-text" id="statusText">正在接收图像...</span>
+          </div>
+          <!-- 进度条 -->
+          <div class="stage-progress">
+            <div class="stage-bar" id="stageBar"></div>
+          </div>
+        </div>
+
+        <!-- 骨架屏结果卡片（loading时显示） -->
+        <div class="skeleton-card" id="skeletonCard" style="display:none">
+          <div class="sk-header">
+            <div class="sk-icon sk-shimmer"></div>
+            <div class="sk-title sk-shimmer"></div>
+          </div>
+          <div class="sk-body">
+            <div class="sk-line sk-shimmer short"></div>
+            <div class="sk-line sk-shimmer"></div>
+            <div class="sk-line sk-shimmer long"></div>
+            <div class="sk-tags">
+              <div class="sk-tag sk-shimmer"></div>
+              <div class="sk-tag sk-shimmer"></div>
+              <div class="sk-tag sk-shimmer"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -193,11 +224,53 @@ async function processFile(file) {
   reader.readAsDataURL(file);
 }
 
+const STAGES = [
+  { icon: '📥', text: '正在接收图像...' },
+  { icon: '🧬', text: '分析叶片纹理特征...' },
+  { icon: '🔍', text: '匹配虫痕模式库...' },
+  { icon: '🐛', text: '识别取食行为类型...' },
+  { icon: '📋', text: '生成鉴定报告...' },
+];
+
+let stageTimer = null;
+
 async function analyzeImage() {
   if(!uploadedImageData){ alert('请先上传图片'); return; }
   const statusEl = document.getElementById('labStatus');
   const btn = document.getElementById('analyzeBtn');
-  statusEl.style.display = 'flex'; btn.disabled = true; btn.textContent = '⏳ 分析中...';
+  const skelCard = document.getElementById('skeletonCard');
+  const scanPreview = document.getElementById('scanPreview');
+
+  // 显示loading状态
+  statusEl.style.display = 'flex';
+  skelCard.style.display = 'block';
+  btn.disabled = true;
+  btn.textContent = '⏳ 分析中...';
+
+  // 设置扫描预览图
+  scanPreview.src = uploadedImageData;
+
+  // 分阶段文字轮播（每4秒切换）
+  let stageIdx = 0;
+  const stageIcon = document.getElementById('stageIcon');
+  const stageText = document.getElementById('statusText');
+  const stageBar = document.getElementById('stageBar');
+
+  function showStage(idx) {
+    if (idx >= STAGES.length) idx = STAGES.length - 1;
+    stageIcon.textContent = STAGES[idx].icon;
+    stageText.textContent = STAGES[idx].text;
+    // 进度条
+    const pct = Math.min(((idx + 1) / STAGES.length) * 100, 95);
+    stageBar.style.width = pct + '%';
+  }
+  showStage(0);
+  stageTimer = setInterval(() => {
+    stageIdx++;
+    if (stageIdx < STAGES.length) showStage(stageIdx);
+    else clearInterval(stageTimer);
+  }, 4000);
+
   try {
     const resp = await fetch('/api/identify-bite', {
       method: 'POST',
@@ -205,11 +278,26 @@ async function analyzeImage() {
       body: JSON.stringify({ imageData: uploadedImageData, filename: uploadedFilename })
     });
     const data = await resp.json();
-    statusEl.style.display = 'none'; btn.disabled = false; btn.textContent = '🔍 AI 鉴定';
+
+    // 清理loading状态
+    clearInterval(stageTimer);
+    stageTimer = null;
+    statusEl.style.display = 'none';
+    skelCard.style.display = 'none';
+    btn.disabled = false;
+    btn.textContent = '🔍 AI 鉴定';
+    // 进度条拉满
+    stageBar.style.width = '100%';
+
     if(!data.success){ alert('分析失败: ' + (data.error || '未知错误')); return; }
     displayResult(data.result);
   } catch(err) {
-    statusEl.style.display = 'none'; btn.disabled = false; btn.textContent = '🔍 AI 鉴定';
+    clearInterval(stageTimer);
+    stageTimer = null;
+    statusEl.style.display = 'none';
+    skelCard.style.display = 'none';
+    btn.disabled = false;
+    btn.textContent = '🔍 AI 鉴定';
     alert('网络错误: ' + err.message);
   }
 }
