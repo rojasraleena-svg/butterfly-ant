@@ -118,6 +118,8 @@
             <div class="result-section"><h4>🌿 取食功能群</h4><span class="guild-badge" id="resultGuild"></span></div>
             <div class="result-section"><h4>📖 生态学背景</h4><p id="resultEco"></p></div>
             <div class="result-section"><h4>🛡️ 植物防御反应</h4><p id="resultDefense"></p></div>
+            <div class="result-section" id="ddSection" style="display:none"><h4>⚖️ 鉴别诊断</h4><p id="resultDD" style="font-size:0.85em;color:var(--text-secondary)"></p></div>
+            <div class="result-section" id="limitSection" style="display:none"><h4>⚠️ 局限性说明</h4><p id="resultLimit" style="font-size:0.82em;color:var(--text-dim);font-style:italic"></p></div>
           </div>
         </div>
         </div><!-- /realResultCard -->
@@ -137,6 +139,56 @@
               <li>鉴定结果仅供参考，精确鉴定需标本采集</li>
             </ul>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 鉴定依据说明 -->
+  <div class="section" style="background:var(--bg-subtle);padding:36px 0;margin-top:0;">
+    <div class="container">
+      <h3 style="color:var(--primary);font-family:var(--font-serif);margin-bottom:16px;font-size:1.1em;">📖 鉴定依据与方法论</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;color:var(--text-secondary);font-size:0.85em;line-height:1.8;">
+        <div style="background:var(--card-bg);padding:20px;border-radius:var(--radius-md);border:1px solid var(--card-border);">
+          <h4 style="color:var(--accent-green);margin-bottom:8px;">🔬 分类框架</h4>
+          <p>本系统采用<strong>Labandeira DTM（Damage Type Model）</strong>取食痕迹分类体系，该框架由古生物学家 Labandeira CC 于2002年建立（<em>PNAS</em> 99:10241），最初用于化石记录中植物-昆虫互作分析，后被现代生态学广泛采用。</p>
+          <p style="margin-top:6px">功能群分类基于 <strong>Root (1973)</strong> 的取食功能群概念和 <strong>Godfray (1984)</strong> 的昆虫生活史策略理论。</p>
+        </div>
+        <div style="background:var(--card-bg);padding:20px;border-radius:var(--radius-md);border:1px solid var(--card-border);">
+          <h4 style="color:var(--primary);margin-bottom:8px;">🤖 AI识别流程</h4>
+          <p><strong>GLM-5V</strong> 多模态视觉模型执行5步推理：</p>
+          <ol style="padding-left:18px;margin:4px 0;">
+            <li>整体评估（图像质量、叶片形态）</li>
+            <li>损伤特征提取（形状/位置/边缘/分布）</li>
+            <li>DTM标准逐一比对打分</li>
+            <li>结合区系推断候选昆虫（到科/属级）</li>
+            <li>输出置信度 + 局限性声明</li>
+          </ol>
+        </div>
+        <div style="background:var(--card-bg);padding:20px;border-radius:var(--radius-md);border:1px solid var(--card-border);">
+          <h4 style="color:var(--accent-red);margin-bottom:8px;">⚠️ 准确性边界</h4>
+          <p><b>能做到的：</b></p>
+          <ul style="padding-left:16px;margin:4px 0;">
+            <li>区分8大类痕迹类型（准确率取决于图像质量）</li>
+            <li>推断到科/属级的昆虫候选</li>
+            <li>提供鉴别诊断和不确定性说明</li>
+          </ul>
+          <p style="margin-top:6px"><b>做不到的：</b></p>
+          <ul style="padding-left:16px;margin:4px 0;">
+            <li>精确到种级别鉴定（需标本+显微观察）</li>
+            <li>区分近缘物种（如不同属的潜叶蛾）</li>
+            <li>替代专业昆虫学家的现场鉴定</li>
+          </ul>
+        </div>
+        <div style="background:var(--card-bg);padding:20px;border-radius:var(--radius-md);border:1px solid var(--card-border);">
+          <h4 style="color:var(--accent-gold);margin-bottom:8px;">📚 核心参考文献</h4>
+          <ol style="padding-left:18px;margin:0;font-size:0.82em;line-height:1.9;">
+            <li>Labandeira CC et al. (2002). PNAS 99(15):10241–10246 — DTM框架奠基</li>
+            <li>Labandeira CC (2007). Annu Rev Ecol Evol Syst 38:591–617 — DTM综述</li>
+            <li>Root RB (1973). Ecol Monogr 43(1):95–124 — 功能群概念起源</li>
+            <li>Godfray HCJ (1984). Oxford Univ Press — 昆虫生活史策略</li>
+            <li>Coley PD & Barone JA (1996). Ecol Monogr 66(4):501–522 — 植食量化方法</li>
+          </ol>
         </div>
       </div>
     </div>
@@ -333,21 +385,40 @@ function displayResult(r) {
   labResult.style.display = 'block';
   document.getElementById('labExamples').style.display = 'none';
   const typeMap = {
-    hole:{icon:'⭕',cn:'洞孔式'}, margin:{icon:'📐',cn:'边缘啃食'},
-    skeletonization:{icon:'🕸️',cn:'骨架化'}, mining:{icon:'〰️',cn:'潜叶隧道'},
-    gall:{icon:'🔵',cn:'虫瘿'}, spot:{icon:'🔘',cn:'斑点状'},
-    surface_scraping:{icon:'📏',cn:'表面刮擦'}, unknown:{icon:'❓',cn:'未知'}
+    hole:{icon:'⭕',cn:'洞孔式',full:'Hole feeding（洞孔式取食）'},
+    marg:{icon:'📐',cn:'边缘啃食',full:'Margin feeding（边缘啃食）'},
+    skel:{icon:'🕸️',cn:'骨架化',full:'Skeletonization（选择性骨架化）'},
+    mine:{icon:'〰️',cn:'潜叶隧道',full:'Leaf mining（潜叶隧道）'},
+    gall:{icon:'🔵',cn:'虫瘿',full:'Galling（虫瘿诱导）'},
+    spot:{icon:'🔘',cn:'斑点状',full:'Piercing/sucking（刺吸斑点）'},
+    surf:{icon:'📏',cn:'表面刮擦',full:'Surface scraping（表面刮擦）'},
+    unknown:{icon:'❓',cn:'无法确定',full:'Unknown'}
   };
   const guildMap = { chewer:'咀嚼式口器', sucker:'刺吸式口器', miner:'潜叶者', borer:'钻蛀者' };
   const t = typeMap[r.damage_type] || typeMap.unknown;
   document.getElementById('resultIcon').textContent = t.icon;
   document.getElementById('resultType').textContent = `痕迹类型：${r.damage_type_cn || t.cn}`;
+  document.getElementById('resultType').title = t.full; // hover显示英文学术名
   const conf = r.confidence || '?';
   document.getElementById('resultConfidence').textContent =
-    `置信度 ${conf}%${conf >= 80 ? ' ✅高' : conf >= 60 ? ' ⚠️中' : ' ❌低'}`;
+    `置信度 ${conf}%${conf >= 80 ? ' ✅高' : conf >= 60 ? ' ⚠️中' : conf < 50 ? ' ❌低（建议重新拍摄更清晰图片）' : ''}`;
   document.getElementById('resultDesc').textContent = r.description || '';
   document.getElementById('resultEco').textContent = r.ecological_context || '';
   document.getElementById('resultDefense').textContent = r.plant_defense_response || '';
+  
+  // 新字段：鉴别诊断
+  if (r.differential_diagnosis) {
+    const ddEl = document.getElementById('ddSection');
+    ddEl.style.display = 'block';
+    document.getElementById('resultDD').textContent = r.differential_diagnosis;
+  }
+  // 新字段：局限性说明
+  if (r.limitations) {
+    const limEl = document.getElementById('limitSection');
+    limEl.style.display = 'block';
+    document.getElementById('resultLimit').textContent = r.limitations;
+  }
+  
   const featEl = document.getElementById('resultFeatures'); featEl.innerHTML = '';
   (r.key_features||[]).forEach(f => { const tag=document.createElement('span');tag.className='feature-tag';tag.textContent=f;featEl.appendChild(tag); });
   const insectEl = document.getElementById('resultInsects'); insectEl.innerHTML = '';
