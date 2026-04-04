@@ -135,13 +135,55 @@ function handleUpload(event) {
   if(file) processFile(file);
 }
 
-function processFile(file) {
+/**
+ * 压缩图片：Canvas 缩放 + JPEG 编码
+ * - 长边限制 MAX_DIMENSION px（保持宽高比）
+ * - JPEG quality = QUALITY
+ * - 输出 base64 data URL
+ */
+function compressImage(dataUrl, maxSize, quality) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      // 按长边缩放
+      if (w > maxSize || h > maxSize) {
+        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+        else     { w = Math.round(w * maxSize / h); h = maxSize; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      // 用 toBlob 转JPEG，再转回 dataURL
+      canvas.toBlob(blob => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      }, 'image/jpeg', quality);
+    };
+    img.src = dataUrl;
+  });
+}
+
+const COMPRESS_MAX_DIM = 1280;   // 长边最大1280px，虫痕识别足够
+const COMPRESS_QUALITY = 0.82;   // JPEG质量
+
+async function processFile(file) {
   if(file.size > 10 * 1024 * 1024){ alert('图片不能超过10MB'); return; }
   uploadedFilename = file.name;
   const reader = new FileReader();
-  reader.onload = e => {
-    uploadedImageData = e.target.result;
-    document.getElementById('previewImg').src = uploadedImageData;
+  reader.onload = async (e) => {
+    const originalSize = e.target.result.length;
+    const compressedDataUrl = await compressImage(e.target.result, COMPRESS_MAX_DIM, COMPRESS_QUALITY);
+    uploadedImageData = compressedDataUrl;
+
+    // 显示压缩信息
+    const compressedSize = compressedDataUrl.length;
+    const ratio = ((1 - compressedSize / originalSize) * 100).toFixed(0);
+    console.log(`[图片压缩] ${(originalSize/1024).toFixed(0)}KB → ${(compressedSize/1024).toFixed(0)}KB (↓${ratio}%)`);
+
+    document.getElementById('previewImg').src = compressedDataUrl;
     document.getElementById('previewImg').style.display = 'block';
     document.getElementById('uploadPlaceholder').style.display = 'none';
     document.getElementById('labActions').style.display = 'flex';
