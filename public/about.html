@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>📖 关于 | 🦋 蝴蝶与蚂蚁</title>
 <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
-<link rel="stylesheet" href="/css/common.css?v=2">
+<link rel="stylesheet" href="/css/common.css?v=3">
   <meta name="description" content="深入了解蝴蝶与蚂蚁共生科普项目的初衷、参考文献、技术架构和科学背景。基于真实科学研究的互动式科普教育网站。">
   <meta property="og:title" content="📖 关于 | 🦋 蝴蝶与蚂蚁">
   <meta property="og:description" content="深入了解蝴蝶与蚂蚁共生科普项目的初衷、参考文献、技术架构和科学背景。基于真实科学研究的互动式科普教育网站。">
@@ -19,7 +19,7 @@
   <meta name="twitter:image" content="https://butterfly.gqy25.top/img/meeting.jpg">
   <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"📖 关于 | 🦋 蝴蝶与蚂蚁","description":"深入了解蝴蝶与蚂蚁共生科普项目的初衷、参考文献、技术架构和科学背景。基于真实科学研究的互动式科普教育网站。","url":"https://butterfly.gqy25.top/about.html","isPartOf":{"@type":"WebSite","name":"蝴蝶与蚂蚁 · 共生的艺术","url":"https://butterfly.gqy25.top/"},"inLanguage":"zh-CN"},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://butterfly.gqy25.top/"},{"@type":"ListItem","position":2,"name":"关于","item":"https://butterfly.gqy25.top/about.html"}]}]</script>
 </head>
-<body>
+<body data-page="about">
   <a href="#main-content" class="skip-link">跳转到主要内容</a>
 
 <nav class="nav" aria-label="主导航">
@@ -82,7 +82,7 @@
   </div>
 </div>
 
-<footer class="footer"><p><a href="/">← 返回首页</a></p><p style="margin-top:12px;">Made with 💙 · 2026</p></footer>
-<script src="/js/common.js?v=3"></script><script>sharedInit();</script>
+<footer class="footer"><p><a href="/">← 返回首页</a></p><p style="margin-top:12px;">Made with 💙 · <span id="year"></span></p></footer>
+<script src="/js/common.js?v=4"></script><script>sharedInit(); document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

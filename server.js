@@ -181,7 +181,7 @@ app.get('/api/damage-examples', (req, res) => {
       {
         type: 'spot',
         cn: '斑点状',
-        icon: '·',
+        icon: '🔘',
         desc: '刺吸式口器造成的小型失绿斑点或褪色区域',
         insects: ['蚜虫', '蝉', '蝽象', '叶螨'],
         guild: 'sucker'

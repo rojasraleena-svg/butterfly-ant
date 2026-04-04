@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>互作类型 | 🦋 蝴蝶与蚂蚁</title>
 <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
-    <link rel="stylesheet" href="/css/common.css?v=2">
+    <link rel="stylesheet" href="/css/common.css?v=3">
   <meta name="description" content="从互利共生到社会性寄生，了解灰蝶科与蚂蚁之间的三种关系模式：互利、兼性、寄生。75%的灰蝶物种涉及蚂蚁互作。">
   <meta property="og:title" content="🤝 互作类型 | 🦋 蝴蝶与蚂蚁">
   <meta property="og:description" content="从互利共生到社会性寄生，了解灰蝶科与蚂蚁之间的三种关系模式：互利、兼性、寄生。75%的灰蝶物种涉及蚂蚁互作。">
@@ -19,7 +19,7 @@
   <meta name="twitter:image" content="https://butterfly.gqy25.top/img/meeting.jpg">
   <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"🤝 互作类型 | 🦋 蝴蝶与蚂蚁","description":"从互利共生到社会性寄生，了解灰蝶科与蚂蚁之间的三种关系模式：互利、兼性、寄生。75%的灰蝶物种涉及蚂蚁互作。","url":"https://butterfly.gqy25.top/mutualism.html","isPartOf":{"@type":"WebSite","name":"蝴蝶与蚂蚁 · 共生的艺术","url":"https://butterfly.gqy25.top/"},"inLanguage":"zh-CN"},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://butterfly.gqy25.top/"},{"@type":"ListItem","position":2,"name":"互作类型","item":"https://butterfly.gqy25.top/mutualism.html"}]}]</script>
 </head>
-<body>
+<body data-page="mutualism">
   <a href="#main-content" class="skip-link">跳转到主要内容</a>
 
 <nav class="nav" aria-label="主导航">
@@ -67,7 +67,29 @@
       </div>
     </div>
 
-    <div class="stats-row fade-in delay-3">
+    <!-- 关系光谱可视化 -->
+    <div class="spectrum-section fade-in delay-3">
+      <h3 class="spectrum-title">🌈 蚁蝶关系连续谱</h3>
+      <p style="text-align:center;color:var(--text-muted);font-size:var(--ts-small);margin-bottom:24px;">
+        三种互作类型并非截然分开——它们构成一个从"完全互利"到"完全寄生"的连续谱。点击节点了解详情。
+      </p>
+      <div class="spectrum-bar-wrap">
+        <div class="spectrum-track"></div>
+        <div class="spectrum-nodes">
+          <div class="spectrum-node n-mutualist" onmouseover="showSpectrum('mutualist')" onmouseout="hideSpectrum()" title="互利共生"></div>
+          <div class="spectrum-node n-facultative" onmouseover="showSpectrum('facultative')" onmouseout="hideSpectrum()" title="兼性共生"></div>
+          <div class="spectrum-node n-parasite" onmouseover="showSpectrum('parasite')" onmouseout="hideSpectrum()" title="社会性寄生"></div>
+        </div>
+        <div class="spectrum-labels">
+          <span class="spectrum-label">完全互利</span>
+          <span class="spectrum-label">灵活合作</span>
+          <span class="spectrum-label">单向剥削</span>
+        </div>
+      </div>
+      <div class="spectrum-detail" id="spectrumDetail">悬停或点击上方节点查看详细信息</div>
+    </div>
+
+    <div class="stats-row fade-in delay-4">
       <div class="stat-box"><div class="stat-num" data-target="75">0</div><div class="stat-label">灰蝶科物种涉及 (%)</div></div>
       <div class="stat-box"><div class="stat-num" data-target="30">0</div><div class="stat-label">百万年进化历史</div></div>
       <div class="stat-box"><div class="stat-num" data-target="40">0</div><div class="stat-label">有蚂蚁保护 存活率提升(%)</div></div>
@@ -82,10 +104,20 @@
 
 <footer class="footer">
   <p><a href="/">← 返回首页</a></p>
-  <p style="margin-top:12px;">Made with 💙 · 2026</p>
+  <p style="margin-top:12px;">Made with 💙 · <span id="year"></span></p>
 </footer>
 
-<script src="/js/common.js?v=3"></script>
-<script>sharedInit();animateCounters();initReveal();</script>
+<script src="/js/common.js?v=4"></script>
+<script>
+const spectrumData = {
+  mutualist: '<b>互利共生（Obligate Mutualism）</b> — 双方形成不可分割的依赖关系。蝴蝶幼虫提供蜜露作为"报酬"，蚂蚁提供全天候保镖服务。这种关系在进化上非常稳定，双方基因协同演化了数千万年。代表：小灰蝶属（Cupido）多数物种。',
+  facultative: '<b>兼性共生（Facultative）</b> — "有则更好，无亦可"。蝴蝶可以根据环境灵活选择策略——蚂蚁丰富的区域就合作，没有蚂蚁的区域就独立生存。这种灵活性是适应力进化的体现，让物种能占据更广的生态位。',
+  parasite: '<b>社会性寄生（Social Parasitism）</b> — 进化的终极欺骗。蝴蝶幼虫通过化学拟态和振动信号完美伪装成蚁巢"自己人"，被搬入后开始捕食蚂蚁后代。一只大蓝蝶幼虫可在蚁巢内吃掉多达 500 只蚂蚁幼虫。这是自然界最精妙的特洛伊木马策略。'
+};
+function showSpectrum(key) { document.getElementById('spectrumDetail').innerHTML = spectrumData[key]; }
+function hideSpectrum() { document.getElementById('spectrumDetail').innerHTML = '悬停或点击上方节点查看详细信息'; }
+sharedInit(); animateCounters(); initReveal();
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
