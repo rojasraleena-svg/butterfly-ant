@@ -1,17 +1,1 @@
-{
-  "name": "butterfly-ant",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "express": "^5.2.1"
-  }
-}
+{"name":"butterfly-ant","version":"1.0.0","description":"蝴蝶蚂蚁共生 - 昆虫咬痕识别与科普网站","main":"server.js","scripts":{"start":"node server.js","dev":"node --watch server.js"},"author":"Q哥","license":"ISC","type":"commonjs","dependencies":{"dotenv":"^16.6.1","express":"^5.2.1"}}

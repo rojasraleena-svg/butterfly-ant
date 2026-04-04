@@ -1,14 +1,14 @@
+require('dotenv').config();
 const path = require('path');
-const fs = require('fs');
-const BASE_DIR = '/workspace/projects/workspace/butterfly-ant';
 const express = require('express');
 const app = express();
-const PORT = 3242;
+const PORT = process.env.PORT || 3242;
+const BASE_DIR = __dirname;
 
 // Zhipu GLM-5V Config
-const ZHIPU_API_KEY = 'c83862d99aff49f9b02bc9411a6500f7.hUheJE2STvRJhXVB';
-const ZHIPU_BASE_URL = 'https://open.bigmodel.cn/api/coding/paas/v4/chat/completions';
-const ZHIPU_MODEL = 'glm-5v-turbo';
+const ZHIPU_API_KEY = process.env.ZHIPU_API_KEY;
+const ZHIPU_BASE_URL = process.env.ZHIPU_BASE_URL || 'https://open.bigmodel.cn/api/coding/paas/v4/chat/completions';
+const ZHIPU_MODEL = process.env.ZHIPU_MODEL || 'glm-5v-turbo';
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(BASE_DIR, 'public'), {
