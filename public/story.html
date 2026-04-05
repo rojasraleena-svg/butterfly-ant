@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🍃 一片叶子的微观战争 | 🦋 蝴蝶与蚂蚁</title>
 <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
-<link rel="stylesheet" href="/css/common.css?v=5">
+<link rel="stylesheet" href="/css/common.css?v=6">
 <meta name="description" content="滚动叙事——跟随一片叶子从春天到秋天，见证昆虫取食的微观战争。DTM金标准分类体系的沉浸式科普体验。">
 <meta property="og:title" content="🍃 一片叶子的微观战争 | 🦋 蝴蝶与蚂蚁">
 <meta property="og:description" content="滚动叙事——跟随一片叶子从春天到秋天，见证昆虫取食的微观战争。">
@@ -61,18 +61,6 @@
   background:linear-gradient(135deg, rgba(91,141,239,0.3), rgba(91,141,239,0.12));
   border-color:rgba(91,141,239,0.5); transform:translateY(-2px);
   box-shadow:0 8px 28px rgba(91,141,239,0.2);
-}
-
-.scroll-indicator {
-  position:absolute; bottom:36px; left:50%; transform:translateX(-50%);
-  z-index:2; text-align:center; animation:bounce 2s infinite;
-  color:var(--text-dim); font-size:0.82em;
-}
-.scroll-indicator span { display:block; margin-top:6px; font-size:1.4em; }
-@keyframes bounce {
-  0%,20%,50%,80%,100% { transform:translateX(-50%) translateY(0); }
-  40% { transform:translateX(-50%) translateY(10px); }
-  60% { transform:translateX(-50%) translateY(5px); }
 }
 
 /* ═══ 章节通用结构 ═══ */
@@ -367,12 +355,19 @@
     <a href="/" class="nav-logo"><img src="/img/logo.svg" alt="蝴蝶与蚂蚁"></a>
     <a href="/" class="nav-link">首页</a>
     <a href="mutualism.html" class="nav-link">互作类型</a>
-    <a href="lab.html" class="nav-link">虫痕鉴定</a>
-    <a href="lifecycle.html" class="nav-link">生命循环</a>
     <a href="chemical.html" class="nav-link">化学通讯</a>
-    <a href="gallery.html" class="nav-link">图鉴</a>
-    <a href="quiz.html" class="nav-link">测验</a>
+    <a href="evolve.html" class="nav-link">进化沙盒</a>
+    <a href="story.html" class="nav-link active">微观战争</a>
     <a href="about.html" class="nav-link">关于</a>
+    <div class="nav-more">
+      <button class="nav-more-btn" aria-label="更多导航"><span class="dot"><span></span><span></span><span></span></span></button>
+      <div class="nav-more-menu">
+        <a href="lab.html">🧪 虫痕鉴定</a>
+        <a href="lifecycle.html">🔄 生命循环</a>
+        <a href="gallery.html">🖼️ 生态图鉴</a>
+        <a href="quiz.html">❓ 知识测验</a>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -380,16 +375,12 @@
 <div class="story-hero" id="storyHero">
   <div class="story-hero-bg"></div>
   <div class="story-hero-content">
-    <div style="font-size:0.82em;color:var(--primary);margin-bottom:12px;font-weight:600;letter-spacing:0.1em;">🍃 SCROLLYTELLING · 滚动叙事</div>
     <h1>一片叶子的<br>微观战争</h1>
     <p class="subtitle">
-      从春芽到秋落，一片叶子会经历什么？<br>
-      在显微镜下，每一道痕迹都是一场战役的证据。<br>
-      向下滚动，开始这场跨越千万年的进化之旅。
+      从春芽到秋落——每一道虫痕都是一场微观战役的证据
     </p>
     <a href="#ch1" class="start-btn">开始探索 ↓</a>
   </div>
-  <div class="scroll-indicator"><span>↓</span><span style="font-size:0.7em">滚动探索</span></div>
 </div>
 
 <!-- ═══ 进度条 ═══ -->
@@ -943,7 +934,7 @@
   <span class="egg-toast-text" id="eggToastText"></span>
 </div>
 
-<script src="/js/common.js?v=4"></script>
+<script src="/js/common.js?v=5"></script>
 <script>
 // ===== Scrollytelling Engine =====
 

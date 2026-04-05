@@ -744,7 +744,7 @@ async function runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chem
         'Authorization': `Bearer ${ZHIPU_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'glm-5',  // 进化沙盒用纯文本模型，更快更便宜
+        model: ZHIPU_MODEL,  // 统一使用配置的模型
         messages: [
           { role: 'system', content: evolveSystemPrompt },
           { role: 'user', content: evolveUserPrompt }

@@ -209,4 +209,15 @@ function sharedInit(){
   loadHeroImg(); loadDataImages(); createParticles();
   initReveal(); initNavActive(); initFooterYear();
   initLifecycleParallax();
+  initNavMore();
+}
+
+// ===== Nav More Dropdown =====
+function initNavMore() {
+  const more = document.querySelector('.nav-more');
+  if(!more) return;
+  const btn = more.querySelector('.nav-more-btn');
+  btn.addEventListener('click', e => { e.stopPropagation(); more.classList.toggle('open'); });
+  document.addEventListener('click', e => { if(!more.contains(e.target)) more.classList.remove('open'); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') more.classList.remove('open'); });
 }
