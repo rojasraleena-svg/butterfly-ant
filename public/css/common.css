@@ -381,10 +381,42 @@ body {
 /* Per-page hero accents */
 [data-page="mutualism"] .page-hero::before { --hero-accent: var(--accent-green); --hero-accent2: #2ecc71; }
 [data-page="lab"]        .page-hero::before { --hero-accent: var(--accent-gold); --hero-accent2: #f39c12; }
+
+/* ═══ Lab Hero — Enhanced Cinematic ═══ */
+[data-page="lab"] .page-hero {
+  padding:72px 0 48px;
+  overflow:hidden;
+}
+[data-page="lab"] .page-hero h1 {
+  background:linear-gradient(135deg, var(--accent-gold) 0%, #f0c860 40%, var(--primary) 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+/* Lab stat badges (bento row) */
+.lab-hero-stats {
+  display:flex; justify-content:center; gap:14px; margin-top:28px; flex-wrap:wrap;
+}
+.lab-stat-badge {
+  display:flex; align-items:center; gap:8px;
+  padding:10px 20px; border-radius:14px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  font-size:0.82em; color:var(--text-secondary);
+  transition:all 0.3s ease;
+}
+.lab-stat-badge:hover {
+  border-color:rgba(91,141,239,0.25);
+  background:rgba(91,141,239,0.04);
+  transform:translateY(-1px);
+}
+.lab-stat-badge .ls-icon { font-size:1.15em; }
+.lab-stat-badge .ls-val {
+  font-weight:700; color:var(--text);
+  font-variant-numeric:tabular-nums;
+}
 [data-page="lifecycle"]  .page-hero::before { --hero-accent: var(--accent-purple); --hero-accent2: #9b59b6; }
 [data-page="chemical"]   .page-hero::before { --hero-accent: #9B7ED9; --hero-accent2: var(--accent-purple); }
 [data-page="gallery"]    .page-hero::before { --hero-accent: var(--accent-red); --hero-accent2: #e74c3c; }
-[data-page="quiz"]      .page-hero::before { --hero-accent: var(--accent-red); --hero-accent2: var(--primary); }
+[data-page="quiz"]      .page-hero::before { --hero-accent: var(--accent-purple); --hero-accent2: var(--primary); }
 [data-page="about"]     .page-hero::before { --hero-accent: var(--text-secondary); --hero-accent2: var(--primary); }
 [data-page="story"]    .page-hero::before { --hero-accent: #228B22; --hero-accent2: #5B8DEF; }
 
@@ -685,21 +717,25 @@ body {
   border:1.5px solid transparent;
   border-radius:16px; padding:40px 16px;
   text-align:center; cursor:pointer;
-  transition:all 0.4s var(--ease-out);
+  transition:all 0.4s cubic-bezier(.16,1,.3,1);
   background:
     /* 网格底纹 */
     linear-gradient(rgba(59,125,216,0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59,125,216,0.04) 1px, transparent 1px),
     /* 径向发光 */
     radial-gradient(ellipse at 50% 42%, rgba(59,125,216,0.12) 0%, transparent 60%),
-    /* 底色 */
-    rgba(10,22,40,0.7);
+    /* 底色 — glassmorphism */
+    rgba(10,22,40,0.6);
   background-size: 20px 20px, 20px 20px, 100% 100%, 100% 100%;
   position:relative; overflow:hidden;
   display:flex; align-items:center; justify-content:center; flex-direction:column;
   flex:1; min-height:240px;
-  /* 渐变边框用 background-clip 实现 */
+  /* 渐变边框 + 毛玻璃 */
   border-image: linear-gradient(135deg, rgba(59,125,216,0.25), rgba(139,109,184,0.18), rgba(59,125,216,0.25)) 1;
+  backdrop-filter:blur(8px);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 /* 扫描线动画 */
@@ -731,18 +767,27 @@ body {
   border-image: linear-gradient(135deg, rgba(59,125,216,0.5), rgba(100,180,255,0.4), rgba(59,125,216,0.5)) 1;
   box-shadow:
     0 0 0 1px rgba(59,125,216,0.2),
-    0 0 40px rgba(59,125,216,0.1),
-    inset 0 0 40px rgba(59,125,216,0.04);
+    0 8px 40px rgba(59,125,216,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.06);
   background:
     linear-gradient(rgba(59,125,216,0.06) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59,125,216,0.06) 1px, transparent 1px),
     radial-gradient(ellipse at 50% 42%, rgba(59,125,216,0.18) 0%, transparent 60%),
-    rgba(10,22,40,0.8);
+    rgba(10,22,40,0.72);
   background-size: 20px 20px, 20px 20px, 100% 100%, 100% 100%;
 }
 .upload-zone.dragover {
   border-image: linear-gradient(135deg, rgba(58,157,92,0.5), rgba(100,200,140,0.4), rgba(58,157,92,0.5)) 1;
-  box-shadow: 0 0 40px rgba(58,157,92,0.15);
+  box-shadow:
+    0 0 0 2px rgba(58,157,92,0.3),
+    0 8px 40px rgba(58,157,92,0.18);
+  transform:scale(1.008);
+  background:
+    linear-gradient(rgba(58,157,92,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(58,157,92,0.06) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 42%, rgba(58,157,92,0.18) 0%, transparent 60%),
+    rgba(10,30,18,0.72);
+  background-size: 20px 20px, 20px 20px, 100% 100%, 100% 100%;
 }
 
 .upload-icon {
@@ -767,8 +812,8 @@ body {
 
 /* ── 扫描覆盖层（覆盖在预览图位置） ── */
 .lab-scan-overlay {
-  display:flex; flex-direction:column; align-items:center; gap:12px;
-  padding:16px; width:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+  padding:16px; width:100%; flex:1; min-height:240px;
   background:linear-gradient(180deg, rgba(10,15,25,0.96) 0%, rgba(18,26,42,0.95) 100%);
   border:1px solid rgba(0,255,136,0.2); border-radius:var(--radius-lg);
   box-shadow:
@@ -954,11 +999,113 @@ body {
   display:inline-block; padding:3px 12px; border-radius:12px; font-size:0.76em; margin-top:5px;
   background:rgba(58,157,92,0.12); color:var(--accent-green);
 }
-.result-body { padding:20px 24px; }
-.result-section { margin-bottom:18px; }
-.result-section:last-child { margin-bottom:0; }
-.result-section h4 { font-size:0.87em; color:var(--primary); margin-bottom:8px; font-weight:600; }
-.result-section p { color:var(--text-muted); font-size:var(--ts-small); line-height:1.75; }
+/* ═══ Result Body — Clean Layout System ═══ */
+.result-body {
+  padding:20px 24px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+/* Row 1: 主内容区（痕迹特征 — 全宽，无卡片边框） */
+.rb-main h4 {
+  font-size:0.85em; color:var(--primary); margin-bottom:10px;
+  font-weight:600; display:flex; align-items:center; gap:6px;
+}
+.rb-main p { color:var(--text-muted); font-size:var(--ts-small); line-height:1.75; }
+
+/* Row 2: 紧凑指标行（损伤/口器/FFG 横排） */
+.rb-metrics {
+  display:flex; gap:16px; flex-wrap:wrap;
+  padding:14px 18px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius-md);
+}
+.rb-metric {
+  display:flex; flex-direction:column; gap:6px;
+  min-width:100px;
+}
+.rb-metric h4 {
+  font-size:0.76em; color:var(--text-dim); font-weight:600;
+  text-transform:uppercase; letter-spacing:0.04em;
+}
+
+/* Row 3+: 宽内容行 */
+.rb-wide h4 {
+  font-size:0.82em; color:var(--primary); margin-bottom:8px;
+  font-weight:600; display:flex; align-items:center; gap:6px;
+}
+.rb-wide p { color:var(--text-muted); font-size:var(--ts-small); line-height:1.7; }
+
+/* 混淆警告 */
+.rb-warning {
+  padding:12px 16px; border-radius:var(--radius-md);
+  background:rgba(201,162,39,0.06); border:1px solid rgba(201,162,39,0.15);
+}
+.rb-warning p { color:var(--accent-gold); font-size:0.83em; line-height:1.6; margin:0; }
+
+/* 灰蝶检测高亮卡 */
+.rb-lycaenid {
+  padding:18px 20px; border-radius:var(--radius-md);
+  background:linear-gradient(135deg, rgba(91,141,239,0.06), rgba(139,109,184,0.05));
+  border:1px solid rgba(91,141,239,0.2);
+  position:relative; overflow:hidden;
+}
+.rb-lycaenid::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, #3B7DEF, #8B6DB8, #E07B55);
+}
+
+/* 底部文本对（生态+防御并排） */
+.rb-pair {
+  display:grid; grid-template-columns:1fr 1fr; gap:14px;
+}
+@media(max-width:640px){ .rb-pair { grid-template-columns:1fr; } }
+.rb-half h4 {
+  font-size:0.8em; color:var(--accent-purple); margin-bottom:6px;
+  font-weight:600;
+}
+.rb-half p { color:var(--text-muted); font-size:0.81em; line-height:1.65; }
+
+/* 局限性说明（极简） */
+.rb-note p { color:var(--text-dim); font-size:0.78em; font-style:italic; line-height:1.5; margin:0; }
+
+/* ── 损伤程度环形进度条 ── */
+.severity-ring-wrap {
+  display:flex; align-items:center; gap:16px; margin-top:8px;
+}
+.severity-ring {
+  width:56px; height:56px; border-radius:50%;
+  position:relative; flex-shrink:0;
+  /* 背景环 */
+  background:conic-gradient(
+    var(--ring-color, var(--accent-gold)) calc(var(--pct, 0) * 1%),
+    rgba(255,255,255,0.06) calc(var(--pct, 0) * 1%)
+  );
+  display:flex; align-items:center; justify-content:center;
+}
+.severity-ring::before {
+  content:''; position:absolute; inset:5px;
+  border-radius:50%; background:var(--card-bg-elevated);
+}
+.severity-ring-value {
+  position:relative; z-index:1;
+  font-size:0.85em; font-weight:700; color:var(--text);
+}
+.severity-ring-label {
+  font-size:0.82em; color:var(--text-secondary); line-height:1.4;
+}
+
+/* ── 灰蝶卡入场动画 */
+@keyframes lycaenidPulse {
+  0%,100%{ box-shadow:0 0 0 0 rgba(91,141,239,0); }
+  50%{ box-shadow:0 0 24px 4px rgba(91,141,239,0.12); }
+}
+.rb-lycaenid:not(.hidden) {
+  animation:lycaenidPulse 2s ease-in-out 1;
+}
+
 .feature-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
 .feature-tag { padding:4px 12px; border-radius:14px; font-size:0.76em; background:rgba(139,109,184,0.1); color:var(--accent-purple); border:1px solid rgba(139,109,184,0.18); }
 .insect-list { display:flex; flex-wrap:wrap; gap:8px; }
@@ -1224,6 +1371,28 @@ body {
   line-height:1.75; margin:0;
 }
 .lab-tips li { margin-bottom:2px; }
+
+/* ═══ Methodology Section ═══ */
+.methodology-section { padding:36px 0; margin-top:0; }
+.methodology-section .methodology-title {
+  color:var(--primary); font-family:var(--font-serif);
+  margin-bottom:16px; font-size:1.1em;
+}
+.methodology-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+  gap:20px; color:var(--text-secondary);
+  font-size:0.85em; line-height:1.8;
+}
+.method-card {
+  background:var(--card-bg); padding:20px;
+  border-radius:var(--radius-md); border:1px solid var(--card-border);
+}
+.method-card h4 { margin-bottom:8px; }
+.method-card h4.mt-green   { color:var(--accent-green); }
+.method-card h4.mt-blue    { color:var(--primary); }
+.method-card h4.mt-red     { color:var(--accent-red); }
+.method-card h4.mt-gold    { color:var(--accent-gold); }
 
 /* ===== QUIZ — Enhanced ===== */
 .quiz-container { max-width:680px; margin:0 auto; }

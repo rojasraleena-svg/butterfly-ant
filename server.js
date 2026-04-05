@@ -79,7 +79,7 @@ app.get('/api/health', (req, res) => {
 // ===== 虫痕鉴定 API =====
 app.post('/api/identify-bite', identifyBiteLimiter, async (req, res) => {
   const reqLog = logIdentify.withContext({ reqId: req._reqId });
-  const t = logEvolve.reqTimer(req);
+  const t = reqLog.timer('identify-bite');
 
   try {
     const { imageData, filename } = req.body;

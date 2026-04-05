@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🧪 虫痕鉴定实验室 | 🦋 蝴蝶与蚂蚁</title>
 <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
-    <link rel="stylesheet" href="/css/common.css?v=6">
+    <link rel="stylesheet" href="/css/common.css?v=8">
   <meta name="description" content="上传叶片照片，AI基于Smithsonian/Labandeira DTM金标准分类体系识别昆虫取食痕迹类型(DT-code)、损伤量化、灰蝶科专项检测。">
   <meta property="og:title" content="🔬 虫痕鉴定实验室 | 🦋 蝴蝶与蚂蚁">
   <meta property="og:description" content="上传叶片照片，AI基于Smithsonian/Labandeira DTM金标准分类体系识别昆虫取食痕迹类型(DT-code)、损伤量化、灰蝶科专项检测。">
@@ -46,13 +46,19 @@
 <div class="page-hero">
   <h1>🧪 虫痕鉴定实验室</h1>
   <p>基于 <strong>Smithsonian / Labandeira DTM 金标准</strong>分类体系，AI 识别昆虫取食痕迹类型（DT-code）、估算损伤程度、执行<strong>灰蝶科专项检测</strong>。由 <strong>GLM-5V 视觉模型</strong>驱动。</p>
+  <div class="lab-hero-stats">
+    <div class="lab-stat-badge"><span class="ls-icon">🏛️</span><span><span class="ls-val">DTM</span> 金标准框架</span></div>
+    <div class="lab-stat-badge"><span class="ls-icon">🔍</span><span><span class="ls-val">7</span> 种痕迹类型</span></div>
+    <div class="lab-stat-badge"><span class="ls-icon">🤖</span><span><span class="ls-val">GLM-5V</span> 多模态识别</span></div>
+    <div class="lab-stat-badge"><span class="ls-icon">🦋</span><span>灰蝶科专项检测</span></div>
+  </div>
 </div>
 
 <div class="section">
   <div class="container">
     <div class="lab-layout">
       <!-- 左侧：上传+预览 -->
-      <div class="lab-left">
+      <div class="lab-left fade-in">
         <div class="lab-left-title"><span class="llt-icon">📤</span>样本上传</div>
         <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
           <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleUpload(event)">
@@ -61,16 +67,16 @@
             <p>点击或拖拽上传叶片照片</p>
             <p class="upload-hint">支持 JPG / PNG / WebP，建议清晰拍摄痕迹区域</p>
           </div>
-          <img id="previewImg" src="" alt="" style="display:none;max-width:100%;border-radius:12px;">
+          <img id="previewImg" src="" alt="" class="hidden" style="max-width:100%;border-radius:12px;">
         </div>
 
-        <div class="lab-actions" id="labActions" class="hidden">
+        <div class="lab-actions hidden" id="labActions">
           <button class="btn btn-primary" id="analyzeBtn" onclick="analyzeImage()">🔍 AI 鉴定</button>
           <button class="btn btn-outline" onclick="resetLab()">🔄 重新上传</button>
         </div>
 
         <!-- 扫描分析层（loading时覆盖在预览图上） -->
-        <div class="lab-scan-overlay" id="labScanOverlay" class="hidden">
+        <div class="lab-scan-overlay hidden" id="labScanOverlay">
           <div class="scan-container" id="scanContainer">
             <img class="scan-preview" id="scanPreview" src="" alt="">
             <div class="scan-line"></div>
@@ -91,7 +97,7 @@
       </div>
 
       <!-- 右侧：结果面板 -->
-      <div class="lab-right" id="labResult" class="hidden">
+      <div class="lab-right hidden" id="labResult">
         <!-- 骨架屏（loading时显示） -->
         <div class="skeleton-card" id="skeletonCard">
           <div class="sk-header">
@@ -111,7 +117,7 @@
         </div>
 
         <!-- 真实结果（loading完成后显示） -->
-        <div class="result-card" id="realResultCard" class="hidden">
+        <div class="result-card hidden" id="realResultCard">
           <div class="result-header">
             <span class="result-type-icon" id="resultIcon">❓</span>
             <div>
@@ -120,45 +126,45 @@
             </div>
           </div>
           <div class="result-body">
-            <!-- DT编码 + 基础信息 -->
-            <div class="result-section"><h4>🔍 痕迹特征</h4><p id="resultDesc"></p><div class="feature-tags" id="resultFeatures"></div></div>
+            <!-- Row 1: 痕迹特征（全宽主内容区） -->
+            <div class="rb-main"><h4>🔍 痕迹特征</h4><p id="resultDesc"></p><div class="feature-tags" id="resultFeatures"></div></div>
 
-            <!-- 损伤量化 -->
-            <div class="result-section" id="severitySection" class="hidden"><h4>📊 损伤程度</h4><p id="severityText" style="font-weight:600"></p></div>
+            <!-- Row 2: 紧凑数据行（损伤+口器+FFG并排） -->
+            <div class="rb-metrics">
+              <div class="rb-metric hidden" id="severitySection"><h4>📊 损伤程度</h4><div class="severity-ring-wrap"><div class="severity-ring" id="severityRing"><span class="severity-ring-value" id="severityRingValue">?</span></div><div class="severity-ring-label" id="severityRingLabel"></div></div></div>
+              <div class="rb-metric"><h4>🌿 口器类型</h4><span class="guild-badge" id="resultGuild"></span></div>
+              <div class="rb-metric hidden" id="ffgSection"><h4>🏛️ 功能性取食组</h4><span class="guild-badge ffg-badge-gradient" id="ffgText"></span></div>
+            </div>
 
-            <!-- FFG功能性取食组 -->
-            <div class="result-section" id="ffgSection" class="hidden"><h4>🏛️ 功能性取食组</h4><span class="guild-badge ffg-badge-gradient" id="ffgText"></span></div>
+            <!-- Row 3: 可能的昆虫 -->
+            <div class="rb-wide"><h4>🐛 可能的昆虫</h4><div class="insect-list" id="resultInsects"></div></div>
 
-            <!-- 混淆组警告 -->
-            <div class="result-section warning-box hidden" id="confusionSection"><p id="confusionText"></p></div>
+            <!-- Row 4: 混淆警告 -->
+            <div class="rb-warning hidden" id="confusionSection"><p id="confusionText"></p></div>
 
-            <!-- 可能的昆虫 -->
-            <div class="result-section"><h4>🐛 可能的昆虫</h4><div class="insect-list" id="resultInsects"></div></div>
-
-            <!-- 取食功能群 -->
-            <div class="result-section"><h4>🌿 口器类型</h4><span class="guild-badge" id="resultGuild"></span></div>
-
-            <!-- 🦋 灰蝶专项检测卡片 -->
-            <div class="result-section lycaenid-card lycaenid-card-styled hidden" id="lycaenidSection">
-              <h4 id="lycaenidTitle" class="lycaenid-title-color" style="margin-bottom:8px;">🦋 疑似灰蝶科取食</h4>
+            <!-- Row 5: 灰蝶检测（全宽高亮卡） -->
+            <div class="rb-lycaenid lycaenid-card-styled hidden" id="lycaenidSection">
+              <h4 id="lycaenidTitle" class="lycaenid-title-color">🦋 疑似灰蝶科取食</h4>
               <p id="lycaenidReasoning" style="font-size:0.88em;line-height:1.6"></p>
               <div id="lycaenidFps" style="margin:8px 0;display:flex;gap:6px;flex-wrap:wrap;"></div>
               <p id="lycaenidHint" style="font-size:0.85em;color:var(--primary);font-style:italic;margin-top:6px;"></p>
               <a href="/lifecycle.html" class="lycaenid-cta">🦋 了解灰蝶与蚂蚁的故事 →</a>
             </div>
 
-            <!-- 生态背景 -->
-            <div class="result-section"><h4>📖 生态学背景</h4><p id="resultEco"></p></div>
-            <div class="result-section"><h4>🛡️ 植物防御反应</h4><p id="resultDefense"></p></div>
-            <div class="result-section" id="ddSection" class="hidden"><h4>⚖️ 鉴别诊断</h4><p id="resultDD" style="font-size:0.85em;color:var(--text-secondary)"></p></div>
-            <div class="result-section" id="limitSection" class="hidden"><h4>⚠️ 局限性说明</h4><p id="resultLimit" style="font-size:0.82em;color:var(--text-dim);font-style:italic"></p></div>
+            <!-- Row 6: 底部文本对（生态+防御） -->
+            <div class="rb-pair">
+              <div class="rb-half"><h4>📖 生态学背景</h4><p id="resultEco"></p></div>
+              <div class="rb-half"><h4>🛡️ 植物防御反应</h4><p id="resultDefense"></p></div>
+            </div>
+            <div class="rb-wide hidden" id="ddSection"><h4>⚖️ 鉴别诊断</h4><p id="resultDD" style="font-size:0.85em;color:var(--text-secondary)"></p></div>
+            <div class="rb-note hidden" id="limitSection"><p id="resultLimit" style="font-size:0.82em;color:var(--text-dim);font-style:italic"></p></div>
           </div>
         </div>
         </div><!-- /realResultCard -->
       </div>
 
       <!-- 右侧默认：示例图鉴 -->
-      <div class="lab-right" id="labExamples">
+      <div class="lab-right fade-in delay-2" id="labExamples">
         <h3>📚 痕迹类型图鉴（点击了解）</h3>
         <div class="lab-examples-wrap">
           <div class="example-grid" id="exampleGrid"></div>
@@ -193,18 +199,18 @@
   </div>
 
   <!-- 鉴定依据说明 -->
-  <div class="section methodology-bg" style="padding:36px 0;margin-top:0;">
+  <div class="section methodology-bg methodology-section">
     <div class="container">
-      <h3 style="color:var(--primary);font-family:var(--font-serif);margin-bottom:16px;font-size:1.1em;">📖 鉴定依据与方法论</h3>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;color:var(--text-secondary);font-size:0.85em;line-height:1.8;">
-        <div style="background:var(--card-bg);padding:20px;border-radius:var(--radius-md);border:1px solid var(--card-border);">
-          <h4 style="color:var(--accent-green);margin-bottom:8px;">🏛️ DTM 金标准分类框架</h4>
+      <h3 class="methodology-title">📖 鉴定依据与方法论</h3>
+      <div class="methodology-grid">
+        <div class="method-card">
+          <h4 class="mt-green">🏛️ DTM 金标准分类框架</h4>
           <p>本系统严格遵循 <strong>Labandeira DTM（Damage Type Model）</strong> 金标准分类体系（Labandeira CC et al., 2002 <em>PNAS</em> 99:10241; Labandeira CC, 2007 <em>Annu Rev Ecol Evol Syst</em> 38:591），该框架由 Smithsonian 国家自然历史博物馆建立，同时适用于化石记录和现生叶片分析。</p>
           <p style="margin-top:6px">每个鉴定结果都附带唯一的 <strong>DT 编码</strong>（如 DT1=边缘取食, DT2=洞孔取食, DT3=骨架化, DT41=蛇形潜叶, DT51=虫瘿, DT61=刺吸损伤等），可直接用于科学研究数据记录。</p>
           <p style="margin-top:6px">功能群分类基于 <strong>Root (1973)</strong> 和 <strong>Godfray (1984)</strong> 的经典理论。损伤量化参考 <strong>Johnson et al. (2016)</strong> 和 <strong>Myers et al. (2018)</strong> 的标准化协议。</p>
         </div>
-        <div style="background:var(--card-bg);padding:20px;border-radius:var(--radius-md);border:1px solid var(--card-border);">
-          <h4 style="color:var(--primary);margin-bottom:8px;">🤖 AI识别流程</h4>
+        <div class="method-card">
+          <h4 class="mt-blue">🤖 AI识别流程</h4>
           <p><strong>GLM-5V</strong> 多模态视觉模型执行5步推理：</p>
           <ol style="padding-left:18px;margin:4px 0;">
             <li>整体评估（图像质量、叶片形态）</li>
@@ -214,8 +220,8 @@
             <li>输出置信度 + 局限性声明</li>
           </ol>
         </div>
-        <div style="background:var(--card-bg);padding:20px;border-radius:var(--radius-md);border:1px solid var(--card-border);">
-          <h4 style="color:var(--accent-red);margin-bottom:8px;">⚠️ 准确性与边界</h4>
+        <div class="method-card">
+          <h4 class="mt-red">⚠️ 准确性与边界</h4>
           <p><b>能做到的：</b></p>
           <ul style="padding-left:16px;margin:4px 0;">
             <li>基于DTM标准输出唯一DT编码（可用于科研数据记录）</li>
@@ -232,8 +238,8 @@
           </ul>
           <p style="margin-top:6px"><b>做不到的：</b>精确到种级别鉴定、替代专业昆虫学家现场鉴定</ul>
         </div>
-        <div style="background:var(--card-bg);padding:20px;border-radius:var(--radius-md);border:1px solid var(--card-border);">
-          <h4 style="color:var(--accent-gold);margin-bottom:8px;">📚 核心参考文献</h4>
+        <div class="method-card">
+          <h4 class="mt-gold">📚 核心参考文献</h4>
           <ol style="padding-left:18px;margin:0;font-size:0.82em;line-height:1.9;">
             <li>Labandeira CC et al. (2002). PNAS 99(15):10241–10246 — DTM框架奠基</li>
             <li>Labandeira CC (2007). Annu Rev Ecol Evol Syst 38:591–617 — DTM综述</li>
@@ -357,7 +363,9 @@ async function analyzeImage() {
   const previewImg = document.getElementById('previewImg');
 
   // ── 进入loading状态 ──
-  // 左侧：隐藏原图 → 显示扫描覆盖层
+  // 左侧：隐藏上传区+按钮+预览图 → 显示扫描覆盖层
+  document.getElementById('uploadZone').classList.add('hidden');
+  document.getElementById('labActions').classList.add('hidden');
   previewImg.classList.add('hidden');
   overlay.classList.remove('hidden');
   scanPreview.src = uploadedImageData;
@@ -403,6 +411,7 @@ async function analyzeImage() {
     // ── 清理loading状态 ──
     clearInterval(stageTimer); stageTimer = null;
     overlay.classList.add('hidden');
+    document.getElementById('uploadZone').classList.remove('hidden');
     previewImg.classList.remove('hidden');
     btn.disabled = false;
     btn.textContent = '🔍 AI 鉴定';
@@ -413,6 +422,8 @@ async function analyzeImage() {
       skelCard.classList.add('hidden');
       labResult.classList.add('hidden');
       document.getElementById('labExamples').classList.remove('hidden');
+      previewImg.classList.add('hidden');
+      document.getElementById('uploadPlaceholder').classList.remove('hidden');
       alert('分析失败: ' + (data.error || '未知错误'));
       return;
     }
@@ -421,6 +432,7 @@ async function analyzeImage() {
   } catch(err) {
     clearInterval(stageTimer); stageTimer = null;
     overlay.classList.add('hidden');
+    document.getElementById('uploadZone').classList.remove('hidden');
     previewImg.classList.remove('hidden');
     btn.disabled = false;
     btn.textContent = '🔍 AI 鉴定';
@@ -441,6 +453,18 @@ function displayResult(r) {
   realCard.classList.remove('hidden');
   labResult.classList.remove('hidden');
   document.getElementById('labExamples').classList.add('hidden');
+
+  // ── 结果面板交错入场动画 ──
+  const animTargets = realCard.querySelectorAll('.rb-main,.rb-metrics,.rb-wide,.rb-pair,.rb-lycaenid,.rb-note');
+  animTargets.forEach((el, i) => {
+    if(!el.classList.contains('hidden')) {
+      el.style.opacity='0'; el.style.transform='translateY(12px)';
+      setTimeout(() => {
+        el.style.transition='opacity 0.4s ease, transform 0.4s ease';
+        el.style.opacity='1'; el.style.transform='none';
+      }, i * 60);
+    }
+  });
 
   const typeMap = {
     marg:{icon:'📐',cn:'边缘啃食',full:'DT1 — Margin Feeding'},
@@ -475,13 +499,23 @@ function displayResult(r) {
   document.getElementById('resultConfidence').textContent =
     `置信度 ${conf}%${conf >= 80 ? ' ✅高' : conf >= 60 ? ' ⚠️中' : conf < 50 ? ' ❌低' : ''}${confNote}`;
 
-  // ── 损伤量化（新！）──
+  // ── 损伤量化（环形进度条）──
   const sevEl = document.getElementById('severitySection');
   if (r.severity_percent !== undefined) {
     sevEl.classList.remove('hidden');
-    let sevIcon = r.severity_level === '轻度' ? '🟢' : r.severity_level === '中度' ? '🟡' : '🔴';
-    document.getElementById('severityText').textContent =
-      `${sevIcon} ${r.severity_level || '?'} · 约${r.severity_percent}% 叶面积受损`;
+    const pct = Math.min(100, Math.max(0, r.severity_percent));
+    const level = r.severity_level || '?';
+    const ring = document.getElementById('severityRing');
+    const ringVal = document.getElementById('severityRingValue');
+    const ringLabel = document.getElementById('severityRingLabel');
+
+    // 设置环形进度 + 颜色
+    ring.style.setProperty('--pct', pct);
+    const color = level.includes('轻') ? 'var(--accent-green)' :
+                  level.includes('中') ? 'var(--accent-gold)' : 'var(--accent-red)';
+    ring.style.setProperty('--ring-color', color);
+    ringVal.textContent = pct + '%';
+    ringLabel.innerHTML = `<strong>${level}</strong> · 叶面积受损`;
   } else {
     sevEl.classList.add('hidden');
   }
@@ -522,7 +556,7 @@ function displayResult(r) {
   const featEl = document.getElementById('resultFeatures'); featEl.innerHTML = '';
   (r.key_features||[]).forEach(f => { const tag=document.createElement('span');tag.className='feature-tag';tag.textContent=f;featEl.appendChild(tag); });
   const insectEl = document.getElementById('resultInsects'); insectEl.innerHTML = '';
-  (r.insects_possible||[]).forEach(ins => { const tag=document.createElement('span');tag.className='insect-tag';tag.textContent=ins;insectEl.appendChild(tag); });
+  (r.insects_possible||[]).forEach(ins => { const tag=document.createElement('span');tag.className='insect-tag';tag.innerHTML=ins;insectEl.appendChild(tag); });
   const guildEl = document.getElementById('resultGuild');
   guildEl.textContent = guildMap[r.feeding_guild] || r.feeding_guild || '';
   guildEl.className = 'guild-badge guild-' + (r.feeding_guild || '');
@@ -553,6 +587,7 @@ function resetLab() {
   uploadedImageData=null; uploadedFilename='';
   const previewImg = document.getElementById('previewImg');
   const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+  const uploadZone = document.getElementById('uploadZone');
   const labActions = document.getElementById('labActions');
   const labResult = document.getElementById('labResult');
   const labExamples = document.getElementById('labExamples');
@@ -561,6 +596,7 @@ function resetLab() {
   const realCard = document.getElementById('realResultCard');
 
   previewImg.classList.add('hidden'); uploadPlaceholder.classList.remove('hidden');
+  uploadZone.classList.remove('hidden');
   labActions.classList.add('hidden');    labResult.classList.add('hidden');
   labExamples.classList.remove('hidden'); overlay.classList.add('hidden');
   skeleton.classList.add('hidden');   realCard.classList.add('hidden');
