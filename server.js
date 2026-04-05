@@ -930,7 +930,15 @@ if (require.main === module) {
   log.info('🧪 API: POST /api/identify-bite  POST /api/evolve[?stream=true]');
   log.info('LOG_LEVEL=%s | LOG_JSON=%s', process.env.LOG_LEVEL || 'debug', process.env.LOG_JSON === 'true');
 
-  app.listen(PORT, '0.0.0.0');
+  const server = app.listen(PORT, '0.0.0.0');
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      log.error('端口 %s 已被占用，请先关闭占用该端口的进程', PORT);
+      log.error('提示: 运行 netstat -ano | findstr :%s 找到 PID', PORT);
+      process.exit(1);
+    }
+    throw err;
+  });
 }
 
 module.exports = { app };
