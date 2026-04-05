@@ -1,6 +1,12 @@
 require('dotenv').config();
 const path = require('path');
 const express = require('express');
+const { createLogger, generateReqId } = require('./lib/logger');
+const log = createLogger('server');
+const logIdentify = createLogger('identify');
+const logEvolve = createLogger('evolve');
+const logRateLimit = createLogger('rateLimit');
+
 const app = express();
 const PORT = process.env.BUTTERFLY_PORT || 3242;
 const BASE_DIR = __dirname;
@@ -20,6 +26,48 @@ app.use(express.static(path.join(BASE_DIR, 'public'), {
   etag: true,
 }));
 
+// ── 全局请求日志（含 reqId 追踪）──
+app.use((req, res, next) => {
+  const reqId = generateReqId();
+  req._reqId = reqId;
+  const ip = req.ip || req.connection?.remoteAddress || 'unknown';
+  const ua = req.get('User-Agent') || '-';
+  const contentLength = req.get('Content-Length');
+  const t = log.timer(`${req.method} ${req.path}`);
+
+  log.debug('%s %s → start [%s] ip=%s body=%s ua=%s',
+    req.method, req.path, reqId, ip,
+    contentLength ? formatBytes(parseInt(contentLength)) : '-',
+    ua.length > 80 ? ua.slice(0, 80) + '...' : ua
+  );
+
+  // 捕获响应大小
+  let respSize = 0;
+  const origEnd = res.end.bind(res);
+  res.end = function(...args) {
+    if (args[0]) respSize += Buffer.byteLength(args[0]);
+    return origEnd(...args);
+  };
+
+  res.on('finish', () => {
+    const ms = t.elapsed.toFixed(0);
+    const level = res.statusCode >= 400 ? 'warn' : 'debug';
+    log[level]('%s %s → %s (%sms) [%s] resp=%s',
+      req.method, req.path, res.statusCode, ms, reqId,
+      formatBytes(respSize || res.getHeader('content-length') || 0)
+    );
+  });
+  next();
+});
+
+/** 格式化字节数 */
+function formatBytes(bytes) {
+  if (!bytes || bytes === 0) return '0B';
+  if (bytes < 1024) return bytes + 'B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + 'KB';
+  return (bytes / 1048576).toFixed(1) + 'MB';
+}
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(BASE_DIR, 'public', 'index.html'));
 });
@@ -30,15 +78,24 @@ app.get('/api/health', (req, res) => {
 
 // ===== 虫痕鉴定 API =====
 app.post('/api/identify-bite', identifyBiteLimiter, async (req, res) => {
+  const reqLog = logIdentify.withContext({ reqId: req._reqId });
+  const t = logEvolve.reqTimer(req);
+
   try {
     const { imageData, filename } = req.body;
-    
+
     if (!imageData) {
+      reqLog.warn('请求缺少 imageData 参数');
       return res.status(400).json({ error: '缺少图片数据' });
     }
 
     // 提取base64数据
     const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
+    reqLog.debug('params: {filename:"%s"} base64_len=%s chars (~%s)',
+      filename || 'unnamed',
+      base64Data.length,
+      formatBytes(base64Data.length * 0.75)
+    );
     
     // 调用GLM-5V进行虫痕识别
     // 基于以下学术分类框架：
@@ -436,12 +493,15 @@ DT71 — 线形产卵切口 (Oviposition Slit / Egg Clutch)
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error('Zhipu API error:', response.status, errText);
+      reqLog.error('Zhipu API error: status=%s body=%s', response.status, errText.slice(0, 500));
       return res.status(500).json({ error: 'AI模型调用失败', details: errText });
     }
 
     const data = await response.json();
     let content = data.choices?.[0]?.message?.content || '';
+    reqLog.info('AI response received (%sms) model=%s content_len=%s',
+      t.elapsed.toFixed(0), data.model, content.length
+    );
     
     // 尝试从返回中提取JSON
     let result;
@@ -449,10 +509,17 @@ DT71 — 线形产卵切口 (Oviposition Slit / Egg Clutch)
     if (jsonMatch) {
       try {
         result = JSON.parse(jsonMatch[0]);
+        reqLog.debug('JSON parsed ok, top_keys=%s',
+          Object.keys(result).slice(0, 10).join(',')
+        );
       } catch(e) {
+        reqLog.warn('JSON parse failed: %s (fallback to raw)', e.message.slice(0, 100));
         result = { raw_response: content, parse_error: true };
       }
     } else {
+      reqLog.warn('No JSON found in response, len=%s preview=%s',
+        content.length, content.slice(0, 120)
+      );
       result = { raw_response: content };
     }
 
@@ -460,7 +527,7 @@ DT71 — 线形产卵切口 (Oviposition Slit / Egg Clutch)
     result = italicizeLatinNames(result);
 
     // 记录使用量
-    console.log(`[虫痕鉴定] model=${data.model} usage=${JSON.stringify(data.usage || {})}`);
+    reqLog.info('done usage=%s', JSON.stringify(data.usage || {}));
 
     res.json({
       success: true,
@@ -470,7 +537,10 @@ DT71 — 线形产卵切口 (Oviposition Slit / Egg Clutch)
     });
 
   } catch (error) {
-    console.error('[虫痕鉴定] Error:', error.message);
+    reqLog.error('Exception: %s | code=%s | stack=%s',
+      error.message, error.code,
+      error.stack ? error.stack.split('\n').slice(0, 3).join(' | ') : 'N/A'
+    );
     res.status(500).json({ error: error.message });
   }
 });
@@ -565,11 +635,20 @@ const evolveLimiter = createRateLimit();
 
 app.post('/api/evolve', evolveLimiter, async (req, res) => {
   const useStream = req.query.stream === 'true';
+  const reqLog = logEvolve.withContext({ reqId: req._reqId });
+  const t = logEvolve.reqTimer(req);
 
   try {
     const { mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season } = req.body;
 
+    reqLog.debug('mode=%s params={mouthpart:%s size:%s speed:%s stealth:%s chems:%s plant:%s biome:%s season:%s}',
+      useStream ? 'SSE' : 'JSON',
+      mouthpart || '-', bodySize || '-', feedingSpeed || '-', stealth || '-',
+      chemicals?.join('+') || '-', hostPlant || '-', biome || '-', season || '-'
+    );
+
     if (!mouthpart || !hostPlant) {
+      reqLog.warn('缺少必要参数: mouthpart=%s hostPlant=%s', !!mouthpart, !!hostPlant);
       return res.status(400).json({ error: '缺少必要参数' });
     }
 
@@ -579,32 +658,48 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
       res.flushHeaders();
+      reqLog.debug('SSE headers sent');
 
       const sendSSE = (event, data) => {
         res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
       };
 
       sendSSE('status', { step: 'calling_ai', message: '正在连接演化引擎...' });
+      reqLog.debug('SSE> status: calling_ai');
 
-      const result = await runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season });
+      const result = await runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season }, reqLog);
 
       if (!result.success) {
+        reqLog.error('AI调用失败: %s', result.error);
         sendSSE('error', { error: result.error });
+        t.done(500);
         res.end();
         return;
       }
 
       // 逐世代推送
       const gens = result.result.generations || [];
+      reqLog.info('流式推送 %d 个世代', gens.length);
       sendSSE('status', { step: 'streaming', total: gens.length, message: `演化完成！共 ${gens.length} 个世代` });
 
       for (let i = 0; i < gens.length; i++) {
-        sendSSE('generation', { index: i, total: gens.length, data: gens[i] });
+        const gen = gens[i];
+        reqLog.debug('SSE> gen[%d/%d] dt=%s milestone=%s fitness=%s',
+          i + 1, gens.length,
+          gen.damage_type || '?',
+          gen.is_milestone ? 'YES' : '-',
+          gen.fitness ?? '?'
+        );
+        sendSSE('generation', { index: i, total: gens.length, data: gen });
         // 小延迟让前端有动画时间
         await new Promise(r => setTimeout(r, 300));
       }
 
       // 推送最终结果
+      reqLog.info('SSE> complete: dt=%s path=%s',
+        result.result.final_dt_code || '?',
+        result.result.evolution_path || '?'
+      );
       sendSSE('complete', {
         final_dt_code: result.result.final_dt_code,
         final_dt_name: result.result.final_dt_name,
@@ -616,16 +711,20 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
       });
 
       res.end();
+      reqLog.debug('SSE stream closed, total=%d gens pushed', gens.length);
+      t.done(200, `${gens.length}gens`);
       return;
     }
 
     // ── 普通JSON模式（原有逻辑）──
-    const result = await runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season });
+    const result = await runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season }, reqLog);
 
     if (!result.success) {
+      reqLog.error('AI返回失败: %s', result.error);
       return res.status(500).json(result);
     }
 
+    reqLog.info('done gens=%s', result.result?.generations?.length ?? '?');
     res.json({
       success: true,
       result: result.result,
@@ -634,7 +733,11 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('[进化沙盒] Error:', error.message);
+    reqLog.error('Exception: %s | code=%s | stack=%s',
+      error.message, error.code,
+      error.stack ? error.stack.split('\n').slice(0, 3).join(' | ') : 'N/A'
+    );
+    t.done(500, 'exception');
     if (useStream) {
       res.write(`event: error\ndata: ${JSON.stringify({ error: error.message })}\n\n`);
       res.end();
@@ -645,7 +748,8 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
 });
 
 // ── 核心AI调用函数（复用）──
-async function runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season }) {
+async function runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season }, reqLog = logEvolve) {
+  const aiTimer = reqLog.timer('Zhipu AI (evolve)');
   try {
 
     const evolveSystemPrompt = `你是一位进化生物学家、古昆虫学家和植物生态学家，专精于植食性昆虫与植物之间的协同进化（coevolutionary arms race）。
@@ -737,6 +841,8 @@ async function runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chem
 
 请输出完整JSON。`;
 
+    reqLog.debug('calling Zhipu AI (model=glm-5.1, max_tokens=8000)');
+
     const response = await fetch(ZHIPU_BASE_URL, {
       method: 'POST',
       headers: {
@@ -744,7 +850,7 @@ async function runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chem
         'Authorization': `Bearer ${ZHIPU_API_KEY}`
       },
       body: JSON.stringify({
-        model: ZHIPU_MODEL,  // 统一使用配置的模型
+        model: 'glm-5.1',  // 进化沙盒用 glm-5.1，长文本输出更稳定
         messages: [
           { role: 'system', content: evolveSystemPrompt },
           { role: 'user', content: evolveUserPrompt }
@@ -756,31 +862,42 @@ async function runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chem
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error('[进化沙盒] Zhipu API error:', response.status, errText);
+      reqLog.error('Zhipu API error: status=%s body=%s', response.status, errText.slice(0, 500));
       return { success: false, error: 'AI模型调用失败', details: errText };
     }
 
     const data = await response.json();
     let content = data.choices?.[0]?.message?.content || '';
+    aiTimer.mark('received');
+    reqLog.info('AI response received (%sms) model=%s content_len=%s',
+      aiTimer.elapsed.toFixed(0), data.model, content.length
+    );
 
     let result;
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       try {
         result = JSON.parse(jsonMatch[0]);
+        reqLog.debug('JSON parsed ok, gens=%s', result.generations?.length ?? '?');
       } catch(e) {
+        reqLog.warn('JSON parse failed: len=%s err=%s (fallback to raw)', content.length, e.message.slice(0,100));
         result = { raw_response: content, parse_error: true };
       }
     } else {
+      reqLog.warn('No JSON in response: len=%s preview=%s', content.length, content.slice(0, 150));
       result = { raw_response: content };
     }
 
-    console.log(`[进化沙盒] model=${data.model} usage=${JSON.stringify(data.usage || {})}`);
+    aiTimer.stop(`gens=${result.generations?.length ?? '?'}`);
+    reqLog.info('done usage=%s', JSON.stringify(data.usage || {}));
 
     return { success: true, result, model: data.model, usage: data.usage };
 
   } catch (error) {
-    console.error('[进化沙盒] Error:', error.message);
+    reqLog.error('Exception: %s | code=%s | cause=%s | stack=%s',
+      error.message, error.code, error.cause?.message || 'N/A',
+      error.stack ? error.stack.split('\n').slice(0, 3).join(' | ') : 'N/A'
+    );
     return { success: false, error: error.message };
   }
 }
@@ -795,10 +912,25 @@ app.get('/sitemap.xml', (req, res) => {
 
 // 仅在直接运行时启动服务器（测试导入时不自动监听）
 if (require.main === module) {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🦋 Butterfly-Ant Mutualism site running on http://0.0.0.0:${PORT}`);
-    console.log(`🧪 Insect Bite Mark Identification API ready at /api/identify-bite`);
-  });
+  // ── 启动信息 ──
+  log.info('🦋 Butterfly-Ant Mutualism site running on http://0.0.0.0:%s', PORT);
+  log.debug('Node %s | env=%s | memory=%sMB',
+    process.version,
+    process.env.NODE_ENV || 'development',
+    (process.memoryUsage?.().heapUsed / 1024 / 1024).toFixed(0) || '?'
+  );
+  const maskedKey = ZHIPU_API_KEY
+    ? ZHIPU_API_KEY.slice(0, 8) + '***' + ZHIPU_API_KEY.slice(-4)
+    : '(not set)';
+  log.debug('API Key=%s | Model=%s | Base=%s',
+    maskedKey, ZHIPU_MODEL,
+    ZHIPU_BASE_URL.replace(/\/\/[^@]+@/, '//***@')
+  );
+  log.debug('Middlewares: json(10MB) · static(1h cache) · request-log · rateLimit(10/15m)');
+  log.info('🧪 API: POST /api/identify-bite  POST /api/evolve[?stream=true]');
+  log.info('LOG_LEVEL=%s | LOG_JSON=%s', process.env.LOG_LEVEL || 'debug', process.env.LOG_JSON === 'true');
+
+  app.listen(PORT, '0.0.0.0');
 }
 
 module.exports = { app };
