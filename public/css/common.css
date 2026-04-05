@@ -2,81 +2,193 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;600;700;family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* === Color System === */
-  --primary: #3B7DD8;
-  --primary-dark: #2A5AA0;
-  --primary-soft: rgba(59,125,216,0.08);
-  --accent-gold: #C9A227;
-  --accent-green: #3A9D5C;
-  --accent-red: #D4644A;
-  --accent-purple: #8B6DB8;
+  /* ===== Layer 1: Global Structural Tokens (全站共享) ===== */
+
   /* Neutral bridge colors */
   --neutral-100: rgba(220,230,244,0.06);
   --neutral-200: rgba(220,230,244,0.10);
   --neutral-300: rgba(220,230,244,0.16);
 
-  /* === Background Layers === */
-  --bg-deep: #080f1a;
-  --bg: #0b1628;
-  --card-bg: rgba(14,28,48,0.88);
-  --card-bg-elevated: rgba(18,35,58,0.92);
-  --card-border: rgba(59,125,216,0.12);
-  --card-border-hover: rgba(59,125,216,0.28);
+  /* Type Scale (5-level, ~1.25 golden ratio) */
+  --ts-display:   clamp(2.2em, 5.5vw, 4.2em);
+  --ts-h1:        clamp(1.7em, 4vw, 2.6em);
+  --ts-h2:        clamp(1.4em, 3.2vw, 2em);
+  --ts-h3:        clamp(1.05em, 1.5vw, 1.25em);
+  --ts-body:      0.94em;
+  --ts-small:     0.84em;
+  --ts-micro:     0.76em;
 
-  /* === Text System — WCAG AA Compliant === */
-  --text:         #e2ecf8;   /* 13.5:1 on card-bg → AAA */
-  --text-secondary:#a8c4e0;  /* 5.6:1 on card-bg → AA ✅ */
-  --text-muted:   #8eb0d4;  /* 4.3:1 on card-bg → AA ✅ (was 2.8:1) */
-  --text-dim:     #6e92b8;  /* 3.0:1 on card-bg → large text only */
+  /* Spacing Scale */
+  --space-xs: 4px;   --space-sm: 8px;  --space-md: 16px;
+  --space-lg: 24px;  --space-xl: 40px;  --space-2xl: 64px;
 
-  /* === Type Scale (5-level, ~1.25 golden ratio) === */
-  --ts-display:   clamp(2.2em, 5.5vw, 4.2em);    /* 35-67px — Hero H1 */
-  --ts-h1:        clamp(1.7em, 4vw, 2.6em);       /* 27-42px — Page H1 */
-  --ts-h2:        clamp(1.4em, 3.2vw, 2em);       /* 22-32px — Section H2 */
-  --ts-h3:        clamp(1.05em, 1.5vw, 1.25em);   /* 17-20px — Card H3 */
-  --ts-body:      0.94em;                          /* 15px — Body text */
-  --ts-small:     0.84em;                          /* 13px — Caption */
-  --ts-micro:     0.76em;                          /* 12px — Legal/metadata */
+  /* Easing Curve Family */
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:    cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring:cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth:cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* === Spacing Scale === */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 40px;
-  --space-2xl: 64px;
+  /* Radius */
+  --radius-sm: 8px;  --radius-md: 14px;  --radius-lg: 20px;  --radius-full: 9999px;
 
-  /* === Easing Curve Family === */
-  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);    /* 出场/强调 — decelerate */
-  --ease-in:    cubic-bezier(0.65, 0, 0.35, 1);   /* 入场 — accelerate */
-  --ease-spring:cubic-bezier(0.34, 1.56, 0.64, 1);/* 弹性 — playful */
-  --ease-smooth:cubic-bezier(0.4, 0, 0.2, 1);     /* 标准 ease-out */
-
-  /* === Radius === */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-full: 9999px;
-
-  /* === Shadows === */
+  /* Shadows */
   --shadow-sm: 0 2px 12px rgba(0,0,0,0.25);
   --shadow-md: 0 8px 32px rgba(0,0,0,0.3);
   --shadow-lg: 0 16px 48px rgba(0,0,0,0.4);
   --shadow-glow: 0 0 40px rgba(59,125,216,0.1);
   --shadow-glow-gold: 0 0 30px rgba(201,162,39,0.12);
 
-  /* === Font Families === */
+  /* Font Families */
   --font-sans: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-serif: 'Noto Serif SC', 'Georgia', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  /* === Transitions === */
+  /* Transitions */
   --transition-fast: 0.2s var(--ease-smooth);
   --transition-base: 0.35s var(--ease-out);
   --transition-slow: 0.5s var(--ease-out);
+
+  /* ===== Layer 2: Theme Color Tokens (Default: Blue Science) ===== */
+  --theme-primary:        #3B7DD8;
+  --theme-primary-dark:   #2A5AA0;
+  --theme-primary-soft:   rgba(59,125,216,0.08);
+  --theme-accent-gold:    #C9A227;
+  --theme-accent-green:   #3A9D5C;
+  --theme-accent-red:     #D4644A;
+  --theme-accent-purple:  #8B6DB8;
+  --theme-bg-deep:        #080f1a;
+  --theme-bg:             #0b1628;
+  --theme-card-bg:        rgba(14,28,48,0.88);
+  --theme-card-elevated:  rgba(18,35,58,0.92);
+  --theme-card-border:    rgba(59,125,216,0.12);
+  --theme-card-border-hover: rgba(59,125,216,0.28);
+  --theme-text:           #e2ecf8;
+  --theme-text-secondary: #a8c4e0;
+  --theme-text-muted:     #8eb0d4;
+  --theme-text-dim:       #6e92b8;
+
+  /* ===== Layer 3: Semantic Aliases (组件引用此层，保持原名不变) ===== */
+  --primary:         var(--theme-primary);
+  --primary-dark:    var(--theme-primary-dark);
+  --primary-soft:    var(--theme-primary-soft);
+  --accent-gold:     var(--theme-accent-gold);
+  --accent-green:    var(--theme-accent-green);
+  --accent-red:      var(--theme-accent-red);
+  --accent-purple:   var(--theme-accent-purple);
+  --bg-deep:         var(--theme-bg-deep);
+  --bg:              var(--theme-bg);
+  --card-bg:         var(--theme-card-bg);
+  --card-bg-elevated:var(--theme-card-elevated);
+  --card-border:     var(--theme-card-border);
+  --card-border-hover:var(--theme-card-border-hover);
+  --text:            var(--theme-text);
+  --text-secondary:  var(--theme-text-secondary);
+  --text-muted:      var(--theme-text-muted);
+  --text-dim:        var(--theme-text-dim);
+
+  /* ============================================
+     Responsive Breakpoint System
+     --bp-xs: 480px   --bp-sm: 600px   --bp-md: 640px
+     --bp-lg: 768px   --bp-xl: 860px
+     ============================================ */
+
+/* ===== Theme Variant: Evolution Sandbox (Dark Green) =====
+.theme-evolution,
+.theme-evolution * {
+  --theme-primary:        #22c55e;
+  --theme-primary-dark:   #16a34a;
+  --theme-primary-soft:   rgba(34,197,94,0.08);
+  --theme-accent-gold:    #f59e0b;
+  --theme-accent-green:   #22c55e;
+  --theme-accent-red:     #ef4444;
+  --theme-accent-purple:  #a855f7;
+  --theme-bg-deep:        #0a0f0d;
+  --theme-bg:             #0a0f0d;
+  --theme-card-bg:        rgba(12,22,18,0.92);
+  --theme-card-elevated:  rgba(12,22,18,0.95);
+  --theme-card-border:    rgba(34,197,94,0.15);
+  --theme-card-border-hover: rgba(34,197,94,0.30);
+}
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+
+/* ===== Utility Classes ===== */
+.hidden { display: none !important; }
+
+/* 渐变进度条（化学通讯页） */
+.bar-fill-green   { background: linear-gradient(90deg, #4CAF7F, #2ecc71); }
+.bar-fill-purple  { background: linear-gradient(90deg, #9B7ED9, #8e44ad); }
+.bar-fill-gold    { background: linear-gradient(90deg, #D4A843, #f39c12); }
+
+/* FFG 徽章 */
+.ffg-badge-gradient {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
 }
 
-* { margin:0; padding:0; box-sizing:border-box; }
+/* 警告提示框 */
+.warning-box {
+  background: rgba(255,193,7,0.08);
+  border-left: 3px solid #ffc107;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 8px 0;
+}
+.warning-box p { color: #b8860b; font-size: 0.85em; }
+
+/* 灰蝶科卡片 */
+.lycaenid-card-styled {
+  background: linear-gradient(135deg, rgba(138,180,248,0.12), rgba(255,183,178,0.12));
+  border: 1px solid rgba(138,180,248,0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0;
+}
+.lycaenid-title-color { color: #5b8def; }
+
+/* 方法论区背景 */
+.methodology-bg { background: rgba(15,35,60,0.2); }
+
+/* ===== 语义布局类（Phase 4B） ===== */
+
+/* 参考文献区（全站复用） */
+.ref-section {
+  margin-top: 36px; padding: 20px;
+  background: var(--card-bg); border-radius: var(--radius-lg);
+  border: 1px solid var(--card-border);
+}
+.ref-section h3 { color: var(--primary); font-size: 0.95em; margin-bottom: 12px; }
+.ref-section .ref-body { color: var(--text-dim); font-size: 0.82em; line-height: 1.9; }
+
+/* 关于页内容卡片 */
+.about-card {
+  max-width: 720px; margin: 0 auto;
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg); padding: 40px; line-height: 1.95;
+}
+
+/* 生命周期阶段时间标签 */
+.stage-timing { margin-top: 6px; font-size: 0.82em; }
+.stage-timing.gold  { color: var(--accent-gold); }
+.stage-timing.green { color: var(--accent-green); }
+.stage-timing.blue  { color: var(--primary); }
+.stage-timing.purple{ color: var(--accent-purple); }
+.stage-timing.red   { color: var(--accent-red); }
+
+/* 物种描述段落 */
+.species-desc { margin-top: 8px; font-size: 0.84em; }
+
+/* 页面副标题 */
+.page-subtitle { text-align: center; color: var(--text-muted); font-size: var(--ts-small); margin-bottom: 24px; }
+
+/* 居中区块 */
+.centered-section { margin-top: 40px; text-align: center; }
+.lycaenid-cta {
+  display: inline-block; margin-top: 10px; padding: 6px 16px;
+  background: linear-gradient(135deg, #5b8def, #8ab4f8);
+  color: #fff; border-radius: 20px; text-decoration: none;
+  font-size: 0.82em; font-weight: 600;
+}
 html { scroll-behavior: smooth; font-size:16px; }
 body {
   font-family: var(--font-sans); background: var(--bg-deep); color: var(--text);

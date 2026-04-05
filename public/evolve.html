@@ -321,7 +321,7 @@
               <div class="evo-empty-icon">🌿</div>
               <p>选择预设或调整参数<br>点击「运行演化」开始模拟</p>
             </div>
-            <svg class="base-leaf" id="leafSvg" viewBox="0 0 400 300" style="display:none">
+            <svg class="base-leaf" id="leafSvg" viewBox="0 0 400 300" class="hidden">
               <defs>
                 <filter id="leafGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
                 <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(40,140,60,.2)"/><stop offset="100%" stop-color="rgba(30,110,45,.12)"/></linearGradient>
@@ -338,14 +338,14 @@
         </div>
 
         <!-- 叶子状态条 -->
-        <div class="leaf-status-bars" id="leafStatusBars" style="display:none">
+        <div class="leaf-status-bars" id="leafStatusBars" class="hidden">
           <div class="status-bar-item"><div class="status-bar-label">健康度</div><div class="status-bar-track"><div class="status-bar-fill" id="barHealth" style="width:100%"></div></div><div class="status-bar-value" id="valHealth">100%</div></div>
           <div class="status-bar-item"><div class="status-bar-label">叶片厚度</div><div class="status-bar-track"><div class="status-bar-fill" id="barThickness" style="width:30%"></div></div><div class="status-bar-value" id="valThickness">薄</div></div>
           <div class="status-bar-item"><div class="status-bar-label">毒素浓度</div><div class="status-bar-track"><div class="status-bar-fill" id="barToxicity" style="width:5%"></div></div><div class="status-bar-value" id="valToxicity">低</div></div>
         </div>
 
         <!-- 时间线播放器 -->
-        <div class="timeline-player" id="timelinePlayer" style="display:none">
+        <div class="timeline-player" id="timelinePlayer" class="hidden">
           <div class="timeline-header">
             <div><div class="timeline-gen-num" id="genNum">—</div><div class="timeline-gen-label" id="genLabel">等待模拟</div></div>
             <div class="timeline-controls">
@@ -361,7 +361,7 @@
         </div>
 
         <!-- 叙事面板 -->
-        <div class="narrative-panel" id="narrativePanel" style="display:none">
+        <div class="narrative-panel" id="narrativePanel" class="hidden">
           <div class="narrative-header">
             <div class="narrative-dt-badge" id="dtBadge">—</div>
             <div class="narrative-fitness" id="fitnessDisplay">适应度 —</div>
@@ -379,7 +379,7 @@
         </div>
 
         <!-- 最终结果 -->
-        <div class="result-card" id="resultCard" style="display:none"></div>
+        <div class="result-card" id="resultCard" class="hidden"></div>
       </div>
     </div>
   </div>
@@ -495,7 +495,7 @@
 
       // 显示流式进度
       prog.classList.remove('hidden');
-      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('emptyState').classList.add('hidden');
       document.getElementById('spText').textContent = '正在连接演化引擎...';
       document.getElementById('spSub').textContent = '准备进入千万年时光';
       document.getElementById('spBarFill').style.width = '0%';
@@ -608,9 +608,9 @@
     function initTimelineUI() {
       const gens = evolutionData.generations;
       if (!gens || !gens.length) return;
-      document.getElementById('timelinePlayer').style.display = 'block';
-      document.getElementById('narrativePanel').style.display = 'block';
-      document.getElementById('leafStatusBars').style.display = 'grid';
+      document.getElementById('timelinePlayer').classList.remove('hidden');
+      document.getElementById('narrativePanel').classList.remove('hidden');
+      document.getElementById('leafStatusBars').classList.remove('hidden');
 
       const markersEl = document.getElementById('milestoneMarkers');
       markersEl.innerHTML = '';
@@ -622,8 +622,8 @@
         markersEl.appendChild(dot);
       });
 
-      document.getElementById('emptyState').style.display = 'none';
-      document.getElementById('leafSvg').style.display = 'block';
+      document.getElementById('emptyState').classList.add('hidden');
+      document.getElementById('leafSvg').classList.remove('hidden');
 
       // 入场动画
       const svg = document.getElementById('leafSvg');
@@ -659,7 +659,7 @@
       document.querySelectorAll('.milestone-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
 
       if (idx === gens.length - 1) showResultCard();
-      else document.getElementById('resultCard').style.display = 'none';
+      else document.getElementById('resultCard').classList.add('hidden');
     }
 
     // ── 更新叙事面板 ──
@@ -760,7 +760,7 @@
     function showResultCard() {
       if (!evolutionData) return;
       const card = document.getElementById('resultCard');
-      card.style.display = 'block';
+      card.classList.remove('hidden');
       const pathMap = {'coevolutionary_arms_race':'🔄 协同进化军备竞赛','directional_change':'↗️ 定向演化','extinction':'💀 灭绝','speciation':'✨ 物种形成','stable_equilibrium':'⚖️ 稳定平衡'};
       card.innerHTML = `
         <h3>🏆 演化完成</h3>

@@ -91,7 +91,7 @@ function renderQuiz() {
     const b = document.createElement('button');
     b.className = 'btn btn-outline';
     b.textContent = '下一题 →';
-    b.style.display = 'none';
+    b.classList.add('hidden');
     b.id = 'nextBtn';
     b.onclick = () => { goToNext(quizState); renderQuiz(); };
     navEl.appendChild(b);
@@ -123,7 +123,7 @@ function handleAnswer(idx, btn) {
   }
 
   const nb = document.getElementById('nextBtn');
-  if (nb) nb.style.display = 'inline-block';
+  if (nb) nb.classList.remove('hidden');
   else if (quizState.currentIndex === QUIZ_DATA.length - 1) {
     setTimeout(() => showResults(), 600);
   }

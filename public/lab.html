@@ -55,7 +55,7 @@
       <div class="lab-left">
         <div class="lab-left-title"><span class="llt-icon">📤</span>样本上传</div>
         <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
-          <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleUpload(event)">
+          <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleUpload(event)">
           <div id="uploadPlaceholder">
             <div class="upload-icon">📷</div>
             <p>点击或拖拽上传叶片照片</p>
@@ -64,13 +64,13 @@
           <img id="previewImg" src="" alt="" style="display:none;max-width:100%;border-radius:12px;">
         </div>
 
-        <div class="lab-actions" id="labActions" style="display:none">
+        <div class="lab-actions" id="labActions" class="hidden">
           <button class="btn btn-primary" id="analyzeBtn" onclick="analyzeImage()">🔍 AI 鉴定</button>
           <button class="btn btn-outline" onclick="resetLab()">🔄 重新上传</button>
         </div>
 
         <!-- 扫描分析层（loading时覆盖在预览图上） -->
-        <div class="lab-scan-overlay" id="labScanOverlay" style="display:none">
+        <div class="lab-scan-overlay" id="labScanOverlay" class="hidden">
           <div class="scan-container" id="scanContainer">
             <img class="scan-preview" id="scanPreview" src="" alt="">
             <div class="scan-line"></div>
@@ -91,7 +91,7 @@
       </div>
 
       <!-- 右侧：结果面板 -->
-      <div class="lab-right" id="labResult" style="display:none">
+      <div class="lab-right" id="labResult" class="hidden">
         <!-- 骨架屏（loading时显示） -->
         <div class="skeleton-card" id="skeletonCard">
           <div class="sk-header">
@@ -111,7 +111,7 @@
         </div>
 
         <!-- 真实结果（loading完成后显示） -->
-        <div class="result-card" id="realResultCard" style="display:none">
+        <div class="result-card" id="realResultCard" class="hidden">
           <div class="result-header">
             <span class="result-type-icon" id="resultIcon">❓</span>
             <div>
@@ -124,13 +124,13 @@
             <div class="result-section"><h4>🔍 痕迹特征</h4><p id="resultDesc"></p><div class="feature-tags" id="resultFeatures"></div></div>
 
             <!-- 损伤量化 -->
-            <div class="result-section" id="severitySection" style="display:none"><h4>📊 损伤程度</h4><p id="severityText" style="font-weight:600"></p></div>
+            <div class="result-section" id="severitySection" class="hidden"><h4>📊 损伤程度</h4><p id="severityText" style="font-weight:600"></p></div>
 
             <!-- FFG功能性取食组 -->
-            <div class="result-section" id="ffgSection" style="display:none"><h4>🏛️ 功能性取食组</h4><span class="guild-badge" id="ffgText" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff"></span></div>
+            <div class="result-section" id="ffgSection" class="hidden"><h4>🏛️ 功能性取食组</h4><span class="guild-badge ffg-badge-gradient" id="ffgText"></span></div>
 
             <!-- 混淆组警告 -->
-            <div class="result-section" id="confusionSection" style="display:none;background:rgba(255,193,7,0.08);border-left:3px solid #ffc107;border-radius:8px;padding:12px 16px;margin:8px 0;"><p id="confusionText" style="font-size:0.85em;color:#b8860b"></p></div>
+            <div class="result-section warning-box hidden" id="confusionSection"><p id="confusionText"></p></div>
 
             <!-- 可能的昆虫 -->
             <div class="result-section"><h4>🐛 可能的昆虫</h4><div class="insect-list" id="resultInsects"></div></div>
@@ -139,19 +139,19 @@
             <div class="result-section"><h4>🌿 口器类型</h4><span class="guild-badge" id="resultGuild"></span></div>
 
             <!-- 🦋 灰蝶专项检测卡片 -->
-            <div class="result-section lycaenid-card" id="lycaenidSection" style="display:none;background:linear-gradient(135deg,rgba(138,180,248,0.12),rgba(255,183,178,0.12));border:1px solid rgba(138,180,248,0.3);border-radius:12px;padding:16px;margin:12px 0;">
-              <h4 id="lycaenidTitle" style="color:#5b8def;margin-bottom:8px;">🦋 疑似灰蝶科取食</h4>
+            <div class="result-section lycaenid-card lycaenid-card-styled hidden" id="lycaenidSection">
+              <h4 id="lycaenidTitle" class="lycaenid-title-color" style="margin-bottom:8px;">🦋 疑似灰蝶科取食</h4>
               <p id="lycaenidReasoning" style="font-size:0.88em;line-height:1.6"></p>
               <div id="lycaenidFps" style="margin:8px 0;display:flex;gap:6px;flex-wrap:wrap;"></div>
-              <p id="lycaenidHint" style="font-size:0.85em;color:var(--accent-blue);font-style:italic;margin-top:6px;"></p>
-              <a href="/lifecycle.html" style="display:inline-block;margin-top:10px;padding:6px 16px;background:linear-gradient(135deg,#5b8def,#8ab4f8);color:#fff;border-radius:20px;text-decoration:none;font-size:0.82em;font-weight:600;">🦋 了解灰蝶与蚂蚁的故事 →</a>
+              <p id="lycaenidHint" style="font-size:0.85em;color:var(--primary);font-style:italic;margin-top:6px;"></p>
+              <a href="/lifecycle.html" class="lycaenid-cta">🦋 了解灰蝶与蚂蚁的故事 →</a>
             </div>
 
             <!-- 生态背景 -->
             <div class="result-section"><h4>📖 生态学背景</h4><p id="resultEco"></p></div>
             <div class="result-section"><h4>🛡️ 植物防御反应</h4><p id="resultDefense"></p></div>
-            <div class="result-section" id="ddSection" style="display:none"><h4>⚖️ 鉴别诊断</h4><p id="resultDD" style="font-size:0.85em;color:var(--text-secondary)"></p></div>
-            <div class="result-section" id="limitSection" style="display:none"><h4>⚠️ 局限性说明</h4><p id="resultLimit" style="font-size:0.82em;color:var(--text-dim);font-style:italic"></p></div>
+            <div class="result-section" id="ddSection" class="hidden"><h4>⚖️ 鉴别诊断</h4><p id="resultDD" style="font-size:0.85em;color:var(--text-secondary)"></p></div>
+            <div class="result-section" id="limitSection" class="hidden"><h4>⚠️ 局限性说明</h4><p id="resultLimit" style="font-size:0.82em;color:var(--text-dim);font-style:italic"></p></div>
           </div>
         </div>
         </div><!-- /realResultCard -->
@@ -193,7 +193,7 @@
   </div>
 
   <!-- 鉴定依据说明 -->
-  <div class="section" style="background:var(--bg-subtle);padding:36px 0;margin-top:0;">
+  <div class="section methodology-bg" style="padding:36px 0;margin-top:0;">
     <div class="container">
       <h3 style="color:var(--primary);font-family:var(--font-serif);margin-bottom:16px;font-size:1.1em;">📖 鉴定依据与方法论</h3>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;color:var(--text-secondary);font-size:0.85em;line-height:1.8;">
@@ -328,11 +328,11 @@ async function processFile(file) {
     console.log(`[图片压缩] ${(originalSize/1024).toFixed(0)}KB → ${(compressedSize/1024).toFixed(0)}KB (↓${ratio}%)`);
 
     document.getElementById('previewImg').src = compressedDataUrl;
-    document.getElementById('previewImg').style.display = 'block';
-    document.getElementById('uploadPlaceholder').style.display = 'none';
-    document.getElementById('labActions').style.display = 'flex';
-    document.getElementById('labResult').style.display = 'none';
-    document.getElementById('labExamples').style.display = 'none';
+    document.getElementById('previewImg').classList.remove('hidden');
+    document.getElementById('uploadPlaceholder').classList.add('hidden');
+    document.getElementById('labActions').classList.remove('hidden');
+    document.getElementById('labResult').classList.add('hidden');
+    document.getElementById('labExamples').classList.add('hidden');
   };
   reader.readAsDataURL(file);
 }
@@ -358,16 +358,16 @@ async function analyzeImage() {
 
   // ── 进入loading状态 ──
   // 左侧：隐藏原图 → 显示扫描覆盖层
-  previewImg.style.display = 'none';
-  overlay.style.display = 'flex';
+  previewImg.classList.add('hidden');
+  overlay.classList.remove('hidden');
   scanPreview.src = uploadedImageData;
 
   // 右侧：隐藏示例 → 显示骨架屏（真实结果隐藏）
-  document.getElementById('labExamples').style.display = 'none';
+  document.getElementById('labExamples').classList.add('hidden');
   const labResult = document.getElementById('labResult');
-  labResult.style.display = 'block';
-  skelCard.style.display = 'block';
-  realCard.style.display = 'none';
+  labResult.classList.remove('hidden');
+  skelCard.classList.remove('hidden');
+  realCard.classList.add('hidden');
 
   btn.disabled = true;
   btn.textContent = '⏳ 分析中...';
@@ -402,17 +402,17 @@ async function analyzeImage() {
 
     // ── 清理loading状态 ──
     clearInterval(stageTimer); stageTimer = null;
-    overlay.style.display = 'none';
-    previewImg.style.display = 'block';
+    overlay.classList.add('hidden');
+    previewImg.classList.remove('hidden');
     btn.disabled = false;
     btn.textContent = '🔍 AI 鉴定';
     stageBar.style.width = '100%';
 
     if(!data.success){
       // 失败：恢复初始状态
-      skelCard.style.display = 'none';
-      labResult.style.display = 'none';
-      document.getElementById('labExamples').style.display = 'block';
+      skelCard.classList.add('hidden');
+      labResult.classList.add('hidden');
+      document.getElementById('labExamples').classList.remove('hidden');
       alert('分析失败: ' + (data.error || '未知错误'));
       return;
     }
@@ -420,13 +420,13 @@ async function analyzeImage() {
 
   } catch(err) {
     clearInterval(stageTimer); stageTimer = null;
-    overlay.style.display = 'none';
-    previewImg.style.display = 'block';
+    overlay.classList.add('hidden');
+    previewImg.classList.remove('hidden');
     btn.disabled = false;
     btn.textContent = '🔍 AI 鉴定';
-    skelCard.style.display = 'none';
-    labResult.style.display = 'none';
-    document.getElementById('labExamples').style.display = 'block';
+    skelCard.classList.add('hidden');
+    labResult.classList.add('hidden');
+    document.getElementById('labExamples').classList.remove('hidden');
     alert('网络错误: ' + err.message);
   }
 }
@@ -437,10 +437,10 @@ function displayResult(r) {
   const realCard = document.getElementById('realResultCard');
 
   // 切换：骨架屏 → 真实结果
-  skelCard.style.display = 'none';
-  realCard.style.display = 'block';
-  labResult.style.display = 'block';
-  document.getElementById('labExamples').style.display = 'none';
+  skelCard.classList.add('hidden');
+  realCard.classList.remove('hidden');
+  labResult.classList.remove('hidden');
+  document.getElementById('labExamples').classList.add('hidden');
 
   const typeMap = {
     marg:{icon:'📐',cn:'边缘啃食',full:'DT1 — Margin Feeding'},
@@ -478,31 +478,31 @@ function displayResult(r) {
   // ── 损伤量化（新！）──
   const sevEl = document.getElementById('severitySection');
   if (r.severity_percent !== undefined) {
-    sevEl.style.display = 'block';
+    sevEl.classList.remove('hidden');
     let sevIcon = r.severity_level === '轻度' ? '🟢' : r.severity_level === '中度' ? '🟡' : '🔴';
     document.getElementById('severityText').textContent =
       `${sevIcon} ${r.severity_level || '?'} · 约${r.severity_percent}% 叶面积受损`;
   } else {
-    sevEl.style.display = 'none';
+    sevEl.classList.add('hidden');
   }
 
   // ── 混淆组警告（新！）──
   const confusEl = document.getElementById('confusionSection');
   if (r.confusion_group) {
-    confusEl.style.display = 'block';
+    confusEl.classList.remove('hidden');
     document.getElementById('confusionText').textContent =
       `⚠️ 天然混淆风险：${r.confusion_group} —— 即使专家也难以纯视觉区分，请结合其他信息综合判断`;
   } else {
-    confusEl.style.display = 'none';
+    confusEl.classList.add('hidden');
   }
 
   // ── FFG分类（新！）──
   const ffgEl = document.getElementById('ffgSection');
   if (r.ffg_category) {
-    ffgEl.style.display = 'block';
+    ffgEl.classList.remove('hidden');
     document.getElementById('ffgText').textContent = ffgMap[r.ffg_category] || r.ffg_category;
   } else {
-    ffgEl.style.display = 'none';
+    ffgEl.classList.add('hidden');
   }
 
   // ── 原有字段 ──
@@ -511,13 +511,13 @@ function displayResult(r) {
   document.getElementById('resultDefense').innerHTML = r.plant_defense_response || '';
 
   if (r.differential_diagnosis) {
-    document.getElementById('ddSection').style.display = 'block';
+    document.getElementById('ddSection').classList.remove('hidden');
     document.getElementById('resultDD').innerHTML = r.differential_diagnosis;
-  } else { document.getElementById('ddSection').style.display = 'none'; }
+  } else { document.getElementById('ddSection').classList.add('hidden'); }
   if (r.limitations) {
-    document.getElementById('limitSection').style.display = 'block';
+    document.getElementById('limitSection').classList.remove('hidden');
     document.getElementById('resultLimit').innerHTML = r.limitations;
-  } else { document.getElementById('limitSection').style.display = 'none'; }
+  } else { document.getElementById('limitSection').classList.add('hidden'); }
 
   const featEl = document.getElementById('resultFeatures'); featEl.innerHTML = '';
   (r.key_features||[]).forEach(f => { const tag=document.createElement('span');tag.className='feature-tag';tag.textContent=f;featEl.appendChild(tag); });
@@ -530,7 +530,7 @@ function displayResult(r) {
   // ── 🦋 灰蝶检测卡片（新！核心差异化功能）──
   const lycaEl = document.getElementById('lycaenidSection');
   if (r.lycaenid_detection && r.lycaenid_detection.is_detected) {
-    lycaEl.style.display = 'block';
+    lycaEl.classList.remove('hidden');
     const ld = r.lycaenid_detection;
     const lcConf = ld.confidence === 'high' ? '🔥高度疑似' :
                     ld.confidence === 'medium' ? '🟡中度疑似' : '🔵低度可能';
@@ -543,7 +543,7 @@ function displayResult(r) {
       document.getElementById('lycaenidFps').appendChild(sp);
     });
   } else {
-    lycaEl.style.display = 'none';
+    lycaEl.classList.add('hidden');
   }
 
   if(r.raw_response) document.getElementById('resultDesc').innerHTML = '<pre style="white-space:pre-wrap;font-size:0.85em;color:var(--text-muted)">'+r.raw_response+'</pre>';
@@ -551,15 +551,19 @@ function displayResult(r) {
 
 function resetLab() {
   uploadedImageData=null; uploadedFilename='';
-  document.getElementById('previewImg').src=''; document.getElementById('previewImg').style.display='none';
-  document.getElementById('uploadPlaceholder').style.display='block';
-  document.getElementById('labActions').style.display='none';
-  document.getElementById('labResult').style.display='none';
-  document.getElementById('labExamples').style.display='block';
-  document.getElementById('labScanOverlay').style.display='none';
-  document.getElementById('skeletonCard').style.display='none';
-  document.getElementById('realResultCard').style.display='none';
-  document.getElementById('fileInput').value='';
+  const previewImg = document.getElementById('previewImg');
+  const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+  const labActions = document.getElementById('labActions');
+  const labResult = document.getElementById('labResult');
+  const labExamples = document.getElementById('labExamples');
+  const overlay = document.getElementById('labScanOverlay');
+  const skeleton = document.getElementById('skeletonCard');
+  const realCard = document.getElementById('realResultCard');
+
+  previewImg.classList.add('hidden'); uploadPlaceholder.classList.remove('hidden');
+  labActions.classList.add('hidden');    labResult.classList.add('hidden');
+  labExamples.classList.remove('hidden'); overlay.classList.add('hidden');
+  skeleton.classList.add('hidden');   realCard.classList.add('hidden');
 }
 
 // ═══ SOTD级图鉴详情弹窗 ═══
@@ -621,7 +625,7 @@ function openTypeModal(ex) {
   `;
 
   // ── 显示动画 ──
-  bd.style.display = 'flex';
+  bd.classList.remove('hidden');
   requestAnimationFrame(() => {
     bd.classList.add('active');
     modal.classList.add('active');
@@ -641,7 +645,7 @@ function closeTypeModal() {
   bd.classList.remove('active');
   modal.classList.remove('active');
   setTimeout(() => {
-    bd.style.display = 'none';
+    bd.classList.add('hidden');
     document.body.style.overflow = '';
   }, 300);
 }
