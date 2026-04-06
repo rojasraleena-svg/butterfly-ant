@@ -471,25 +471,33 @@ DT71 — 线形产卵切口 (Oviposition Slit / Egg Clutch)
 
 请严格按照JSON格式输出鉴定报告。`;
 
-    const response = await fetch(ZHIPU_BASE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ZHIPU_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: ZHIPU_MODEL,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: [
-            { type: 'text', text: userPrompt },
-            { type: 'image_url', image_url: { url: imageData } }
-          ]}
-        ],
-        max_tokens: 20000,
-        temperature: 0.3
-      })
-    });
+    const idController = new AbortController();
+    const idTimeout = setTimeout(() => idController.abort(), 120_000); // 2分钟超时（图片识别）
+    let response;
+    try {
+      response = await fetch(ZHIPU_BASE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${ZHIPU_API_KEY}`
+        },
+        signal: idController.signal,
+        body: JSON.stringify({
+          model: ZHIPU_MODEL,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: [
+              { type: 'text', text: userPrompt },
+              { type: 'image_url', image_url: { url: imageData } }
+            ]}
+          ],
+          max_tokens: 20000,
+          temperature: 0.3
+        })
+      });
+    } finally {
+      clearTimeout(idTimeout);
+    }
 
     if (!response.ok) {
       const errText = await response.text();
@@ -630,8 +638,23 @@ app.get('/api/damage-examples', (req, res) => {
   });
 });
 
-// ===== 进化沙盒 API（支持SSE流式 + 普通JSON双模式）=====
+// ===== 进化沙盒 API（异步轮询模式 + SSE流式备选）=====
 const evolveLimiter = createRateLimit();
+
+// ── 异步任务存储 ──
+const evolveJobs = new Map();
+let jobIdCounter = 0;
+
+function createJob(params) {
+  const id = 'evo_' + (++jobIdCounter) + '_' + Date.now().toString(36);
+  const job = { id, params, status: 'pending', result: null, error: null, createdAt: Date.now() };
+  evolveJobs.set(id, job);
+  // 清理超过10分钟的任务
+  for (const [jid, j] of evolveJobs) {
+    if (Date.now() - j.createdAt > 600_000) evolveJobs.delete(jid);
+  }
+  return job;
+}
 
 app.post('/api/evolve', evolveLimiter, async (req, res) => {
   const useStream = req.query.stream === 'true';
@@ -640,9 +663,10 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
 
   try {
     const { mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season } = req.body;
+    const params = { mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season };
 
     reqLog.debug('mode=%s params={mouthpart:%s size:%s speed:%s stealth:%s chems:%s plant:%s biome:%s season:%s}',
-      useStream ? 'SSE' : 'JSON',
+      useStream ? 'SSE' : 'async-polling',
       mouthpart || '-', bodySize || '-', feedingSpeed || '-', stealth || '-',
       chemicals?.join('+') || '-', hostPlant || '-', biome || '-', season || '-'
     );
@@ -652,7 +676,7 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
       return res.status(400).json({ error: '缺少必要参数' });
     }
 
-    // ── 流式模式（SSE）──
+    // ── 流式模式（SSE）— 用于本地直连，不受CF超时限制 ──
     if (useStream) {
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
@@ -667,7 +691,7 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
       sendSSE('status', { step: 'calling_ai', message: '正在连接演化引擎...' });
       reqLog.debug('SSE> status: calling_ai');
 
-      const result = await runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season }, reqLog);
+      const result = await runEvolutionAI(params, reqLog);
 
       if (!result.success) {
         reqLog.error('AI调用失败: %s', result.error);
@@ -677,7 +701,6 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
         return;
       }
 
-      // 逐世代推送
       const gens = result.result.generations || [];
       reqLog.info('流式推送 %d 个世代', gens.length);
       sendSSE('status', { step: 'streaming', total: gens.length, message: `演化完成！共 ${gens.length} 个世代` });
@@ -685,29 +708,17 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
       for (let i = 0; i < gens.length; i++) {
         const gen = gens[i];
         reqLog.debug('SSE> gen[%d/%d] dt=%s milestone=%s fitness=%s',
-          i + 1, gens.length,
-          gen.damage_type || '?',
-          gen.is_milestone ? 'YES' : '-',
-          gen.fitness ?? '?'
+          i + 1, gens.length, gen.damage_type || '?', gen.is_milestone ? 'YES' : '-', gen.fitness ?? '?'
         );
         sendSSE('generation', { index: i, total: gens.length, data: gen });
-        // 小延迟让前端有动画时间
         await new Promise(r => setTimeout(r, 300));
       }
 
-      // 推送最终结果
-      reqLog.info('SSE> complete: dt=%s path=%s',
-        result.result.final_dt_code || '?',
-        result.result.evolution_path || '?'
-      );
+      reqLog.info('SSE> complete: dt=%s path=%s', result.result.final_dt_code || '?', result.result.evolution_path || '?');
       sendSSE('complete', {
-        final_dt_code: result.result.final_dt_code,
-        final_dt_name: result.result.final_dt_name,
-        evolution_path: result.result.evolution_path,
-        ai_summary: result.result.ai_summary,
-        fun_fact: result.result.fun_fact,
-        model: result.model,
-        usage: result.usage
+        final_dt_code: result.result.final_dt_code, final_dt_name: result.result.final_dt_name,
+        evolution_path: result.result.evolution_path, ai_summary: result.result.ai_summary,
+        fun_fact: result.result.fun_fact, model: result.model, usage: result.usage
       });
 
       res.end();
@@ -716,21 +727,31 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
       return;
     }
 
-    // ── 普通JSON模式（原有逻辑）──
-    const result = await runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chemicals, hostPlant, biome, season }, reqLog);
+    // ── 异步轮询模式（默认）— 立即返回job_id，后台执行 ──
+    const job = createJob(params);
+    reqLog.info('async job created: %s', job.id);
 
-    if (!result.success) {
-      reqLog.error('AI返回失败: %s', result.error);
-      return res.status(500).json(result);
-    }
-
-    reqLog.info('done gens=%s', result.result?.generations?.length ?? '?');
-    res.json({
-      success: true,
-      result: result.result,
-      model: result.model,
-      usage: result.usage
+    // 后台执行（不阻塞响应）
+    runEvolutionAI(params, reqLog).then(result => {
+      if (result.success) {
+        job.status = 'complete';
+        job.result = result.result;
+        job.model = result.model;
+        job.usage = result.usage;
+        reqLog.info('job %s complete: gens=%s', job.id, result.result?.generations?.length ?? '?');
+      } else {
+        job.status = 'error';
+        job.error = result.error;
+        reqLog.error('job %s failed: %s', job.id, result.error);
+      }
+    }).catch(err => {
+      job.status = 'error';
+      job.error = err.message;
+      reqLog.error('job %s exception: %s', job.id, err.message);
     });
+
+    t.done(202, job.id);
+    res.status(202).json({ job_id: job.id, status: 'pending', message: '演化任务已提交，请轮询 /api/evolve/status/:job_id 获取结果' });
 
   } catch (error) {
     reqLog.error('Exception: %s | code=%s | stack=%s',
@@ -745,6 +766,23 @@ app.post('/api/evolve', evolveLimiter, async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   }
+});
+
+// ── 轮询任务状态 ──
+app.get('/api/evolve/status/:jobId', (req, res) => {
+  const job = evolveJobs.get(req.params.jobId);
+  if (!job) return res.status(404).json({ error: '任务不存在或已过期' });
+
+  const response = { job_id: job.id, status: job.status };
+  if (job.status === 'complete') {
+    response.success = true;
+    response.result = job.result;
+    response.model = job.model;
+    response.usage = job.usage;
+  } else if (job.status === 'error') {
+    response.error = job.error;
+  }
+  res.json(response);
 });
 
 // ── 核心AI调用函数（复用）──
@@ -843,22 +881,30 @@ async function runEvolutionAI({ mouthpart, bodySize, feedingSpeed, stealth, chem
 
     reqLog.debug('calling Zhipu AI (model=glm-5.1, max_tokens=8000)');
 
-    const response = await fetch(ZHIPU_BASE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ZHIPU_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'glm-5.1',  // 进化沙盒用 glm-5.1，长文本输出更稳定
-        messages: [
-          { role: 'system', content: evolveSystemPrompt },
-          { role: 'user', content: evolveUserPrompt }
-        ],
-        max_tokens: 8000,
-        temperature: 0.7
-      })
-    });
+    const controller = new AbortController();
+    const aiTimeout = setTimeout(() => controller.abort(), 300_000); // 5分钟超时（glm-5.1 长文本输出较慢）
+    let response;
+    try {
+      response = await fetch(ZHIPU_BASE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${ZHIPU_API_KEY}`
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: 'glm-5v-turbo',  // 进化沙盒用 glm-5v-turbo，速度更快避免CF超时
+          messages: [
+            { role: 'system', content: evolveSystemPrompt },
+            { role: 'user', content: evolveUserPrompt }
+          ],
+          max_tokens: 8000,
+          temperature: 0.7
+        })
+      });
+    } finally {
+      clearTimeout(aiTimeout);
+    }
 
     if (!response.ok) {
       const errText = await response.text();

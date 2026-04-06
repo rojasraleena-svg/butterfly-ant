@@ -98,6 +98,9 @@
     .sp-sub { font-size:.72rem; color:var(--text-muted); margin-top:.3rem; }
     .sp-bar { width:200px; height:3px; background:rgba(255,255,255,.08); border-radius:2px; overflow:hidden; margin-top:.8rem; }
     .sp-bar-fill { height:100%; background:linear-gradient(90deg,var(--primary),var(--primary2)); border-radius:2px; transition:width .4s ease; width:0%; }
+    .sp-timer { font-size:.7rem; color:var(--text-muted); font-family:'JetBrains Mono',monospace; margin-top:.5rem; opacity:.7; }
+    .sp-tip { font-size:.7rem; color:var(--accent-gold); margin-top:.4rem; opacity:.8; animation:tipPulse 2s ease-in-out infinite; }
+    @keyframes tipPulse { 0%,100%{opacity:.6} 50%{opacity:1} }
 
     /* 时间线 */
     .timeline-player { background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:1.1rem 1.3rem; backdrop-filter:blur(16px); }
@@ -328,6 +331,8 @@
             <div class="sp-text" id="spText">正在连接演化引擎...</div>
             <div class="sp-sub" id="spSub">准备进入千万年时光</div>
             <div class="sp-bar"><div class="sp-bar-fill" id="spBarFill"></div></div>
+            <div class="sp-timer" id="spTimer"></div>
+            <div class="sp-tip" id="spTip"></div>
           </div>
           <div class="leaf-stage-inner" id="leafStageInner">
             <div class="evo-empty-state" id="emptyState">
@@ -502,57 +507,158 @@
       if (evolutionData && evolutionData.generations) seekGen(currentGenIdx);
     }
 
-    // ── 运行演化（SSE流式）──
+    // ── 运行演化（异步轮询模式）──
+    let evoTimerStart = null, evoTimerInterval = null, evoPollTimer = null, evoJobId = null;
+    const EVO_TIPS = [
+      'AI 正在模拟千万年的自然选择过程...',
+      '计算昆虫与植物的协同进化动力学...',
+      '分析取食压力对植物防御的驱动...',
+      '生成 DT 痕迹类型演变轨迹...',
+      '演化模拟需要较长时间，请耐心等待...',
+      '正在构建世代交替的生态叙事...',
+      '🧬 模型正在推理每个世代的生态变化...',
+      '📊 计算适应度曲线和种群动态...',
+      '🎨 为每个世代生成痕迹 SVG 图形...',
+    ];
+
     async function runEvolution() {
       const btn = document.getElementById('runBtn'), prog = document.getElementById('streamProgress');
       btn.disabled = true; btn.classList.add('loading');
 
-      // 显示流式进度
       prog.classList.remove('hidden');
       document.getElementById('emptyState').classList.add('hidden');
-      document.getElementById('spText').textContent = '正在连接演化引擎...';
-      document.getElementById('spSub').textContent = '准备进入千万年时光';
-      document.getElementById('spBarFill').style.width = '0%';
+      document.getElementById('spText').textContent = '🚀 提交演化任务...';
+      document.getElementById('spSub').textContent = '正在连接服务器';
+      document.getElementById('spBarFill').style.width = '5%';
+      document.getElementById('spTimer').textContent = '';
+      document.getElementById('spTip').textContent = '';
+
+      evoTimerStart = Date.now();
+      evoTimerInterval = setInterval(updateEvoTimer, 1000);
 
       const params = getParams();
       try {
-        const resp = await fetch('/api/evolve?stream=true', {
+        // Step 1: 提交任务（立即返回）
+        const submitResp = await fetch('/api/evolve', {
           method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(params)
         });
-        const reader = resp.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
+        const submitData = await submitResp.json();
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-
-          // 解析SSE事件
-          const lines = buffer.split('\n');
-          buffer = lines.pop(); // 保留不完整的行
-
-          let currentEvent = '';
-          for (const line of lines) {
-            if (line.startsWith('event: ')) {
-              currentEvent = line.slice(7).trim();
-              continue;
-            }
-            if (!line.startsWith('data: ')) continue;
-            try {
-              const data = JSON.parse(line.slice(6));
-              data._event = currentEvent; // 注入事件名，供 handleSSEEvent 判断
-              handleSSEEvent(data);
-            } catch(e) {}
-          }
+        if (!submitResp.ok || !submitData.job_id) {
+          throw new Error(submitData.error || '提交任务失败');
         }
+
+        evoJobId = submitData.job_id;
+        document.getElementById('spText').textContent = '🧬 演化引擎已启动';
+        document.getElementById('spSub').textContent = 'AI 正在模拟千万年协同进化过程（glm-5v-turbo 模型）';
+        document.getElementById('spBarFill').style.width = '10%';
+
+        // Step 2: 轮询结果
+        await pollEvolutionResult();
+
       } catch(err) {
         console.error('[Evo]', err);
-        alert('❌ 演化失败: ' + err.message);
-      } finally {
-        btn.disabled = false; btn.classList.remove('loading');
-        prog.classList.add('hidden');
+        document.getElementById('spText').textContent = '❌ 出错了';
+        document.getElementById('spSub').textContent = err.message;
+        setTimeout(() => {
+          btn.disabled = false; btn.classList.remove('loading');
+          prog.classList.add('hidden');
+        }, 3000);
       }
+    }
+
+    async function pollEvolutionResult() {
+      const btn = document.getElementById('runBtn'), prog = document.getElementById('streamProgress');
+
+      while (evoJobId) {
+        await new Promise(r => setTimeout(r, 2000)); // 每2秒轮询
+
+        try {
+          const resp = await fetch(`/api/evolve/status/${evoJobId}`);
+          const data = await resp.json();
+
+          if (data.status === 'complete' && data.result) {
+            // 成功！渲染结果
+            evolutionData = data.result;
+            const gens = evolutionData.generations || [];
+
+            document.getElementById('spText').textContent = `✅ 演化完成！共 ${gens.length} 个世代`;
+            document.getElementById('spSub').textContent = '正在逐代渲染...';
+            document.getElementById('spTip').textContent = '';
+            document.getElementById('spBarFill').style.width = '70%';
+
+            // 初始化UI并逐代展示
+            initTimelineUI();
+            showLeafStage();
+
+            for (let i = 0; i < gens.length; i++) {
+              const pct = Math.round((i + 1) / gens.length * 30) + 70;
+              document.getElementById('spBarFill').style.width = pct + '%';
+              document.getElementById('spSub').textContent = `渲染第 ${i + 1}/${gens.length} 代...`;
+              seekGen(i);
+              const panel = document.getElementById('narrativePanel');
+              panel.classList.remove('gen-enter'); void panel.offsetWidth; panel.classList.add('gen-enter');
+              await new Promise(r => setTimeout(r, 300));
+            }
+
+            // 补充最终数据
+            evolutionData.final_dt_code = data.result.final_dt_code;
+            evolutionData.final_dt_name = data.result.final_dt_name;
+            evolutionData.evolution_path = data.result.evolution_path;
+            evolutionData.ai_summary = data.result.ai_summary;
+            evolutionData.fun_fact = data.result.fun_fact;
+
+            document.getElementById('spBarFill').style.width = '100%';
+            document.getElementById('spText').textContent = '✅ 演化完成！';
+            document.getElementById('spSub').textContent = `共 ${gens.length} 个世代`;
+
+            setTimeout(() => {
+              prog.classList.add('hidden');
+              seekGen(gens.length - 1);
+              showResultCard();
+            }, 800);
+
+            clearInterval(evoTimerInterval); evoTimerInterval = null; evoTimerStart = null;
+            btn.disabled = false; btn.classList.remove('loading');
+            return;
+
+          } else if (data.status === 'error') {
+            throw new Error(data.error || '演化计算出错');
+          }
+          // status === 'pending' → 继续轮询
+
+        } catch(err) {
+          if (err.message !== '演化计算出错') throw err; // 网络错误等，重试
+          document.getElementById('spText').textContent = '❌ 出错了';
+          document.getElementById('spSub').textContent = err.message;
+          break;
+        }
+      }
+
+      cleanupEvo();
+    }
+
+    function cleanupEvo() {
+      clearInterval(evoTimerInterval); evoTimerInterval = null;
+      clearInterval(evoPollTimer); evoPollTimer = null;
+      evoTimerStart = null; evoJobId = null;
+      const btn = document.getElementById('runBtn'), prog = document.getElementById('streamProgress');
+      btn.disabled = false; btn.classList.remove('loading');
+      setTimeout(() => prog.classList.add('hidden'), 3000);
+    }
+
+    function updateEvoTimer() {
+      if (!evoTimerStart) return;
+      const elapsed = Math.floor((Date.now() - evoTimerStart) / 1000);
+      const m = Math.floor(elapsed / 60), s = elapsed % 60;
+      document.getElementById('spTimer').textContent = `⏱ 已等待 ${m}:${s.toString().padStart(2,'0')}`;
+
+      const tipEl = document.getElementById('spTip');
+      if (elapsed >= 180) tipEl.textContent = '💡 即将完成，复杂场景最长需要 3-4 分钟...';
+      else if (elapsed >= 120) tipEl.textContent = '💡 复杂演化场景可能需要 2-3 分钟，AI 仍在工作中...';
+      else if (elapsed >= 60) tipEl.textContent = EVO_TIPS[Math.floor(elapsed / 12) % EVO_TIPS.length];
+      else if (elapsed >= 30) tipEl.textContent = '🧬 AI 正在深度思考演化路径...';
+      else if (elapsed >= 10) tipEl.textContent = '';
     }
 
     // ── SSE事件处理 ──
@@ -560,13 +666,14 @@
 
     function handleSSEEvent(data) {
       if (data.step === 'calling_ai') {
-        document.getElementById('spText').textContent = '正在连接演化引擎...';
-        document.getElementById('spSub').textContent = 'AI正在分析你的昆虫设计';
+        document.getElementById('spText').textContent = '🧬 演化引擎已启动';
+        document.getElementById('spSub').textContent = 'AI 正在模拟千万年协同进化过程（glm-5v-turbo 模型）';
         document.getElementById('spBarFill').style.width = '10%';
       }
       else if (data.step === 'streaming') {
-        document.getElementById('spText').textContent = `演化完成！共 ${data.total} 个世代`;
+        document.getElementById('spText').textContent = `✅ 演化完成！共 ${data.total} 个世代`;
         document.getElementById('spSub').textContent = '正在逐代渲染...';
+        document.getElementById('spTip').textContent = '';
         document.getElementById('spBarFill').style.width = '30%';
         // 初始化UI
         initTimelineUI();
